@@ -740,6 +740,12 @@ button { font-family: inherit; }
 
 .grid-empty { grid-column: 1 / -1; text-align: center; color: var(--grey); padding: 2rem; }
 
+/* Touch-Geräte (Handy/Tablet): kein Hover -> "In den Warenkorb" dauerhaft zeigen */
+@media (hover: none) {
+  .quick-add { transform: translateY(0); }
+  .product-media .prod-art { height: 62%; }
+}
+
 /* ============ Über Caroud ============ */
 .about-grid {
   display: grid;
@@ -1099,4 +1105,14 @@ button { font-family: inherit; }
   .site-header { padding: 0 1rem; }
   .logo img { height: 20px; }
   .section { padding: 3rem 1.2rem; }
+  .announcement-bar { font-size: 0.66rem; letter-spacing: 0.06em; padding: 0.5rem 0.8rem; line-height: 1.6; }
+  /* 2-spaltiges Produkt- und Kategorie-Grid auf dem Handy */
+  .product-grid { grid-template-columns: repeat(2, 1fr); gap: 1.4rem 0.7rem; }
+  .category-grid { grid-template-columns: repeat(2, 1fr); gap: 0.7rem; }
+  .product-name { font-size: 0.82rem; }
+  .product-prices { font-size: 0.85rem; margin-top: 0.15rem; }
+  .quick-add { font-size: 0.66rem; padding: 0.6rem 0.4rem; letter-spacing: 0.08em; }
+  /* Hero-Buttons untereinander statt nebeneinander (verhindert Abschneiden) */
+  .hero-cta { flex-direction: column; align-items: center; width: 100%; }
+  .hero-cta a { width: 100%; max-width: 280px; text-align: center; }
 }
