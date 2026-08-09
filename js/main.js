@@ -78,10 +78,30 @@ function baumSVG(color, label) {
   </svg>`;
 }
 
+function clipSVG(color, label) {
+  return `
+  <svg class="prod-art" viewBox="0 0 140 200" xmlns="http://www.w3.org/2000/svg">
+    <g opacity="0.55">
+      <rect x="24" y="150" width="92" height="9" rx="3" fill="#8f8f8f"/>
+      <rect x="24" y="164" width="92" height="9" rx="3" fill="#7c7c7c"/>
+      <rect x="24" y="178" width="92" height="9" rx="3" fill="#8f8f8f"/>
+    </g>
+    <path d="M60 122 V152 Q60 160 68 160 H72 Q80 160 80 152 V122" fill="none" stroke="#444" stroke-width="4" stroke-linecap="round"/>
+    <rect x="30" y="24" width="80" height="104" rx="16" fill="${color}" stroke="rgba(0,0,0,0.18)"/>
+    <rect x="34" y="28" width="72" height="96" rx="13" fill="none" stroke="rgba(255,255,255,0.14)"/>
+    <rect x="42" y="58" width="56" height="40" rx="4" fill="#fff" stroke="#ddd"/>
+    <text x="70" y="74" text-anchor="middle" font-size="10" font-weight="600" font-family="Georgia, serif" letter-spacing="1" fill="#111">CAROUD</text>
+    <rect x="56" y="81" width="28" height="4" rx="2" fill="${color}" stroke="rgba(0,0,0,0.2)"/>
+    <text x="70" y="96" text-anchor="middle" font-size="7.5" font-family="Georgia, serif" fill="#555">${label}</text>
+    <text x="70" y="116" text-anchor="middle" font-size="5.5" font-family="Georgia, serif" fill="#999">- est. 2026 -</text>
+  </svg>`;
+}
+
 function artFor(p) {
   if (p.type === "spray") return sprayBottleSVG(p.color, p.label);
   if (p.type === "baum") return baumSVG(p.color, p.label);
   if (p.type === "haenger") return haengerSVG(p.color, p.label);
+  if (p.type === "clip") return clipSVG(p.color, p.label);
   if (p.type === "bundle") return bundleSVG(p.color, p.label);
   return tuchSVG(p.color, p.label);
 }
@@ -112,7 +132,7 @@ CATEGORIES.forEach((cat) => {
 
 // ---------- Filter & Produkt-Grid ----------
 
-const FILTERS = ["bestseller", "alle", "Duftsprays", "Duftbäume", "Duftanhänger", "Bundles"];
+const FILTERS = ["bestseller", "alle", "Duftsprays", "Duftbäume", "Duftanhänger", "Lüftungsclips", "Bundles"];
 const FILTER_LABELS = { bestseller: "Bestseller", alle: "Alle Produkte" };
 let activeFilter = "bestseller";
 
