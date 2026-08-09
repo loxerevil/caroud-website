@@ -179,7 +179,6 @@ setFilter("bestseller");
 
 // ---------- Warenkorb ----------
 
-const FREE_SHIPPING_AT = 50;
 let cart = [];
 try {
   cart = JSON.parse(localStorage.getItem("caroud-cart") || "[]");
@@ -235,15 +234,8 @@ function renderCart() {
   const subtotal = cartSubtotal();
   cartSubtotalEl.textContent = euro(subtotal);
 
-  const missing = FREE_SHIPPING_AT - subtotal;
-  if (subtotal === 0) {
-    shippingTextEl.innerHTML = `Ab <strong>${euro(FREE_SHIPPING_AT)}</strong> versandkostenfrei (EU)`;
-  } else if (missing > 0) {
-    shippingTextEl.innerHTML = `Noch <strong>${euro(missing)}</strong> bis zum Gratisversand`;
-  } else {
-    shippingTextEl.innerHTML = `<strong>✦ Gratisversand freigeschaltet!</strong>`;
-  }
-  shippingFillEl.style.width = Math.min(100, (subtotal / FREE_SHIPPING_AT) * 100) + "%";
+  shippingTextEl.innerHTML = `<strong>✦ Versandkostenfrei</strong> – auf alle Bestellungen`;
+  shippingFillEl.style.width = "100%";
 
   cartItemsEl.innerHTML = "";
   if (!cart.length) {
