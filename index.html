@@ -3,170 +3,316 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="robots" content="noindex, nofollow">
-  <title>CAROUD – Hier entsteht bald was Neues</title>
+  <title>Caroud – Autodüfte, Duftsprays &amp; Duftanhänger</title>
   <link rel="icon" type="image/png" href="img/favicon.png">
-  <style>
-    :root {
-      --ink: #1c1b19;
-      --gold: #b9a06a;
-      --serif: Georgia, "Times New Roman", serif;
-    }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { height: 100%; }
-    body {
-      background: var(--ink);
-      color: #f2ede3;
-      font-family: var(--serif);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      text-align: center;
-      overflow-x: hidden;
-      padding: 24px 16px;
-    }
-    .logo {
-      width: min(280px, 70vw);
-      margin-bottom: 28px;
-      opacity: 0;
-      animation: fadeIn 1.2s ease forwards;
-    }
-    h1 {
-      font-size: clamp(1.8rem, 5vw, 2.8rem);
-      letter-spacing: 2px;
-      margin-bottom: 14px;
-      opacity: 0;
-      animation: fadeIn 1.2s ease 0.3s forwards;
-    }
-    h1 .gold { color: var(--gold); }
-    .msg {
-      max-width: 560px;
-      font-size: clamp(1rem, 2.5vw, 1.15rem);
-      line-height: 1.7;
-      color: #cfc8ba;
-      margin-bottom: 40px;
-      opacity: 0;
-      animation: fadeIn 1.2s ease 0.6s forwards;
-    }
-    .msg b { color: var(--gold); font-weight: 600; }
-
-    /* ---------- unendliche Warteschlange ---------- */
-    .queue-wrap {
-      width: 100%;
-      max-width: 720px;
-      opacity: 0;
-      animation: fadeIn 1.2s ease 0.9s forwards;
-    }
-    .queue-label {
-      font-size: 0.8rem;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 6px;
-    }
-    .queue-count {
-      font-size: 1.05rem;
-      color: #cfc8ba;
-      margin-bottom: 18px;
-      font-variant-numeric: tabular-nums;
-    }
-    .queue-belt {
-      position: relative;
-      overflow: hidden;
-      padding: 10px 0 0;
-      -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
-              mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
-    }
-    .queue-track {
-      display: flex;
-      width: max-content;
-      animation: march 14s linear infinite;
-    }
-    .queue-track svg {
-      width: 54px;
-      height: 90px;
-      flex: 0 0 auto;
-      margin: 0 10px;
-      animation: bob 1.6s ease-in-out infinite;
-    }
-    .queue-track svg:nth-child(2n) { animation-delay: 0.4s; }
-    .queue-track svg:nth-child(3n) { animation-delay: 0.8s; }
-    .queue-track svg:nth-child(5n) { animation-delay: 1.2s; }
-    .queue-floor {
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(185,160,106,0.6), transparent);
-      margin-top: 6px;
-    }
-    .hint {
-      margin-top: 26px;
-      font-size: 0.85rem;
-      color: #7d7668;
-      font-style: italic;
-    }
-    @keyframes march {
-      from { transform: translateX(0); }
-      to   { transform: translateX(-50%); }
-    }
-    @keyframes bob {
-      0%, 100% { transform: translateY(0); }
-      50%      { transform: translateY(-5px); }
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(12px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-  </style>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <img class="logo" src="img/logo-text-transparent.png" alt="CAROUD – Fine Fragrance for the Drive">
 
-  <h1>Shu lau <span class="gold">👋</span></h1>
-  <p class="msg">
-    Wir sind gerade in <b>Wartung</b> und müssen hier erstmal alles bauen.<br>
-    <b>Walid</b> &amp; <b>Samet</b> machen das Ganze schon –<br>
-    hier entsteht bald was Neues.
-  </p>
-
-  <div class="queue-wrap">
-    <div class="queue-label">Warteschlange</div>
-    <div class="queue-count">Vor dir: <span id="count">∞</span> Sprühdosen</div>
-    <div class="queue-belt">
-      <div class="queue-track" id="track"></div>
-      <div class="queue-floor"></div>
+  <!-- Ladebildschirm (Sprühstoß) -->
+  <div class="preloader" id="preloader" aria-hidden="true">
+    <div class="preloader-glow"></div>
+    <div class="preloader-inner" id="preloaderInner">
+      <div class="preloader-bottle">
+        <svg viewBox="0 0 120 200" xmlns="http://www.w3.org/2000/svg">
+          <g id="sprayHead">
+            <rect x="48" y="24" width="24" height="16" rx="2" fill="none" stroke="#b9a06a" stroke-width="2"/>
+            <path d="M72 28 H84 V34 H72" fill="none" stroke="#b9a06a" stroke-width="2"/>
+          </g>
+          <path d="M52 40 V52 H68 V40" fill="none" stroke="#b9a06a" stroke-width="2"/>
+          <path d="M42 60 Q42 52 50 52 H70 Q78 52 78 60 L82 76 V182 Q82 190 74 190 H46 Q38 190 38 182 V76 Z" fill="none" stroke="#b9a06a" stroke-width="2"/>
+          <text x="60" y="130" text-anchor="middle" font-size="11" font-family="Georgia, serif" letter-spacing="2.5" fill="#f2efe9">CAROUD</text>
+        </svg>
+        <div class="spray-origin" id="sprayOrigin"></div>
+      </div>
+      <div class="preloader-word">
+        <span style="--i:0">C</span><span style="--i:1">A</span><span style="--i:2">R</span><span style="--i:3">O</span><span style="--i:4">U</span><span style="--i:5">D</span>
+      </div>
+      <p class="preloader-tag">Fine&nbsp;Fragrance&nbsp;for&nbsp;the&nbsp;Drive</p>
     </div>
-    <p class="hint">Geschätzte Wartezeit: bis es fertig ist.</p>
+    <div class="mist" id="mist"></div>
   </div>
 
-  <script>
-    // Sprühdosen-Platzhalter aus dem Shop-Prototyp
-    function sprayBottleSVG(color) {
-      return `
-      <svg viewBox="0 0 120 200" xmlns="http://www.w3.org/2000/svg">
-        <rect x="52" y="4" width="16" height="14" rx="2" fill="#222"/>
-        <rect x="44" y="18" width="32" height="16" rx="3" fill="#111"/>
-        <path d="M38 40 Q38 34 46 34 H74 Q82 34 82 40 L86 60 V186 Q86 194 78 194 H42 Q34 194 34 186 V60 Z" fill="${color}" stroke="rgba(0,0,0,0.25)"/>
-        <rect x="42" y="88" width="36" height="46" rx="3" fill="#fff" stroke="#ddd"/>
-        <text x="60" y="106" text-anchor="middle" font-size="9" font-weight="600" font-family="Georgia, serif" letter-spacing="1" fill="#111">CAROUD</text>
-        <rect x="48" y="112" width="24" height="4" rx="2" fill="${color}" stroke="rgba(0,0,0,0.2)"/>
-      </svg>`;
-    }
+  <!-- Ankündigungsleiste -->
+  <div class="announcement-bar">
+    <span>CODE: CAROUD10 – 10% RABATT&nbsp;&nbsp;|&nbsp;&nbsp;GRATIS DUFTBAUM ZU JEDEM DUFTSPRAY&nbsp;&nbsp;|&nbsp;&nbsp;AB 50€ VERSANDKOSTENFREI (EU)</span>
+  </div>
 
-    const colors = ["#b9a06a", "#3a3a3a", "#7a1f2b", "#93a3ad", "#e8d9b8", "#274a3d"];
-    // zwei identische Hälften -> nahtlose Endlosschleife
-    let row = "";
-    for (let i = 0; i < 14; i++) row += sprayBottleSVG(colors[i % colors.length]);
-    document.getElementById("track").innerHTML = row + row;
+  <!-- Header -->
+  <header class="site-header" id="siteHeader">
+    <button class="icon-btn menu-toggle" aria-label="Menü öffnen">
+      <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+    </button>
 
-    // Zähler, der immer weiter STEIGT statt zu sinken
-    let n = 99999999;
-    const el = document.getElementById("count");
-    el.textContent = n.toLocaleString("de-DE");
-    setInterval(() => {
-      n += Math.floor(Math.random() * 7) + 1;
-      el.textContent = n.toLocaleString("de-DE");
-    }, 800);
-  </script>
+    <a href="#top" class="logo"><img src="img/logo-text-transparent.png" alt="Caroud"></a>
+
+    <div class="header-actions">
+      <button class="icon-btn search-toggle" aria-label="Suche">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M16 16l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+      <button class="icon-btn cart-toggle" aria-label="Warenkorb">
+        <svg viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6L5 8z" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linejoin="round"/><path d="M9 8V6a3 3 0 0 1 6 0v2" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+        <span class="cart-count" hidden>0</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Seitenmenü (Drawer links) -->
+  <div class="drawer-overlay" data-overlay="menu" hidden></div>
+  <nav class="drawer drawer-left" id="menuDrawer" aria-label="Hauptmenü">
+    <button class="icon-btn drawer-close" data-close="menu" aria-label="Menü schließen">
+      <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </button>
+    <ul class="menu-list">
+      <li><a href="#top">Home</a></li>
+      <li><a href="#produkte" data-filter="alle">Alle Produkte</a></li>
+      <li><a href="#produkte" data-filter="bestseller">Bestseller</a></li>
+      <li><a href="#produkte" data-filter="Duftsprays">Duftsprays</a></li>
+      <li><a href="#produkte" data-filter="Duftbäume">Duftbäume</a></li>
+      <li><a href="#produkte" data-filter="Duftanhänger">Duftanhänger</a></li>
+      <li><a href="#produkte" data-filter="Bundles">Bundles</a></li>
+      <li><a href="#ueber">Über uns</a></li>
+    </ul>
+    <p class="menu-note">est. 2026 – Premium Autodüfte</p>
+  </nav>
+
+  <!-- Warenkorb (Drawer rechts) -->
+  <div class="drawer-overlay" data-overlay="cart" hidden></div>
+  <aside class="drawer drawer-right" id="cartDrawer" aria-label="Warenkorb">
+    <div class="cart-head">
+      <h3>Warenkorb</h3>
+      <button class="icon-btn" data-close="cart" aria-label="Warenkorb schließen">
+        <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+
+    <div class="shipping-progress">
+      <p class="shipping-text" id="shippingText"></p>
+      <div class="shipping-bar"><div class="shipping-fill" id="shippingFill"></div></div>
+    </div>
+
+    <div class="cart-items" id="cartItems"></div>
+
+    <div class="cart-foot">
+      <div class="cart-subtotal">
+        <span>Zwischensumme</span>
+        <strong id="cartSubtotal">€0,00</strong>
+      </div>
+      <p class="cart-hint">Versandkosten werden im Checkout berechnet.</p>
+      <button class="btn btn-dark btn-block" id="checkoutBtn">Zur Kasse</button>
+    </div>
+  </aside>
+
+  <!-- Suche (Overlay) -->
+  <div class="search-overlay" id="searchOverlay" hidden>
+    <div class="search-box">
+      <div class="search-row">
+        <svg viewBox="0 0 24 24" class="search-icon"><circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M16 16l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <input type="text" id="searchInput" placeholder="Wonach suchst du? z. B. Vanilla…" autocomplete="off">
+        <button class="icon-btn" data-close="search" aria-label="Suche schließen">
+          <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <div class="search-results" id="searchResults"></div>
+    </div>
+  </div>
+
+  <!-- Hero -->
+  <section class="hero" id="top">
+    <video class="hero-video" src="img/hero-video.mp4" autoplay muted loop playsinline aria-hidden="true"></video>
+    <div class="hero-inner">
+      <h1 class="sr-only">Caroud – Fine Fragrance for the Drive</h1>
+      <div class="hero-cta">
+        <a href="#produkte" class="btn btn-gold">Jetzt shoppen</a>
+        <a href="#marke" class="btn btn-outline">Unsere Marke</a>
+      </div>
+    </div>
+    <div class="hero-scroll">▾</div>
+  </section>
+
+  <!-- Laufband -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <span>CAROUD&nbsp;✦&nbsp;PREMIUM AUTODÜFTE&nbsp;✦&nbsp;LANGANHALTEND&nbsp;✦&nbsp;EST. 2026&nbsp;✦&nbsp;</span>
+      <span>CAROUD&nbsp;✦&nbsp;PREMIUM AUTODÜFTE&nbsp;✦&nbsp;LANGANHALTEND&nbsp;✦&nbsp;EST. 2026&nbsp;✦&nbsp;</span>
+    </div>
+  </div>
+
+  <!-- Kategorien -->
+  <section class="section reveal" id="kategorien">
+    <h2 class="section-title">Kategorien</h2>
+    <div class="category-grid" id="categoryGrid"></div>
+  </section>
+
+  <!-- Produkte -->
+  <section class="section section-alt reveal" id="produkte">
+    <h2 class="section-title" id="productTitle">Bestseller</h2>
+    <div class="filter-chips" id="filterChips"></div>
+    <div class="product-grid" id="productGrid"></div>
+  </section>
+
+  <!-- Über Caroud -->
+  <section class="section about reveal" id="ueber">
+    <div class="about-grid">
+      <div class="about-text">
+        <p class="about-kicker">Fine Fragrance for the Drive</p>
+        <h2>Über Caroud</h2>
+        <p>
+          Caroud ist mehr als eine Marke – es ist der Anspruch, dass sich dein Auto so gut anfühlt,
+          wie es aussieht. Entstanden aus der Leidenschaft für besondere Autos und feine Parfümerie,
+          entwickeln wir Düfte, die zum Charakter deines Fahrzeugs passen: kraftvoll, elegant, niemals aufdringlich.
+        </p>
+        <p>
+          Jeder Duft wird von uns so lange verfeinert, bis er im Innenraum genauso überzeugt wie auf dem Papier.
+          Das Ergebnis sind Kompositionen, die jede Fahrt zu einem Erlebnis machen – vom kurzen Weg zur Arbeit
+          bis zur Nachtfahrt über leere Straßen.
+        </p>
+        <a href="#produkte" class="btn btn-gold">Jetzt ansehen</a>
+      </div>
+      <div class="about-media">
+        <img src="img/about.png" alt="Luxuriöses Fahrzeug-Interieur mit Caroud Duft">
+      </div>
+    </div>
+  </section>
+
+  <!-- Marken-Statement -->
+  <section class="brand-band reveal" id="marke">
+    <div class="brand-inner">
+      <p class="brand-kicker">Die Marke</p>
+      <h2>„Die Autos, die wir fahren, sagen viel über uns.<br>Der Duft darin auch."</h2>
+      <p class="brand-text">
+        Caroud steht für Düfte, die zu deinem Auto passen: kraftvoll, aber nie aufdringlich.
+        Jeder Duft wird von uns getestet, bis er sich im Innenraum genauso anfühlt wie auf dem Papier – edel, klar, unverwechselbar.
+      </p>
+    </div>
+  </section>
+
+  <!-- Vorteile -->
+  <section class="section usp-row reveal">
+    <div class="usp">
+      <div class="usp-icon">✦</div>
+      <h3>Langanhaltend</h3>
+      <p>Bis zu 8 Wochen Duft – entwickelt für den Innenraum deines Autos.</p>
+    </div>
+    <div class="usp">
+      <div class="usp-icon">➤</div>
+      <h3>Schneller Versand</h3>
+      <p>Versand innerhalb von 24h – ab 50€ kostenlos in der EU.</p>
+    </div>
+    <div class="usp">
+      <div class="usp-icon">◆</div>
+      <h3>Schlichtes Design</h3>
+      <p>Dezent im Auto, stark im Duft. Kein Schnickschnack.</p>
+    </div>
+  </section>
+
+  <!-- Kundenstimmen -->
+  <section class="section section-alt reveal">
+    <h2 class="section-title">Was unsere Kunden sagen</h2>
+    <div class="review-grid">
+      <div class="review-card">
+        <div class="stars">★★★★★</div>
+        <p>„Der Midnight-Duft ist genau mein Ding – edel und nicht zu süß. Hält bei mir seit Wochen."</p>
+        <span class="review-author">– Deniz K.</span>
+      </div>
+      <div class="review-card">
+        <div class="stars">★★★★★</div>
+        <p>„Endlich mal Duftanhänger, die im Auto nicht billig aussehen. Schlichtes Design, starker Duft."</p>
+        <span class="review-author">– Melina S.</span>
+      </div>
+      <div class="review-card">
+        <div class="stars">★★★★☆</div>
+        <p>„Schneller Versand, schöne Verpackung. Vanilla Cloud riecht besser als jeder Duftbaum."</p>
+        <span class="review-author">– Jonas B.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section faq-section reveal" id="faq">
+    <h2 class="section-title">Häufige Fragen</h2>
+    <div class="faq-list">
+      <details class="faq-item">
+        <summary>Wie lange hält ein Duftanhänger?</summary>
+        <p>Je nach Belüftung und Temperatur zwischen 4 und 8 Wochen. Tipp: Bei Nichtgebrauch zurück in den Beutel legen – das verlängert die Duftdauer deutlich.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Wie benutze ich das Duftspray richtig?</summary>
+        <p>2–3 Sprühstöße auf Fußmatten oder Sitze (nicht auf Leder oder Displays), Türen kurz schließen – fertig. Bei Bedarf nach ein paar Tagen auffrischen.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Wie schnell wird geliefert?</summary>
+        <p>Bestellungen bis 14 Uhr verlassen unser Lager noch am selben Werktag. Lieferzeit innerhalb Deutschlands: 1–3 Werktage.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Kann ich Produkte zurückgeben?</summary>
+        <p>Ja – ungeöffnete Produkte kannst du innerhalb von 14 Tagen ohne Angabe von Gründen zurückgeben.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- Newsletter -->
+  <section class="newsletter reveal">
+    <div class="newsletter-inner">
+      <h2>Bleib auf dem Laufenden</h2>
+      <p>Neue Düfte, Drops und exklusive Rabatte – direkt in dein Postfach.</p>
+      <form class="newsletter-form" id="newsletterForm">
+        <input type="email" placeholder="Deine E-Mail-Adresse" required>
+        <button type="submit" class="btn btn-gold">Anmelden</button>
+      </form>
+      <p class="newsletter-done" id="newsletterDone" hidden>Danke! Du bist dabei. ✦</p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-cols">
+      <div>
+        <img class="footer-logo" src="img/logo-transparent.png" alt="Caroud – Fine Fragrance for the Drive">
+        <p>Autodüfte, Duftsprays und Duftanhänger – est. 2026.</p>
+      </div>
+      <div>
+        <h4>Shop</h4>
+        <ul>
+          <li><a href="#produkte">Alle Produkte</a></li>
+          <li><a href="#produkte">Bestseller</a></li>
+          <li><a href="#kategorien">Kategorien</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Service</h4>
+        <ul>
+          <li><a href="#faq">FAQ</a></li>
+          <li><a href="#">Versand &amp; Rückgabe</a></li>
+          <li><a href="#">Kontakt</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Rechtliches</h4>
+        <ul>
+          <li><a href="#">Impressum</a></li>
+          <li><a href="#">Datenschutz</a></li>
+          <li><a href="#">AGB</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="footer-copy">© 2026 Caroud. Alle Rechte vorbehalten.</p>
+  </footer>
+
+  <!-- Produkt-Detail (Modal) -->
+  <div class="modal-overlay" id="productModal" hidden>
+    <div class="modal">
+      <button class="icon-btn modal-close" data-close="modal" aria-label="Schließen">
+        <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="js/products.js"></script>
+  <script src="js/main.js"></script>
 </body>
 </html>
