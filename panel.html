@@ -504,7 +504,7 @@
       started = true;
       $("subTitle").textContent = user.email;
       renderGreeting();
-      switchTab(localStorage.getItem("caroud-panel-tab") || "dash");
+      switchTab("dash"); // App startet immer auf der Übersicht (Begrüßung)
 
       getDoc(doc(db, "config", "discord"))
         .then((s) => { webhookUrl = s.exists() ? s.data().url : null; }).catch(() => {});
