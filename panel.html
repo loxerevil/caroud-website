@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Caroud Panel</title>
+  <link rel="icon" type="image/png" href="img/favicon.png">
+  <!-- iPhone Homescreen-App -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Caroud">
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+  <meta name="theme-color" content="#1c1b19">
+  <style>
+    :root {
+      --gold: #b9a06a;
+      --gold-dark: #a08a55;
+      --ink: #1c1b19;
+      --ink-2: #262420;
+      --ink-3: #2f2d28;
+      --ink-line: #2e2c28;
+      --paper: #f2efe9;
+      --grey: #8a867e;
+      --red: #c0504a;
+      --orange: #cf9040;
+      --green: #6fa172;
+      --font: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      --serif: "Playfair Display", Georgia, "Times New Roman", serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { height: 100%; }
+    body {
+      font-family: var(--font);
+      background: var(--ink);
+      color: var(--paper);
+      line-height: 1.5;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    input, select, textarea, button { font-family: inherit; font-size: 1rem; }
+    /* ============ Login ============ */
+    .login-wrap { min-height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 2rem 1.5rem; }
+    .login-card { width: 100%; max-width: 340px; text-align: center; }
+    .login-card h1 { font-family: var(--serif); font-weight: 500; letter-spacing: 4px; color: var(--gold); font-size: 1.6rem; margin-bottom: 0.3rem; }
+    .login-card p { color: var(--grey); font-size: 0.85rem; margin-bottom: 1.8rem; letter-spacing: 1px; }
+    .login-card input {
+      width: 100%; background: var(--ink-2); border: 1px solid var(--ink-line); border-radius: 10px;
+      color: var(--paper); padding: 0.85rem 1rem; margin-bottom: 0.8rem; outline: none;
+    }
+    .login-card input:focus { border-color: var(--gold-dark); }
+    .login-card button[type=submit] {
+      width: 100%; background: var(--gold); color: var(--ink); border: none; border-radius: 10px;
+      font-weight: 600; letter-spacing: 1px; padding: 0.9rem; cursor: pointer; margin-top: 0.4rem;
+    }
+    .login-card button[type=submit]:active { background: var(--gold-dark); }
+    .login-error { color: var(--red); font-size: 0.85rem; margin-top: 1rem; min-height: 1.2em; }
+    .login-hint { margin-top: 1rem; }
+    .login-hint button { background: none; border: none; color: var(--grey); font-size: 0.8rem; text-decoration: underline; cursor: pointer; }
+    /* ============ Shell ============ */
+    .app { display: none; min-height: 100dvh; }
+    .topbar {
+      position: sticky; top: 0; z-index: 10;
+      background: rgba(28, 27, 25, 0.92);
+      -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--ink-line);
+      padding: calc(0.7rem + env(safe-area-inset-top)) 1.1rem 0;
+    }
+    .topbar-row { display: flex; align-items: center; justify-content: space-between; padding-bottom: 0.55rem; }
+    .topbar h1 { font-family: var(--serif); font-size: 1.15rem; font-weight: 500; letter-spacing: 3px; color: var(--gold); }
+    .topbar .sub { font-size: 0.7rem; color: var(--grey); letter-spacing: 1px; }
+    .logout { background: none; border: 1px solid var(--ink-line); color: var(--grey); border-radius: 8px; font-size: 0.75rem; padding: 0.45rem 0.8rem; cursor: pointer; }
+    .tabs {
+      display: flex; gap: 0.45rem; overflow-x: auto; padding: 0.15rem 0 0.7rem;
+      scrollbar-width: none; -ms-overflow-style: none;
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab {
+      flex-shrink: 0; background: var(--ink-2); border: 1px solid var(--ink-line); color: var(--grey);
+      border-radius: 999px; font-size: 0.8rem; letter-spacing: 0.5px; padding: 0.45rem 0.95rem; cursor: pointer;
+    }
+    .tab.active { background: var(--gold); border-color: var(--gold); color: var(--ink); font-weight: 600; }
+    .content { max-width: 720px; margin: 0 auto; padding: 0.9rem 1.1rem 3.5rem; }
+    section[data-panel] { display: none; }
+    section[data-panel].active { display: block; }
+    .offline-note { display: none; background: var(--red); color: #fff; text-align: center; font-size: 0.78rem; padding: 0.4rem; letter-spacing: 1px; }
+    /* ============ Bausteine ============ */
+    .card { background: var(--ink-2); border: 1px solid var(--ink-line); border-radius: 14px; padding: 0.9rem; margin-bottom: 0.8rem; }
+    .sec-title { font-family: var(--serif); font-size: 0.95rem; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gold); margin: 1.1rem 0 0.55rem; }
+    .sec-title:first-child { margin-top: 0.2rem; }
+    .stats { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+    .stat { flex: 1; min-width: 90px; background: var(--ink-2); border: 1px solid var(--ink-line); border-radius: 12px; padding: 0.6rem 0.4rem; text-align: center; }
+    .stat b { display: block; font-size: 1.25rem; font-weight: 600; }
+    .stat span { font-size: 0.62rem; color: var(--grey); letter-spacing: 1px; text-transform: uppercase; }
+    .stat.warn b { color: var(--orange); }
+    .stat.out b { color: var(--red); }
+    .stat.gold b { color: var(--gold); }
+    .stat.green b { color: var(--green); }
+    .frow { display: flex; gap: 0.55rem; margin-bottom: 0.55rem; }
+    .frow > * { flex: 1; min-width: 0; }
+    .frow input, .frow select, .frow textarea, .finput {
+      width: 100%; background: var(--ink); border: 1px solid var(--ink-line); border-radius: 10px;
+      color: var(--paper); padding: 0.7rem 0.85rem; outline: none; font-size: 0.95rem;
+    }
+    .frow input:focus, .frow select:focus, .frow textarea:focus, .finput:focus { border-color: var(--gold-dark); }
+    .frow select { -webkit-appearance: none; appearance: none; }
+    textarea { resize: vertical; min-height: 70px; }
+    .btn-gold {
+      background: var(--gold); color: var(--ink); border: none; border-radius: 10px;
+      font-weight: 600; letter-spacing: 0.5px; padding: 0.7rem 1.1rem; cursor: pointer; font-size: 0.92rem;
+    }
+    .btn-gold:active { background: var(--gold-dark); }
+    .btn-ghost {
+      background: none; border: 1px solid var(--ink-line); color: var(--grey);
+      border-radius: 10px; padding: 0.55rem 0.9rem; cursor: pointer; font-size: 0.82rem;
+    }
+    .icon-btn { background: none; border: none; color: var(--grey); font-size: 1rem; cursor: pointer; padding: 0.3rem 0.45rem; flex-shrink: 0; }
+    .icon-btn:active { color: var(--red); }
+    .lrow {
+      display: flex; align-items: center; gap: 0.7rem;
+      background: var(--ink-2); border: 1px solid var(--ink-line); border-radius: 12px;
+      padding: 0.65rem 0.8rem; margin-bottom: 0.5rem;
+    }
+    .lrow .grow { flex: 1; min-width: 0; }
+    .lrow b { font-size: 0.9rem; font-weight: 600; display: block; overflow-wrap: anywhere; }
+    .lrow small { color: var(--grey); font-size: 0.74rem; display: block; overflow-wrap: anywhere; }
+    .empty { color: var(--grey); text-align: center; padding: 1.6rem 1rem; font-size: 0.85rem; }
+    .chip {
+      flex-shrink: 0; border-radius: 999px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px;
+      padding: 0.3rem 0.7rem; border: none; cursor: pointer; text-transform: uppercase;
+    }
+    .chip.offen { background: rgba(207, 144, 64, 0.18); color: var(--orange); }
+    .chip.bezahlt { background: rgba(185, 160, 106, 0.18); color: var(--gold); }
+    .chip.verschickt { background: rgba(111, 161, 114, 0.18); color: var(--green); }
+    details { margin-top: 0.9rem; }
+    details summary { color: var(--grey); font-size: 0.82rem; cursor: pointer; padding: 0.3rem 0; }
+    .checkbox-row { display: flex; align-items: center; gap: 0.5rem; color: var(--grey); font-size: 0.85rem; margin-bottom: 0.55rem; }
+    .checkbox-row input { width: 18px; height: 18px; accent-color: var(--gold); }
+    .bar { height: 8px; border-radius: 4px; background: var(--ink); border: 1px solid var(--ink-line); overflow: hidden; margin: 0.5rem 0 0.3rem; }
+    .bar i { display: block; height: 100%; background: var(--gold); border-radius: 4px; transition: width 0.3s ease; }
+    .bar i.over { background: var(--red); }
+    .muted { color: var(--grey); font-size: 0.8rem; }
+    /* Aufgaben */
+    .task-check { width: 22px; height: 22px; accent-color: var(--gold); flex-shrink: 0; cursor: pointer; }
+    .task-done b { text-decoration: line-through; color: var(--grey); font-weight: 400; }
+    .due-over { color: var(--red) !important; }
+    /* Lager */
+    .item { display: flex; align-items: center; gap: 0.8rem; background: var(--ink-2); border: 1px solid var(--ink-line); border-radius: 14px; padding: 0.75rem 0.9rem; margin-bottom: 0.6rem; }
+    .dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.25); }
+    .item .name { flex: 1; min-width: 0; cursor: pointer; }
+    .item .name b { display: block; font-size: 0.92rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .item .name span { font-size: 0.72rem; color: var(--grey); }
+    .item .name span.low { color: var(--orange); }
+    .item .name span.out { color: var(--red); }
+    .qty { display: flex; align-items: center; gap: 0.15rem; flex-shrink: 0; }
+    .qty button {
+      width: 42px; height: 42px; border-radius: 12px; border: 1px solid var(--ink-line);
+      background: var(--ink); color: var(--paper); font-size: 1.35rem; line-height: 1; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .qty button:active { background: var(--gold); color: var(--ink); }
+    .qty button:disabled { opacity: 0.3; }
+    .qty .count { min-width: 52px; text-align: center; font-size: 1.15rem; font-weight: 600; cursor: pointer; padding: 0.3rem 0.2rem; }
+    .qty .count.out { color: var(--red); }
+    .qty .count.low { color: var(--orange); }
+    .qty .count.ok { color: var(--green); }
+    .cat-title { font-family: var(--serif); font-size: 0.9rem; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gold); padding: 1.1rem 0 0.45rem; }
+    /* Historien-Sheet */
+    .sheet-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 50; align-items: flex-end; }
+    .sheet-backdrop.open { display: flex; }
+    .sheet {
+      width: 100%; max-height: 70dvh; background: var(--ink-2); border-top: 1px solid var(--ink-line);
+      border-radius: 18px 18px 0 0; padding: 1rem 1.1rem calc(1.2rem + env(safe-area-inset-bottom)); overflow-y: auto;
+    }
+    .sheet-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; gap: 0.8rem; }
+    .sheet-head b { font-size: 1rem; }
+    .sheet-head button { background: none; border: 1px solid var(--ink-line); color: var(--grey); border-radius: 8px; width: 34px; height: 34px; flex-shrink: 0; cursor: pointer; }
+    .hist-row { display: flex; justify-content: space-between; gap: 0.8rem; padding: 0.5rem 0; border-bottom: 1px solid var(--ink-line); font-size: 0.85rem; }
+    .hist-row:last-child { border-bottom: none; }
+    .hist-row .when { color: var(--grey); }
+    .hist-row .delta.plus { color: var(--green); }
+    .hist-row .delta.minus { color: var(--red); }
+    .hist-empty { color: var(--grey); text-align: center; padding: 1.5rem 0; font-size: 0.85rem; }
+    /* Dashboard */
+    .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+    .dash-grid .stat { min-width: 0; }
+    .activity-row { display: flex; gap: 0.7rem; padding: 0.45rem 0; border-bottom: 1px solid var(--ink-line); font-size: 0.83rem; }
+    .activity-row:last-child { border-bottom: none; }
+    .activity-row .when { color: var(--grey); flex-shrink: 0; font-size: 0.75rem; padding-top: 0.1rem; }
+    .note-card { background: var(--ink-2); border: 1px solid var(--ink-line); border-radius: 12px; padding: 0.8rem 0.9rem; margin-bottom: 0.55rem; }
+    .note-card p { font-size: 0.9rem; white-space: pre-wrap; overflow-wrap: anywhere; cursor: pointer; }
+    .note-card small { color: var(--grey); font-size: 0.7rem; display: block; margin-top: 0.4rem; }
+    .note-actions { display: flex; gap: 0.5rem; margin-top: 0.55rem; }
+  </style>
+</head>
+<body>
+
+  <!-- Login -->
+  <div class="login-wrap" id="loginView">
+    <form class="login-card" id="loginForm">
+      <h1>CAROUD</h1>
+      <p>UNTERNEHMENS-PANEL</p>
+      <input type="email" id="loginEmail" placeholder="E-Mail" autocomplete="username" required>
+      <input type="password" id="loginPass" placeholder="Passwort" autocomplete="current-password" required>
+      <button type="submit">Anmelden</button>
+      <div class="login-error" id="loginError"></div>
+      <div class="login-hint"><button type="button" id="resetPass">Passwort vergessen?</button></div>
+    </form>
+  </div>
+
+  <!-- App -->
+  <div class="app" id="appView">
+    <div class="offline-note" id="offlineNote">OFFLINE – Änderungen werden synchronisiert, sobald du wieder online bist</div>
+    <div class="topbar">
+      <div class="topbar-row">
+        <div>
+          <h1>CAROUD</h1>
+          <div class="sub" id="subTitle">Panel</div>
+        </div>
+        <button class="logout" id="logoutBtn">Abmelden</button>
+      </div>
+      <nav class="tabs" id="tabBar">
+        <button class="tab" data-tab="dash">Übersicht</button>
+        <button class="tab" data-tab="lager">Lager</button>
+        <button class="tab" data-tab="aufgaben">Aufgaben</button>
+        <button class="tab" data-tab="finanzen">Finanzen</button>
+        <button class="tab" data-tab="produktion">Produktion</button>
+        <button class="tab" data-tab="bestellungen">Bestellungen</button>
+        <button class="tab" data-tab="notizen">Notizen</button>
+      </nav>
+    </div>
+
+    <div class="content">
+
+      <!-- Übersicht -->
+      <section data-panel="dash">
+        <div class="sec-title">Lager</div>
+        <div class="dash-grid" id="dashLager"></div>
+        <div class="sec-title">Geschäft</div>
+        <div class="dash-grid" id="dashBiz"></div>
+        <div class="sec-title">Nächste Aufgaben</div>
+        <div id="dashTasks"></div>
+        <div class="sec-title">Letzte Aktivität</div>
+        <div class="card" id="dashActivity"><div class="empty">Noch keine Aktivität.</div></div>
+      </section>
+
+      <!-- Lager -->
+      <section data-panel="lager">
+        <div class="stats" id="lagerStats"></div>
+        <input class="finput" id="lagerSearch" type="search" placeholder="Produkt suchen…" style="margin-top:0.8rem">
+        <div id="lagerList" class="empty">Lade Bestände…</div>
+      </section>
+
+      <!-- Aufgaben -->
+      <section data-panel="aufgaben">
+        <div class="card">
+          <form id="taskForm">
+            <div class="frow"><input id="taskTitle" placeholder="Neue Aufgabe…" required></div>
+            <div class="frow">
+              <input id="taskDue" type="date" title="Fällig am (optional)">
+              <button class="btn-gold" type="submit">Hinzufügen</button>
+            </div>
+          </form>
+        </div>
+        <div id="taskListOpen"></div>
+        <details id="taskDoneWrap" hidden>
+          <summary>Erledigte anzeigen (<span id="taskDoneCount">0</span>)</summary>
+          <div id="taskListDone" style="margin-top:0.5rem"></div>
+        </details>
+      </section>
+
+      <!-- Finanzen -->
+      <section data-panel="finanzen">
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:baseline; gap:0.8rem;">
+            <div><span class="muted">Ausgaben gesamt</span><br><b style="font-size:1.4rem" id="finSum">0,00 €</b></div>
+            <button class="btn-ghost" id="finBudgetBtn">Budget festlegen</button>
+          </div>
+          <div id="finBudgetWrap" hidden>
+            <div class="bar"><i id="finBar" style="width:0%"></i></div>
+            <div class="muted" id="finBudgetText"></div>
+          </div>
+        </div>
+        <div class="card">
+          <form id="finForm">
+            <div class="frow">
+              <input id="finBetrag" type="number" step="0.01" min="0" placeholder="Betrag €" required>
+              <select id="finKat">
+                <option>Flaschen &amp; Verpackung</option>
+                <option>Duftöle</option>
+                <option>Marketing</option>
+                <option>Versand</option>
+                <option>Gebühren</option>
+                <option>Sonstiges</option>
+              </select>
+            </div>
+            <div class="frow">
+              <input id="finNotiz" placeholder="Wofür? (optional)">
+            </div>
+            <div class="frow">
+              <input id="finDatum" type="date" required>
+              <button class="btn-gold" type="submit">Ausgabe erfassen</button>
+            </div>
+          </form>
+        </div>
+        <div id="finList"></div>
+      </section>
+
+      <!-- Produktion -->
+      <section data-panel="produktion">
+        <div class="card">
+          <form id="prodForm">
+            <div class="frow">
+              <select id="prodProdukt"></select>
+            </div>
+            <div class="frow">
+              <input id="prodMenge" type="number" min="1" placeholder="Menge (Stück)" required>
+              <input id="prodDatum" type="date" required>
+            </div>
+            <div class="frow"><input id="prodNotiz" placeholder="Notiz zur Charge (optional)"></div>
+            <label class="checkbox-row"><input type="checkbox" id="prodBuchen" checked> Menge direkt ins Lager buchen</label>
+            <button class="btn-gold" type="submit" style="width:100%">Charge anlegen</button>
+          </form>
+        </div>
+        <div id="prodList"></div>
+      </section>
+
+      <!-- Bestellungen -->
+      <section data-panel="bestellungen">
+        <div class="stats" style="margin-bottom:0.8rem">
+          <div class="stat warn"><b id="bestOffen">0</b><span>Offen</span></div>
+          <div class="stat green"><b id="bestUmsatz">0 €</b><span>Einnahmen</span></div>
+        </div>
+        <div class="card">
+          <form id="bestForm">
+            <div class="frow">
+              <input id="bestKunde" placeholder="Kunde / Name" required>
+              <select id="bestKanal">
+                <option>Instagram</option>
+                <option>TikTok</option>
+                <option>WhatsApp</option>
+                <option>Persönlich</option>
+                <option>Sonstige</option>
+              </select>
+            </div>
+            <div class="frow"><input id="bestArtikel" placeholder="Artikel, z. B. 2× Midnight Spray" required></div>
+            <div class="frow">
+              <input id="bestBetrag" type="number" step="0.01" min="0" placeholder="Betrag €" required>
+              <button class="btn-gold" type="submit">Bestellung anlegen</button>
+            </div>
+          </form>
+        </div>
+        <div class="muted" style="margin-bottom:0.5rem">Tipp: Auf den Status tippen, um ihn zu ändern (offen → bezahlt → verschickt).</div>
+        <div id="bestList"></div>
+      </section>
+
+      <!-- Notizen -->
+      <section data-panel="notizen">
+        <div class="card">
+          <form id="noteForm">
+            <div class="frow"><textarea id="noteText" placeholder="Neue Notiz / Idee…" required></textarea></div>
+            <button class="btn-gold" type="submit" style="width:100%">Speichern</button>
+          </form>
+        </div>
+        <div id="noteList"></div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- Buchungshistorie -->
+  <div class="sheet-backdrop" id="histBackdrop">
+    <div class="sheet">
+      <div class="sheet-head">
+        <b id="histTitle"></b>
+        <button type="button" id="histClose">✕</button>
+      </div>
+      <div class="sheet-body" id="histBody"></div>
+    </div>
+  </div>
+
+  <script src="js/products.js"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      getFirestore, collection, doc, onSnapshot, setDoc, addDoc, updateDoc, deleteDoc,
+      getDoc, getDocs, query, orderBy, limit, serverTimestamp, enableIndexedDbPersistence
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    // ---- Firebase (Projekt caroud-lager) ----
+    const firebaseConfig = {
+      apiKey: "AIzaSyBffFvICYg4tHzrRDanLT8gvB6ciGj5RSQ",
+      authDomain: "caroud-lager.firebaseapp.com",
+      projectId: "caroud-lager",
+      storageBucket: "caroud-lager.firebasestorage.app",
+      messagingSenderId: "538993545159",
+      appId: "1:538993545159:web:a9e80ec1ea65a7723413e2",
+    };
+    const LOW_STOCK = 5;
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    enableIndexedDbPersistence(db).catch(() => {});
+
+    // ---- Helfer ----
+    const $ = (id) => document.getElementById(id);
+    const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const eur = (n) => (n || 0).toLocaleString("de-DE", { style: "currency", currency: "EUR" });
+    const fmtDatum = (s) => { // "2026-08-11" -> "11.08.2026"
+      if (!s) return "";
+      const [y, m, d] = s.split("-");
+      return d + "." + m + "." + y;
+    };
+    const fmtTs = (ts) => ts && ts.toDate
+      ? ts.toDate().toLocaleString("de-DE", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })
+      : "jetzt";
+    const heute = () => {
+      const d = new Date();
+      return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+    };
+    const HAS_PRICES = PRODUCTS.some((p) => p.price > 0);
+
+    // ---- Zustand ----
+    const stock = {};
+    let tasks = [], ausgaben = [], chargen = [], bestellungen = [], notizen = [], aktivitaet = [];
+    let budget = null;
+    let webhookUrl = null;
+    let started = false;
+
+    // ---- Login ----
+    $("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      $("loginError").textContent = "";
+      try {
+        await signInWithEmailAndPassword(auth, $("loginEmail").value.trim(), $("loginPass").value);
+      } catch (err) {
+        $("loginError").textContent =
+          err.code === "auth/invalid-credential" ? "E-Mail oder Passwort falsch." :
+          err.code === "auth/too-many-requests" ? "Zu viele Versuche – kurz warten." :
+          "Anmeldung fehlgeschlagen (" + err.code + ")";
+      }
+    });
+    $("resetPass").addEventListener("click", async () => {
+      const mail = $("loginEmail").value.trim();
+      if (!mail) { $("loginError").textContent = "Bitte erst deine E-Mail eintragen."; return; }
+      try {
+        await sendPasswordResetEmail(auth, mail);
+        $("loginError").textContent = "Mail zum Zurücksetzen ist unterwegs an " + mail;
+      } catch (err) {
+        $("loginError").textContent = "Konnte Mail nicht senden (" + err.code + ")";
+      }
+    });
+    $("logoutBtn").addEventListener("click", () => signOut(auth));
+
+    onAuthStateChanged(auth, (user) => {
+      $("loginView").style.display = user ? "none" : "flex";
+      $("appView").style.display = user ? "block" : "none";
+      if (user) start(user);
+    });
+
+    // ---- Aktivitätslog ----
+    function logActivity(text) {
+      addDoc(collection(db, "aktivitaet"), { ts: serverTimestamp(), text }).catch(() => {});
+    }
+
+    // ---- Tabs ----
+    document.querySelectorAll(".tab").forEach((btn) => {
+      btn.addEventListener("click", () => switchTab(btn.dataset.tab));
+    });
+    function switchTab(name) {
+      document.querySelectorAll(".tab").forEach((b) => b.classList.toggle("active", b.dataset.tab === name));
+      document.querySelectorAll("section[data-panel]").forEach((s) =>
+        s.classList.toggle("active", s.dataset.panel === name));
+      localStorage.setItem("caroud-panel-tab", name);
+    }
+
+    // ---- Start: alle Live-Listener ----
+    function start(user) {
+      if (started) return;
+      started = true;
+      $("subTitle").textContent = user.email;
+      switchTab(localStorage.getItem("caroud-panel-tab") || "dash");
+
+      getDoc(doc(db, "config", "discord"))
+        .then((s) => { webhookUrl = s.exists() ? s.data().url : null; }).catch(() => {});
+
+      onSnapshot(collection(db, "lager"), (snap) => {
+        snap.forEach((d) => { stock[d.id] = d.data().stock ?? 0; });
+        renderLager(); renderDash();
+      }, (err) => { $("lagerList").innerHTML = '<div class="empty">Fehler: ' + err.code + "</div>"; });
+
+      onSnapshot(query(collection(db, "aufgaben"), orderBy("erstellt", "desc"), limit(200)), (snap) => {
+        tasks = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        renderTasks(); renderDash();
+      });
+
+      onSnapshot(query(collection(db, "finanzen"), orderBy("datum", "desc"), limit(300)), (snap) => {
+        ausgaben = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        renderFinanzen(); renderDash();
+      });
+
+      onSnapshot(doc(db, "einstellungen", "allgemein"), (snap) => {
+        budget = snap.exists() ? (snap.data().budget ?? null) : null;
+        renderFinanzen(); renderDash();
+      });
+
+      onSnapshot(query(collection(db, "produktion"), orderBy("erstellt", "desc"), limit(100)), (snap) => {
+        chargen = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        renderProduktion();
+      });
+
+      onSnapshot(query(collection(db, "bestellungen"), orderBy("erstellt", "desc"), limit(300)), (snap) => {
+        bestellungen = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        renderBestellungen(); renderDash();
+      });
+
+      onSnapshot(query(collection(db, "notizen"), orderBy("geaendert", "desc"), limit(100)), (snap) => {
+        notizen = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        renderNotizen();
+      });
+
+      onSnapshot(query(collection(db, "aktivitaet"), orderBy("ts", "desc"), limit(10)), (snap) => {
+        aktivitaet = snap.docs.map((d) => d.data());
+        renderDash();
+      });
+    }
+
+    // ================= LAGER =================
+    function statusClass(n) { return n === 0 ? "out" : n < LOW_STOCK ? "low" : "ok"; }
+    function statusText(n) { return n === 0 ? "Ausverkauft" : n < LOW_STOCK ? "Fast leer" : "Auf Lager"; }
+
+    function applyStock(id, next, quelle) {
+      const p = PRODUCTS.find((x) => x.id === id);
+      const prev = stock[id] ?? 0;
+      next = Math.max(0, next);
+      if (next === prev) return;
+      stock[id] = next;
+      renderLager(); renderDash();
+      setDoc(doc(db, "lager", id), { stock: next, updated: serverTimestamp() }, { merge: true });
+      addDoc(collection(db, "lager", id, "historie"),
+        { ts: serverTimestamp(), delta: next - prev, neu: next }).catch(() => {});
+      setDoc(doc(db, "shopstatus", id),
+        { out: next === 0, low: next > 0 && next < LOW_STOCK, updated: serverTimestamp() },
+        { merge: true }).catch(() => {});
+      if (p) discordNotify(p, prev, next);
+      if (p && quelle !== "still") {
+        const diff = next - prev;
+        logActivity("Lager: " + p.name + " " + (diff > 0 ? "+" + diff : diff) + " → " + next + " Stück");
+      }
+    }
+
+    function discordNotify(p, prev, next) {
+      if (!webhookUrl) return;
+      let type = null, msg = null;
+      if (prev > 0 && next === 0) {
+        type = "out"; msg = "🔴 **" + p.name + "** ist jetzt AUSVERKAUFT";
+      } else if (prev >= LOW_STOCK && next < LOW_STOCK && next > 0) {
+        type = "low"; msg = "🟠 **" + p.name + "** ist fast leer – nur noch **" + next + "** Stück";
+      }
+      if (!type) return;
+      const key = "caroud-notify-" + p.id + "-" + type;
+      const last = parseInt(localStorage.getItem(key) || "0", 10);
+      if (Date.now() - last < 6 * 3600 * 1000) return;
+      localStorage.setItem(key, String(Date.now()));
+      fetch(webhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: msg, username: "Caroud Lager" }),
+      }).catch(() => {});
+    }
+
+    $("lagerSearch").addEventListener("input", renderLager);
+
+    function renderLager() {
+      const term = $("lagerSearch").value.trim().toLowerCase();
+      let total = 0, low = 0, out = 0;
+      PRODUCTS.forEach((p) => {
+        const n = stock[p.id] ?? 0;
+        total += n;
+        if (n === 0) out++; else if (n < LOW_STOCK) low++;
+      });
+      let statHtml =
+        '<div class="stat"><b>' + total + '</b><span>Stück gesamt</span></div>' +
+        '<div class="stat warn"><b>' + low + '</b><span>Fast leer</span></div>' +
+        '<div class="stat out"><b>' + out + '</b><span>Ausverkauft</span></div>';
+      if (HAS_PRICES) {
+        const value = PRODUCTS.reduce((s, p) => s + (p.price || 0) * (stock[p.id] ?? 0), 0);
+        statHtml += '<div class="stat gold"><b style="font-size:1.05rem;line-height:1.7">' + eur(value) + "</b><span>Lagerwert</span></div>";
+      }
+      $("lagerStats").innerHTML = statHtml;
+
+      const list = $("lagerList");
+      list.classList.remove("empty");
+      const frag = document.createDocumentFragment();
+      CATEGORIES.forEach((cat) => {
+        const items = PRODUCTS.filter((p) => p.category === cat.name &&
+          (!term || p.name.toLowerCase().includes(term)));
+        if (!items.length) return;
+        const h = document.createElement("div");
+        h.className = "cat-title";
+        h.textContent = cat.name;
+        frag.appendChild(h);
+        items.forEach((p) => {
+          const n = stock[p.id] ?? 0;
+          const row = document.createElement("div");
+          row.className = "item";
+          row.innerHTML =
+            '<div class="dot" style="background:' + p.color + '"></div>' +
+            '<div class="name"><b>' + esc(p.name) + "</b><span class=\"" + statusClass(n) + "\">" + statusText(n) + "</span></div>" +
+            '<div class="qty">' +
+              '<button type="button" class="minus"' + (n === 0 ? " disabled" : "") + ">&minus;</button>" +
+              '<div class="count ' + statusClass(n) + '">' + n + "</div>" +
+              '<button type="button" class="plus">+</button>' +
+            "</div>";
+          row.querySelector(".minus").addEventListener("click", () => applyStock(p.id, (stock[p.id] ?? 0) - 1));
+          row.querySelector(".plus").addEventListener("click", () => applyStock(p.id, (stock[p.id] ?? 0) + 1));
+          row.querySelector(".count").addEventListener("click", () => {
+            const v = prompt("Bestand für „" + p.name + "“:", n);
+            if (v !== null && v.trim() !== "" && !isNaN(v)) applyStock(p.id, parseInt(v, 10));
+          });
+          row.querySelector(".name").addEventListener("click", () => openHistory(p));
+          frag.appendChild(row);
+        });
+      });
+      list.innerHTML = "";
+      if (!frag.childNodes.length) list.innerHTML = '<div class="empty">Kein Produkt gefunden.</div>';
+      else list.appendChild(frag);
+    }
+
+    async function openHistory(p) {
+      $("histTitle").textContent = p.name;
+      $("histBody").innerHTML = '<div class="hist-empty">Lade Verlauf…</div>';
+      $("histBackdrop").classList.add("open");
+      try {
+        const snap = await getDocs(query(
+          collection(db, "lager", p.id, "historie"), orderBy("ts", "desc"), limit(20)));
+        if (snap.empty) {
+          $("histBody").innerHTML = '<div class="hist-empty">Noch keine Buchungen.</div>';
+          return;
+        }
+        const rows = [];
+        snap.forEach((d) => {
+          const e = d.data();
+          const sign = e.delta > 0 ? "+" + e.delta : String(e.delta);
+          rows.push('<div class="hist-row"><span class="when">' + fmtTs(e.ts) + "</span>" +
+            '<span class="delta ' + (e.delta > 0 ? "plus" : "minus") + '">' + sign + "</span>" +
+            "<span>→ " + e.neu + " Stück</span></div>");
+        });
+        $("histBody").innerHTML = rows.join("");
+      } catch (err) {
+        $("histBody").innerHTML = '<div class="hist-empty">Fehler: ' + err.code + "</div>";
+      }
+    }
+    $("histClose").addEventListener("click", () => $("histBackdrop").classList.remove("open"));
+    $("histBackdrop").addEventListener("click", (e) => {
+      if (e.target === $("histBackdrop")) $("histBackdrop").classList.remove("open");
+    });
+
+    // ================= AUFGABEN =================
+    $("taskForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const titel = $("taskTitle").value.trim();
+      if (!titel) return;
+      addDoc(collection(db, "aufgaben"), {
+        titel, faellig: $("taskDue").value || null, erledigt: false, erstellt: serverTimestamp(),
+      });
+      logActivity("Aufgabe angelegt: " + titel);
+      $("taskTitle").value = ""; $("taskDue").value = "";
+    });
+
+    function taskRow(t) {
+      const row = document.createElement("div");
+      row.className = "lrow" + (t.erledigt ? " task-done" : "");
+      const overdue = !t.erledigt && t.faellig && t.faellig < heute();
+      row.innerHTML =
+        '<input type="checkbox" class="task-check"' + (t.erledigt ? " checked" : "") + ">" +
+        '<div class="grow"><b>' + esc(t.titel) + "</b>" +
+        (t.faellig ? '<small class="' + (overdue ? "due-over" : "") + '">fällig ' + fmtDatum(t.faellig) + (overdue ? " – überfällig!" : "") + "</small>" : "") +
+        "</div>" +
+        '<button class="icon-btn" title="Löschen">✕</button>';
+      row.querySelector(".task-check").addEventListener("change", (e) => {
+        updateDoc(doc(db, "aufgaben", t.id), { erledigt: e.target.checked });
+        if (e.target.checked) logActivity("Aufgabe erledigt: " + t.titel);
+      });
+      row.querySelector(".icon-btn").addEventListener("click", () => {
+        if (confirm("Aufgabe „" + t.titel + "“ löschen?")) deleteDoc(doc(db, "aufgaben", t.id));
+      });
+      return row;
+    }
+
+    function renderTasks() {
+      const open = tasks.filter((t) => !t.erledigt)
+        .sort((a, b) => (a.faellig || "9999").localeCompare(b.faellig || "9999"));
+      const done = tasks.filter((t) => t.erledigt);
+      const wrapO = $("taskListOpen");
+      wrapO.innerHTML = "";
+      if (!open.length) wrapO.innerHTML = '<div class="empty">Keine offenen Aufgaben – stark! ✦</div>';
+      open.forEach((t) => wrapO.appendChild(taskRow(t)));
+      const wrapD = $("taskListDone");
+      wrapD.innerHTML = "";
+      done.forEach((t) => wrapD.appendChild(taskRow(t)));
+      $("taskDoneWrap").hidden = !done.length;
+      $("taskDoneCount").textContent = done.length;
+    }
+
+    // ================= FINANZEN =================
+    $("finDatum").value = heute();
+    $("finForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const betrag = parseFloat($("finBetrag").value);
+      if (isNaN(betrag) || betrag <= 0) return;
+      const kat = $("finKat").value;
+      addDoc(collection(db, "finanzen"), {
+        betrag, kategorie: kat, notiz: $("finNotiz").value.trim(),
+        datum: $("finDatum").value || heute(), erstellt: serverTimestamp(),
+      });
+      logActivity("Ausgabe: " + eur(betrag) + " (" + kat + ")");
+      $("finBetrag").value = ""; $("finNotiz").value = "";
+    });
+
+    $("finBudgetBtn").addEventListener("click", () => {
+      const v = prompt("Budget in € (z. B. 3000):", budget ?? "");
+      if (v === null || v.trim() === "" || isNaN(v)) return;
+      setDoc(doc(db, "einstellungen", "allgemein"), { budget: parseFloat(v) }, { merge: true });
+    });
+
+    function finSumme() { return ausgaben.reduce((s, a) => s + (a.betrag || 0), 0); }
+
+    function renderFinanzen() {
+      const sum = finSumme();
+      $("finSum").textContent = eur(sum);
+      if (budget) {
+        $("finBudgetWrap").hidden = false;
+        $("finBudgetBtn").textContent = "Budget: " + eur(budget);
+        const pct = Math.min(100, (sum / budget) * 100);
+        const bar = $("finBar");
+        bar.style.width = pct + "%";
+        bar.classList.toggle("over", sum > budget);
+        $("finBudgetText").textContent = sum > budget
+          ? eur(sum - budget) + " über Budget"
+          : eur(budget - sum) + " übrig von " + eur(budget);
+      } else {
+        $("finBudgetWrap").hidden = true;
+        $("finBudgetBtn").textContent = "Budget festlegen";
+      }
+      const wrap = $("finList");
+      wrap.innerHTML = "";
+      if (!ausgaben.length) { wrap.innerHTML = '<div class="empty">Noch keine Ausgaben erfasst.</div>'; return; }
+      ausgaben.forEach((a) => {
+        const row = document.createElement("div");
+        row.className = "lrow";
+        row.innerHTML =
+          '<div class="grow"><b>' + eur(a.betrag) + " – " + esc(a.kategorie) + "</b>" +
+          "<small>" + fmtDatum(a.datum) + (a.notiz ? " · " + esc(a.notiz) : "") + "</small></div>" +
+          '<button class="icon-btn" title="Löschen">✕</button>';
+        row.querySelector(".icon-btn").addEventListener("click", () => {
+          if (confirm("Ausgabe über " + eur(a.betrag) + " löschen?")) deleteDoc(doc(db, "finanzen", a.id));
+        });
+        wrap.appendChild(row);
+      });
+    }
+
+    // ================= PRODUKTION =================
+    $("prodDatum").value = heute();
+    $("prodProdukt").innerHTML = PRODUCTS
+      .filter((p) => p.type !== "bundle")
+      .map((p) => '<option value="' + p.id + '">' + esc(p.name) + "</option>").join("");
+
+    $("prodForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const menge = parseInt($("prodMenge").value, 10);
+      if (isNaN(menge) || menge <= 0) return;
+      const pid = $("prodProdukt").value;
+      const p = PRODUCTS.find((x) => x.id === pid);
+      addDoc(collection(db, "produktion"), {
+        produktId: pid, produktName: p ? p.name : pid, menge,
+        notiz: $("prodNotiz").value.trim(), datum: $("prodDatum").value || heute(),
+        gebucht: $("prodBuchen").checked, erstellt: serverTimestamp(),
+      });
+      if ($("prodBuchen").checked) applyStock(pid, (stock[pid] ?? 0) + menge, "still");
+      logActivity("Produktion: " + menge + "× " + (p ? p.name : pid) +
+        ($("prodBuchen").checked ? " (ins Lager gebucht)" : ""));
+      $("prodMenge").value = ""; $("prodNotiz").value = "";
+    });
+
+    function renderProduktion() {
+      const wrap = $("prodList");
+      wrap.innerHTML = "";
+      if (!chargen.length) { wrap.innerHTML = '<div class="empty">Noch keine Chargen erfasst.</div>'; return; }
+      chargen.forEach((c) => {
+        const row = document.createElement("div");
+        row.className = "lrow";
+        row.innerHTML =
+          '<div class="grow"><b>' + c.menge + "× " + esc(c.produktName) + "</b>" +
+          "<small>" + fmtDatum(c.datum) + (c.gebucht ? " · ins Lager gebucht" : "") +
+          (c.notiz ? " · " + esc(c.notiz) : "") + "</small></div>" +
+          '<button class="icon-btn" title="Löschen">✕</button>';
+        row.querySelector(".icon-btn").addEventListener("click", () => {
+          if (confirm("Charge löschen? (Der Lagerbestand bleibt unverändert.)")) deleteDoc(doc(db, "produktion", c.id));
+        });
+        wrap.appendChild(row);
+      });
+    }
+
+    // ================= BESTELLUNGEN =================
+    const STATUS_FOLGE = { offen: "bezahlt", bezahlt: "verschickt", verschickt: "offen" };
+
+    $("bestForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const betrag = parseFloat($("bestBetrag").value);
+      const kunde = $("bestKunde").value.trim();
+      const artikel = $("bestArtikel").value.trim();
+      if (!kunde || !artikel || isNaN(betrag)) return;
+      addDoc(collection(db, "bestellungen"), {
+        kunde, kanal: $("bestKanal").value, artikel, betrag,
+        status: "offen", datum: heute(), erstellt: serverTimestamp(),
+      });
+      logActivity("Bestellung: " + kunde + " – " + artikel + " (" + eur(betrag) + ")");
+      $("bestKunde").value = ""; $("bestArtikel").value = ""; $("bestBetrag").value = "";
+    });
+
+    function renderBestellungen() {
+      const offen = bestellungen.filter((b) => b.status === "offen").length;
+      const umsatz = bestellungen.filter((b) => b.status !== "offen").reduce((s, b) => s + (b.betrag || 0), 0);
+      $("bestOffen").textContent = offen;
+      $("bestUmsatz").textContent = umsatz.toLocaleString("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
+      const wrap = $("bestList");
+      wrap.innerHTML = "";
+      if (!bestellungen.length) { wrap.innerHTML = '<div class="empty">Noch keine Bestellungen erfasst.</div>'; return; }
+      bestellungen.forEach((b) => {
+        const row = document.createElement("div");
+        row.className = "lrow";
+        row.innerHTML =
+          '<div class="grow"><b>' + esc(b.kunde) + " – " + eur(b.betrag) + "</b>" +
+          "<small>" + esc(b.artikel) + " · " + esc(b.kanal) + " · " + fmtDatum(b.datum) + "</small></div>" +
+          '<button class="chip ' + b.status + '">' + b.status + "</button>" +
+          '<button class="icon-btn" title="Löschen">✕</button>';
+        row.querySelector(".chip").addEventListener("click", () => {
+          const next = STATUS_FOLGE[b.status] || "offen";
+          updateDoc(doc(db, "bestellungen", b.id), { status: next });
+          if (next === "verschickt") logActivity("Bestellung verschickt: " + b.kunde + " – " + b.artikel);
+        });
+        row.querySelector(".icon-btn").addEventListener("click", () => {
+          if (confirm("Bestellung von „" + b.kunde + "“ löschen?")) deleteDoc(doc(db, "bestellungen", b.id));
+        });
+        wrap.appendChild(row);
+      });
+    }
+
+    // ================= NOTIZEN =================
+    let editNoteId = null;
+
+    $("noteForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const text = $("noteText").value.trim();
+      if (!text) return;
+      addDoc(collection(db, "notizen"), { text, erstellt: serverTimestamp(), geaendert: serverTimestamp() });
+      $("noteText").value = "";
+    });
+
+    function renderNotizen() {
+      const wrap = $("noteList");
+      wrap.innerHTML = "";
+      if (!notizen.length) { wrap.innerHTML = '<div class="empty">Noch keine Notizen.</div>'; return; }
+      notizen.forEach((n) => {
+        const card = document.createElement("div");
+        card.className = "note-card";
+        if (editNoteId === n.id) {
+          card.innerHTML =
+            '<textarea class="finput">' + esc(n.text) + "</textarea>" +
+            '<div class="note-actions">' +
+              '<button class="btn-gold" data-save>Speichern</button>' +
+              '<button class="btn-ghost" data-cancel>Abbrechen</button>' +
+              '<button class="btn-ghost" data-del style="color:var(--red)">Löschen</button>' +
+            "</div>";
+          card.querySelector("[data-save]").addEventListener("click", () => {
+            const t = card.querySelector("textarea").value.trim();
+            if (t) updateDoc(doc(db, "notizen", n.id), { text: t, geaendert: serverTimestamp() });
+            editNoteId = null; renderNotizen();
+          });
+          card.querySelector("[data-cancel]").addEventListener("click", () => { editNoteId = null; renderNotizen(); });
+          card.querySelector("[data-del]").addEventListener("click", () => {
+            if (confirm("Notiz löschen?")) { deleteDoc(doc(db, "notizen", n.id)); editNoteId = null; }
+          });
+        } else {
+          card.innerHTML = "<p>" + esc(n.text) + "</p><small>" + fmtTs(n.geaendert) + " · zum Bearbeiten tippen</small>";
+          card.querySelector("p").addEventListener("click", () => { editNoteId = n.id; renderNotizen(); });
+        }
+        wrap.appendChild(card);
+      });
+    }
+
+    // ================= ÜBERSICHT =================
+    function renderDash() {
+      let total = 0, low = 0, out = 0;
+      PRODUCTS.forEach((p) => {
+        const n = stock[p.id] ?? 0;
+        total += n;
+        if (n === 0) out++; else if (n < LOW_STOCK) low++;
+      });
+      let lagerHtml =
+        '<div class="stat"><b>' + total + '</b><span>Stück gesamt</span></div>' +
+        '<div class="stat warn"><b>' + low + '</b><span>Fast leer</span></div>' +
+        '<div class="stat out"><b>' + out + '</b><span>Ausverkauft</span></div>';
+      if (HAS_PRICES) {
+        const value = PRODUCTS.reduce((s, p) => s + (p.price || 0) * (stock[p.id] ?? 0), 0);
+        lagerHtml += '<div class="stat gold"><b style="font-size:1.05rem;line-height:1.7">' + eur(value) + "</b><span>Lagerwert</span></div>";
+      }
+      $("dashLager").innerHTML = lagerHtml;
+
+      const offeneAufg = tasks.filter((t) => !t.erledigt).length;
+      const offeneBest = bestellungen.filter((b) => b.status === "offen").length;
+      const umsatz = bestellungen.filter((b) => b.status !== "offen").reduce((s, b) => s + (b.betrag || 0), 0);
+      const sum = finSumme();
+      $("dashBiz").innerHTML =
+        '<div class="stat"><b>' + offeneAufg + '</b><span>Offene Aufgaben</span></div>' +
+        '<div class="stat warn"><b>' + offeneBest + '</b><span>Offene Bestellungen</span></div>' +
+        '<div class="stat green"><b style="font-size:1.05rem;line-height:1.7">' +
+          umsatz.toLocaleString("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }) +
+          "</b><span>Einnahmen</span></div>" +
+        '<div class="stat' + (budget && sum > budget ? " out" : "") + '"><b style="font-size:1.05rem;line-height:1.7">' +
+          sum.toLocaleString("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }) +
+          "</b><span>Ausgaben" + (budget ? " / " + budget.toLocaleString("de-DE", { maximumFractionDigits: 0 }) + " €" : "") + "</span></div>";
+
+      const next = tasks.filter((t) => !t.erledigt)
+        .sort((a, b) => (a.faellig || "9999").localeCompare(b.faellig || "9999")).slice(0, 3);
+      const dt = $("dashTasks");
+      dt.innerHTML = "";
+      if (!next.length) dt.innerHTML = '<div class="empty">Keine offenen Aufgaben. ✦</div>';
+      next.forEach((t) => {
+        const overdue = t.faellig && t.faellig < heute();
+        const row = document.createElement("div");
+        row.className = "lrow";
+        row.style.cursor = "pointer";
+        row.innerHTML = '<div class="grow"><b>' + esc(t.titel) + "</b>" +
+          (t.faellig ? '<small class="' + (overdue ? "due-over" : "") + '">fällig ' + fmtDatum(t.faellig) + "</small>" : "") + "</div><span class=\"muted\">›</span>";
+        row.addEventListener("click", () => switchTab("aufgaben"));
+        dt.appendChild(row);
+      });
+
+      const act = $("dashActivity");
+      if (!aktivitaet.length) act.innerHTML = '<div class="empty">Noch keine Aktivität.</div>';
+      else act.innerHTML = aktivitaet.map((a) =>
+        '<div class="activity-row"><span class="when">' + fmtTs(a.ts) + "</span><span>" + esc(a.text) + "</span></div>").join("");
+    }
+
+    // ---- Offline-Hinweis ----
+    addEventListener("online", () => { $("offlineNote").style.display = "none"; });
+    addEventListener("offline", () => { $("offlineNote").style.display = "block"; });
+  </script>
+</body>
+</html>
