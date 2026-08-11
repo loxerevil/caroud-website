@@ -270,7 +270,7 @@
     <form class="login-card" id="loginForm">
       <h1>CAROUD</h1>
       <p>UNTERNEHMENS-PANEL</p>
-      <input type="email" id="loginEmail" placeholder="E-Mail" autocomplete="username" required><!-- PANEL_VERSION 6 -->
+      <input type="email" id="loginEmail" placeholder="E-Mail" autocomplete="username" required><!-- PANEL_VERSION 7 -->
       <input type="password" id="loginPass" placeholder="Passwort" autocomplete="current-password" required>
       <button type="submit">Anmelden</button>
       <div class="login-error" id="loginError"></div>
@@ -298,6 +298,7 @@
           <button class="tab" data-tab="dash">Übersicht</button>
           <button class="tab" data-tab="lager">Lager</button>
           <button class="tab" data-tab="aufgaben">Aufgaben</button>
+          <button class="tab" data-tab="zeit">Zeit</button>
           <button class="tab" data-tab="finanzen">Finanzen</button>
           <button class="tab" data-tab="produktion">Produktion</button>
           <button class="tab" data-tab="bestellungen">Bestellungen</button>
@@ -348,6 +349,21 @@
           <summary>Erledigte anzeigen (<span id="taskDoneCount">0</span>)</summary>
           <div id="taskListDone" style="margin-top:0.5rem"></div>
         </details>
+      </section>
+
+      <!-- Zeit -->
+      <section data-panel="zeit">
+        <div class="card" style="text-align:center">
+          <div class="muted" id="zeitStatus" style="margin-bottom:0.8rem">Nicht eingestempelt</div>
+          <button class="btn-gold" id="stempelBtn" style="width:100%; padding:1rem; font-size:1.05rem">Einstempeln</button>
+          <div class="muted" id="zeitAndere" style="margin-top:0.7rem"></div>
+        </div>
+        <div class="stats">
+          <div class="stat gold"><b id="zeitWoche" style="font-size:1.05rem;line-height:1.7">–</b><span>Diese Woche</span></div>
+          <div class="stat"><b id="zeitGesamt" style="font-size:1.05rem;line-height:1.7">–</b><span>Projekt gesamt</span></div>
+        </div>
+        <div class="sec-title">Einträge</div>
+        <div id="zeitList"></div>
       </section>
 
       <!-- Finanzen -->
@@ -506,11 +522,12 @@
     };
     const HAS_PRICES = PRODUCTS.some((p) => p.price > 0);
     const RANKS = { "samoo6723@gmail.com": "Chef", "e.caroud@gmail.de": "Chef" };
-    let rang = "Chef";
+    const NAMES = { "samoo6723@gmail.com": "Samet", "e.caroud@gmail.de": "Partner" };
+    let rang = "Chef", myEmail = "", myName = "";
 
     // ---- Zustand ----
     const stock = {};
-    let tasks = [], ausgaben = [], chargen = [], bestellungen = [], notizen = [], aktivitaet = [];
+    let tasks = [], ausgaben = [], chargen = [], bestellungen = [], notizen = [], aktivitaet = [], zeiten = [];
     let budget = null;
     let webhookUrl = null;
     let started = false;
@@ -584,6 +601,8 @@
       if (started) return;
       started = true;
       rang = RANKS[user.email] || "Team";
+      myEmail = user.email;
+      myName = NAMES[user.email] || user.email.split("@")[0];
       $("subTitle").textContent = rang;
       renderGreeting();
       switchTab("dash"); // App startet immer auf der Übersicht (Begrüßung)
@@ -630,6 +649,11 @@
       onSnapshot(query(collection(db, "aktivitaet"), orderBy("ts", "desc"), limit(10)), (snap) => {
         aktivitaet = snap.docs.map((d) => d.data());
         renderDash();
+      });
+
+      onSnapshot(query(collection(db, "zeiten"), orderBy("start", "desc"), limit(300)), (snap) => {
+        zeiten = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        renderZeit();
       });
     }
 
@@ -997,6 +1021,91 @@
         wrap.appendChild(card);
       });
     }
+
+    // ================= ZEIT =================
+    function fmtDauer(min) {
+      min = Math.max(0, Math.round(min));
+      return min < 60 ? min + " Min" : Math.floor(min / 60) + " Std " + (min % 60) + " Min";
+    }
+    function elapsedMin(z) {
+      const startMs = z.start && z.start.toDate ? z.start.toDate().getTime() : Date.now();
+      return (Date.now() - startMs) / 60000;
+    }
+    function entryMin(z) { return z.ende ? (z.minuten || 0) : elapsedMin(z); }
+
+    $("stempelBtn").addEventListener("click", () => {
+      const mine = zeiten.find((z) => !z.ende && z.email === myEmail);
+      if (mine) {
+        const minuten = Math.max(1, Math.round(elapsedMin(mine)));
+        updateDoc(doc(db, "zeiten", mine.id), { ende: serverTimestamp(), minuten });
+        logActivity(myName + " ausgestempelt – " + fmtDauer(minuten));
+      } else {
+        addDoc(collection(db, "zeiten"), {
+          email: myEmail, name: myName, start: serverTimestamp(), ende: null, minuten: 0,
+        });
+        logActivity(myName + " eingestempelt");
+      }
+    });
+
+    function renderZeit() {
+      const mine = zeiten.find((z) => !z.ende && z.email === myEmail);
+      const btn = $("stempelBtn");
+      if (mine) {
+        const seit = mine.start && mine.start.toDate
+          ? mine.start.toDate().toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" }) + " Uhr"
+          : "gerade";
+        $("zeitStatus").innerHTML = '<span style="color:var(--green)">●</span> Eingestempelt seit ' +
+          seit + " · <b style=\"color:var(--paper)\">" + fmtDauer(elapsedMin(mine)) + "</b>";
+        btn.textContent = "Ausstempeln";
+      } else {
+        $("zeitStatus").textContent = "Nicht eingestempelt";
+        btn.textContent = "Einstempeln";
+      }
+
+      const andere = zeiten.filter((z) => !z.ende && z.email !== myEmail);
+      $("zeitAndere").innerHTML = andere.length
+        ? '<span style="color:var(--green)">●</span> ' + esc(andere[0].name) + " ist gerade auch eingestempelt"
+        : "";
+
+      // Wochenstart: Montag 00:00
+      const now = new Date();
+      const monday = new Date(now);
+      monday.setDate(now.getDate() - ((now.getDay() + 6) % 7));
+      monday.setHours(0, 0, 0, 0);
+      let woche = 0, gesamt = 0;
+      zeiten.forEach((z) => {
+        const m = entryMin(z);
+        gesamt += m;
+        const s = z.start && z.start.toDate ? z.start.toDate() : now;
+        if (s >= monday) woche += m;
+      });
+      $("zeitWoche").textContent = fmtDauer(woche);
+      $("zeitGesamt").textContent = fmtDauer(gesamt);
+
+      const wrap = $("zeitList");
+      wrap.innerHTML = "";
+      if (!zeiten.length) { wrap.innerHTML = '<div class="empty">Noch keine Einträge – stempel dich ein!</div>'; return; }
+      zeiten.forEach((z) => {
+        const s = z.start && z.start.toDate ? z.start.toDate() : null;
+        const e = z.ende && z.ende.toDate ? z.ende.toDate() : null;
+        const von = s ? s.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" }) : "–";
+        const bis = e ? e.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" }) : "läuft";
+        const datum = s ? s.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit" }) : "";
+        const row = document.createElement("div");
+        row.className = "lrow";
+        row.innerHTML =
+          '<div class="grow"><b>' + esc(z.name) + (z.ende ? "" : ' <span style="color:var(--green)">●</span>') + "</b>" +
+          "<small>" + datum + " · " + von + " – " + bis + " · " + fmtDauer(entryMin(z)) + "</small></div>" +
+          '<button class="icon-btn" title="Löschen">✕</button>';
+        row.querySelector(".icon-btn").addEventListener("click", () => {
+          if (confirm("Zeiteintrag von " + z.name + " (" + fmtDauer(entryMin(z)) + ") löschen?")) deleteDoc(doc(db, "zeiten", z.id));
+        });
+        wrap.appendChild(row);
+      });
+    }
+
+    // laufende Zeit alle 30 Sekunden aktualisieren
+    setInterval(() => { if (zeiten.some((z) => !z.ende)) renderZeit(); }, 30000);
 
     // ================= ÜBERSICHT =================
     const SPRUECHE = [
