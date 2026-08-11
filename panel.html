@@ -270,7 +270,7 @@
     <form class="login-card" id="loginForm">
       <h1>CAROUD</h1>
       <p>UNTERNEHMENS-PANEL</p>
-      <input type="email" id="loginEmail" placeholder="E-Mail" autocomplete="username" required><!-- PANEL_VERSION 8 -->
+      <input type="email" id="loginEmail" placeholder="E-Mail" autocomplete="username" required><!-- PANEL_VERSION 9 -->
       <input type="password" id="loginPass" placeholder="Passwort" autocomplete="current-password" required>
       <button type="submit">Anmelden</button>
       <div class="login-error" id="loginError"></div>
@@ -355,7 +355,10 @@
       <section data-panel="zeit">
         <div class="card" style="text-align:center">
           <div class="muted" id="zeitStatus" style="margin-bottom:0.8rem">Nicht eingestempelt</div>
-          <button class="btn-gold" id="stempelBtn" style="width:100%; padding:1rem; font-size:1.05rem">Einstempeln</button>
+          <div style="display:flex; gap:0.6rem">
+            <button class="btn-ghost" id="pauseBtn" style="flex:1; display:none; padding:1rem; font-size:1rem">Pause</button>
+            <button class="btn-gold" id="stempelBtn" style="flex:1.6; padding:1rem; font-size:1.05rem">Einstempeln</button>
+          </div>
           <div class="muted" id="zeitAndere" style="margin-top:0.7rem"></div>
         </div>
         <div class="stats">
@@ -1027,9 +1030,15 @@
       min = Math.max(0, Math.round(min));
       return min < 60 ? min + " Min" : Math.floor(min / 60) + " Std " + (min % 60) + " Min";
     }
-    function elapsedMin(z) {
+    function pauseElapsed(z) { // Minuten der aktuell laufenden Pause
+      if (!z.pauseStart) return 0;
+      const ms = z.pauseStart.toDate ? z.pauseStart.toDate().getTime() : Date.now();
+      return (Date.now() - ms) / 60000;
+    }
+    function pauseTotal(z) { return (z.pausenMin || 0) + pauseElapsed(z); }
+    function elapsedMin(z) { // reine Arbeitszeit (ohne Pausen)
       const startMs = z.start && z.start.toDate ? z.start.toDate().getTime() : Date.now();
-      return (Date.now() - startMs) / 60000;
+      return Math.max(0, (Date.now() - startMs) / 60000 - pauseTotal(z));
     }
     function entryMin(z) { return z.ende ? (z.minuten || 0) : elapsedMin(z); }
 
@@ -1037,29 +1046,55 @@
       const mine = zeiten.find((z) => !z.ende && z.email === myEmail);
       if (mine) {
         const minuten = Math.max(1, Math.round(elapsedMin(mine)));
-        updateDoc(doc(db, "zeiten", mine.id), { ende: serverTimestamp(), minuten });
+        updateDoc(doc(db, "zeiten", mine.id), {
+          ende: serverTimestamp(), minuten,
+          pausenMin: Math.round(pauseTotal(mine)), pauseStart: null,
+        });
         logActivity(myName + " ausgestempelt – " + fmtDauer(minuten));
       } else {
         addDoc(collection(db, "zeiten"), {
-          email: myEmail, name: myName, start: serverTimestamp(), ende: null, minuten: 0,
+          email: myEmail, name: myName, start: serverTimestamp(), ende: null,
+          minuten: 0, pausenMin: 0, pauseStart: null,
         });
         logActivity(myName + " eingestempelt");
+      }
+    });
+
+    $("pauseBtn").addEventListener("click", () => {
+      const mine = zeiten.find((z) => !z.ende && z.email === myEmail);
+      if (!mine) return;
+      if (mine.pauseStart) {
+        updateDoc(doc(db, "zeiten", mine.id), {
+          pausenMin: (mine.pausenMin || 0) + pauseElapsed(mine), pauseStart: null,
+        });
+      } else {
+        updateDoc(doc(db, "zeiten", mine.id), { pauseStart: serverTimestamp() });
       }
     });
 
     function renderZeit() {
       const mine = zeiten.find((z) => !z.ende && z.email === myEmail);
       const btn = $("stempelBtn");
+      const pBtn = $("pauseBtn");
       if (mine) {
         const seit = mine.start && mine.start.toDate
           ? mine.start.toDate().toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" }) + " Uhr"
           : "gerade";
-        $("zeitStatus").innerHTML = '<span style="color:var(--green)">●</span> Eingestempelt seit ' +
-          seit + " · <b style=\"color:var(--paper)\">" + fmtDauer(elapsedMin(mine)) + "</b>";
+        if (mine.pauseStart) {
+          $("zeitStatus").innerHTML = '<span style="color:var(--orange)">⏸</span> Pause · Arbeitszeit bisher ' +
+            "<b style=\"color:var(--paper)\">" + fmtDauer(elapsedMin(mine)) + "</b>";
+          pBtn.textContent = "Weiter";
+        } else {
+          $("zeitStatus").innerHTML = '<span style="color:var(--green)">●</span> Eingestempelt seit ' +
+            seit + " · <b style=\"color:var(--paper)\">" + fmtDauer(elapsedMin(mine)) + "</b>";
+          pBtn.textContent = "Pause";
+        }
         btn.textContent = "Ausstempeln";
+        pBtn.style.display = "";
       } else {
         $("zeitStatus").textContent = "Nicht eingestempelt";
         btn.textContent = "Einstempeln";
+        pBtn.style.display = "none";
       }
 
       const andere = zeiten.filter((z) => !z.ende && z.email !== myEmail);
@@ -1095,7 +1130,8 @@
         row.className = "lrow";
         row.innerHTML =
           '<div class="grow"><b>' + esc(z.name) + (z.ende ? "" : ' <span style="color:var(--green)">●</span>') + "</b>" +
-          "<small>" + datum + " · " + von + " – " + bis + " · " + fmtDauer(entryMin(z)) + "</small></div>" +
+          "<small>" + datum + " · " + von + " – " + bis + " · " + fmtDauer(entryMin(z)) +
+          (pauseTotal(z) >= 1 ? " · Pause " + fmtDauer(pauseTotal(z)) : "") + "</small></div>" +
           '<button class="icon-btn" title="Löschen">✕</button>';
         row.querySelector(".icon-btn").addEventListener("click", () => {
           if (confirm("Zeiteintrag von " + z.name + " (" + fmtDauer(entryMin(z)) + ") löschen?")) deleteDoc(doc(db, "zeiten", z.id));
