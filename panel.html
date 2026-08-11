@@ -60,8 +60,21 @@
     .ptr.loading .ptr-spinner { animation: ptr-spin 0.7s linear infinite; }
     @keyframes ptr-spin { to { transform: rotate(360deg); } }
     input, select, textarea, button { font-family: inherit; font-size: 1rem; }
+    /* ============ Splash (bis klar ist, ob eingeloggt) ============ */
+    .splash {
+      position: fixed; inset: 0; z-index: 100;
+      background: var(--ink);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.4rem;
+    }
+    .splash h1 {
+      font-family: var(--serif); font-weight: 500; font-size: 1.7rem;
+      letter-spacing: 5px; color: var(--gold);
+      animation: splash-pulse 1.4s ease-in-out infinite alternate;
+    }
+    .splash p { color: var(--grey); font-size: 0.72rem; letter-spacing: 2px; }
+    @keyframes splash-pulse { from { opacity: 0.45; } to { opacity: 1; } }
     /* ============ Login ============ */
-    .login-wrap { min-height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 2rem 1.5rem; }
+    .login-wrap { min-height: 100dvh; display: none; align-items: center; justify-content: center; padding: 2rem 1.5rem; }
     .login-card { width: 100%; max-width: 340px; text-align: center; }
     .login-card h1 { font-family: var(--serif); font-weight: 500; letter-spacing: 4px; color: var(--gold); font-size: 1.6rem; margin-bottom: 0.3rem; }
     .login-card p { color: var(--grey); font-size: 0.85rem; margin-bottom: 1.8rem; letter-spacing: 1px; }
@@ -246,12 +259,18 @@
 </head>
 <body>
 
+  <!-- Splash -->
+  <div class="splash" id="splash">
+    <h1>CAROUD</h1>
+    <p>FINE FRAGRANCE FOR THE DRIVE</p>
+  </div>
+
   <!-- Login -->
   <div class="login-wrap" id="loginView">
     <form class="login-card" id="loginForm">
       <h1>CAROUD</h1>
       <p>UNTERNEHMENS-PANEL</p>
-      <input type="email" id="loginEmail" placeholder="E-Mail" autocomplete="username" required><!-- PANEL_VERSION 5 -->
+      <input type="email" id="loginEmail" placeholder="E-Mail" autocomplete="username" required><!-- PANEL_VERSION 6 -->
       <input type="password" id="loginPass" placeholder="Passwort" autocomplete="current-password" required>
       <button type="submit">Anmelden</button>
       <div class="login-error" id="loginError"></div>
@@ -522,6 +541,7 @@
     $("logoutBtn").addEventListener("click", () => signOut(auth));
 
     onAuthStateChanged(auth, (user) => {
+      $("splash").style.display = "none";
       $("loginView").style.display = user ? "none" : "flex";
       $("appView").style.display = user ? "block" : "none";
       if (user) start(user);
