@@ -702,50 +702,6 @@ button { font-family: inherit; }
   z-index: 2;
 }
 
-/* Lager-Badges (aus der Lagerverwaltung) */
-.stock-badge {
-  position: absolute;
-  top: 0.7rem;
-  left: 0.7rem;
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  padding: 0.3rem 0.7rem;
-  z-index: 2;
-}
-
-.stock-badge.out { background: #8e1b1b; color: var(--white); }
-
-.stock-badge.low { background: var(--gold); color: var(--black); }
-
-.stock-badge-inline {
-  display: inline-block;
-  vertical-align: middle;
-  margin-left: 0.5rem;
-  font-size: 0.6rem;
-  font-weight: 700;
-  font-family: var(--font);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  padding: 0.25rem 0.55rem;
-}
-
-.stock-badge-inline.out { background: #8e1b1b; color: var(--white); }
-
-.stock-badge-inline.low { background: var(--gold); color: var(--black); }
-
-.quick-add.is-out,
-.quick-add:disabled {
-  background: #6b6b6b;
-  cursor: default;
-  transform: translateY(0);
-}
-
-.quick-add.is-out:hover { background: #6b6b6b; }
-
-.btn:disabled { opacity: 0.55; cursor: default; }
-
 .quick-add {
   position: absolute;
   left: 0;

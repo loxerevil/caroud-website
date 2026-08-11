@@ -114,35 +114,6 @@ function byId(id) {
   return PRODUCTS.find((p) => p.id === id);
 }
 
-// ---------- Verfügbarkeit aus der Lagerverwaltung (Firestore, öffentlich lesbar) ----------
-
-const STOCKSTATE = {};
-fetch("https://firestore.googleapis.com/v1/projects/caroud-lager/databases/(default)/documents/shopstatus?pageSize=300&key=AIzaSyBffFvICYg4tHzrRDanLT8gvB6ciGj5RSQ")
-  .then((r) => (r.ok ? r.json() : null))
-  .then((data) => {
-    if (!data || !data.documents) return;
-    data.documents.forEach((d) => {
-      STOCKSTATE[d.name.split("/").pop()] = {
-        out: !!(d.fields && d.fields.out && d.fields.out.booleanValue),
-        low: !!(d.fields && d.fields.low && d.fields.low.booleanValue),
-      };
-    });
-    renderProducts();
-  })
-  .catch(() => {});
-
-function isOut(id) {
-  return !!(STOCKSTATE[id] && STOCKSTATE[id].out);
-}
-
-function stockBadge(id) {
-  const s = STOCKSTATE[id];
-  if (!s) return "";
-  if (s.out) return `<span class="stock-badge out">Ausverkauft</span>`;
-  if (s.low) return `<span class="stock-badge low">Nur noch wenige</span>`;
-  return "";
-}
-
 // ---------- Kategorien ----------
 
 const categoryGrid = document.getElementById("categoryGrid");
@@ -204,13 +175,11 @@ function renderProducts() {
     const saving = p.priceOld ? p.priceOld - p.price : 0;
     const card = document.createElement("div");
     card.className = "product-card";
-    const out = isOut(p.id);
     card.innerHTML = `
       <div class="product-media">
         ${p.priceOld ? `<span class="sale-badge">Sparen ${euro(saving)}</span>` : ""}
-        ${stockBadge(p.id)}
         ${artFor(p)}
-        <button class="quick-add${out ? " is-out" : ""}" ${out ? "disabled" : ""}>${out ? "Ausverkauft" : "+ In den Warenkorb"}</button>
+        <button class="quick-add">+ In den Warenkorb</button>
       </div>
       <div class="product-name">${p.name}</div>
       <div class="product-prices">
@@ -219,7 +188,6 @@ function renderProducts() {
       </div>`;
     card.querySelector(".quick-add").addEventListener("click", (e) => {
       e.stopPropagation();
-      if (isOut(p.id)) return;
       addToCart(p.id, 1);
     });
     card.addEventListener("click", () => openProductModal(p.id));
@@ -335,12 +303,11 @@ function openProductModal(id) {
   if (!p) return;
   modalQty = 1;
   const saving = p.priceOld ? p.priceOld - p.price : 0;
-  const out = isOut(p.id);
   modalBody.innerHTML = `
     <div class="modal-art">${artFor(p)}</div>
     <div class="modal-info">
       <p class="modal-category">${p.category}</p>
-      <h3>${p.name}${stockBadge(p.id) ? ` <span class="stock-badge-inline ${STOCKSTATE[p.id].out ? "out" : "low"}">${STOCKSTATE[p.id].out ? "Ausverkauft" : "Nur noch wenige"}</span>` : ""}</h3>
+      <h3>${p.name}</h3>
       <div class="modal-prices">
         ${p.priceOld ? `<span class="price-old">${euro(p.priceOld)}</span>` : ""}
         <span class="price-now">${euro(p.price)}</span>
@@ -356,7 +323,7 @@ function openProductModal(id) {
           <span class="qty-val" id="modalQtyVal">1</span>
           <button class="qty-btn" data-mplus>+</button>
         </div>
-        <button class="btn btn-dark" id="modalAdd" ${out ? "disabled" : ""}>${out ? "Ausverkauft" : "In den Warenkorb"}</button>
+        <button class="btn btn-dark" id="modalAdd">In den Warenkorb</button>
       </div>
     </div>`;
   modalBody.querySelector("[data-mminus]").addEventListener("click", () => {
@@ -368,7 +335,6 @@ function openProductModal(id) {
     document.getElementById("modalQtyVal").textContent = modalQty;
   });
   modalBody.querySelector("#modalAdd").addEventListener("click", () => {
-    if (isOut(p.id)) return;
     addToCart(p.id, modalQty);
     closeModal();
     openCart();
