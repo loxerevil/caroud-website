@@ -181,6 +181,22 @@
     .hist-row .delta.minus { color: var(--red); }
     .hist-empty { color: var(--grey); text-align: center; padding: 1.5rem 0; font-size: 0.85rem; }
     /* Dashboard */
+    .hero-greet { padding: 0.4rem 0 1rem; }
+    .hero-greet h2 {
+      font-family: var(--serif);
+      font-size: 1.45rem;
+      font-weight: 500;
+      letter-spacing: 1px;
+      color: var(--gold);
+      margin-bottom: 0.35rem;
+    }
+    .hero-greet p {
+      color: var(--grey);
+      font-size: 0.92rem;
+      font-style: italic;
+      line-height: 1.55;
+      max-width: 34rem;
+    }
     .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
     .dash-grid .stat { min-width: 0; }
     .activity-row { display: flex; gap: 0.7rem; padding: 0.45rem 0; border-bottom: 1px solid var(--ink-line); font-size: 0.83rem; }
@@ -233,6 +249,10 @@
 
       <!-- Übersicht -->
       <section data-panel="dash">
+        <div class="hero-greet">
+          <h2 id="greetTitle">Hallo Chef!</h2>
+          <p id="greetQuote"></p>
+        </div>
         <div class="sec-title">Lager</div>
         <div class="dash-grid" id="dashLager"></div>
         <div class="sec-title">Geschäft</div>
@@ -483,6 +503,7 @@
       if (started) return;
       started = true;
       $("subTitle").textContent = user.email;
+      renderGreeting();
       switchTab(localStorage.getItem("caroud-panel-tab") || "dash");
 
       getDoc(doc(db, "config", "discord"))
@@ -895,6 +916,38 @@
     }
 
     // ================= ÜBERSICHT =================
+    const SPRUECHE = [
+      "Angst beginnt im Kopf – Erfolg aber genauso.",
+      "Der Duft des Erfolgs? Den mischst du gerade selbst.",
+      "Große Marken haben klein angefangen. Genau hier. Genau so.",
+      "Disziplin schlägt Talent, wenn Talent nicht diszipliniert ist.",
+      "Jede große Reise beginnt mit einer vollen Ladefläche.",
+      "Nicht warten, bis es perfekt ist – machen, bis es perfekt wird.",
+      "Dein einziger Konkurrent ist der, der du gestern warst.",
+      "Erfolg ist die Summe kleiner Anstrengungen – Tag für Tag.",
+      "Wer aufhört, besser zu werden, hat aufgehört, gut zu sein.",
+      "Träume groß. Fang klein an. Aber fang an.",
+      "Qualität ist kein Zufall – sie ist deine Entscheidung.",
+      "Die beste Werbung ist ein Produkt, das man nicht vergisst.",
+      "Rückschläge sind Anlauf.",
+      "Heute gesät, morgen geerntet – bleib dran, Chef.",
+      "Es muss nicht schnell gehen. Es muss vorwärts gehen.",
+      "Aus Leidenschaft wird Marke. Aus Marke wird Erfolg.",
+      "Der Unterschied zwischen Traum und Ziel? Ein Plan – und du hast einen.",
+      "Momentum schlägt Motivation. Ein Schritt reicht für heute.",
+      "Man verliert nie: Man gewinnt oder man lernt.",
+      "Auch der weiteste Weg beginnt mit Zündung an.",
+    ];
+
+    function renderGreeting() {
+      const h = new Date().getHours();
+      const gruss = h < 5 ? "Nachtschicht, Chef?" :
+                    h < 11 ? "Guten Morgen, Chef!" :
+                    h < 18 ? "Hallo Chef!" : "Guten Abend, Chef!";
+      $("greetTitle").textContent = gruss;
+      $("greetQuote").textContent = "„" + SPRUECHE[Math.floor(Math.random() * SPRUECHE.length)] + "“";
+    }
+
     function renderDash() {
       let total = 0, low = 0, out = 0;
       PRODUCTS.forEach((p) => {
