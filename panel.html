@@ -36,7 +36,29 @@
       color: var(--paper);
       line-height: 1.5;
       padding-bottom: env(safe-area-inset-bottom);
+      overscroll-behavior-y: contain;
     }
+    /* Pull-to-Refresh */
+    .ptr {
+      position: fixed;
+      top: calc(env(safe-area-inset-top) + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      z-index: 60;
+      pointer-events: none;
+      transition: opacity 0.15s ease;
+    }
+    .ptr-spinner {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      border: 3px solid var(--ink-line);
+      border-top-color: var(--gold);
+      background: var(--ink-2);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+    }
+    .ptr.loading .ptr-spinner { animation: ptr-spin 0.7s linear infinite; }
+    @keyframes ptr-spin { to { transform: rotate(360deg); } }
     input, select, textarea, button { font-family: inherit; font-size: 1rem; }
     /* ============ Login ============ */
     .login-wrap { min-height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 2rem 1.5rem; }
@@ -229,13 +251,16 @@
     <form class="login-card" id="loginForm">
       <h1>CAROUD</h1>
       <p>UNTERNEHMENS-PANEL</p>
-      <input type="email" id="loginEmail" placeholder="E-Mail" autocomplete="username" required><!-- PANEL_VERSION 4 -->
+      <input type="email" id="loginEmail" placeholder="E-Mail" autocomplete="username" required><!-- PANEL_VERSION 5 -->
       <input type="password" id="loginPass" placeholder="Passwort" autocomplete="current-password" required>
       <button type="submit">Anmelden</button>
       <div class="login-error" id="loginError"></div>
       <div class="login-hint"><button type="button" id="resetPass">Passwort vergessen?</button></div>
     </form>
   </div>
+
+  <!-- Pull-to-Refresh-Anzeige -->
+  <div class="ptr" id="ptr"><div class="ptr-spinner" id="ptrSpin"></div></div>
 
   <!-- App -->
   <div class="app" id="appView">
@@ -461,7 +486,7 @@
       return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
     };
     const HAS_PRICES = PRODUCTS.some((p) => p.price > 0);
-    const RANKS = { "samoo6723@gmail.com": "Chef", "e.caroud@gmail.de": "Admin" };
+    const RANKS = { "samoo6723@gmail.com": "Chef", "e.caroud@gmail.de": "Chef" };
     let rang = "Chef";
 
     // ---- Zustand ----
@@ -1042,6 +1067,41 @@
       else act.innerHTML = aktivitaet.map((a) =>
         '<div class="activity-row"><span class="when">' + fmtTs(a.ts) + "</span><span>" + esc(a.text) + "</span></div>").join("");
     }
+
+    // ---- Pull-to-Refresh (oben runterwischen = Seite neu laden) ----
+    const PTR_THRESHOLD = 70; // ab dieser Zugdistanz wird ausgelöst
+    let ptrStartY = null, ptrDist = 0;
+
+    document.addEventListener("touchstart", (e) => {
+      ptrDist = 0;
+      ptrStartY = (window.scrollY <= 0 && started && !$("histBackdrop").classList.contains("open"))
+        ? e.touches[0].clientY : null;
+    }, { passive: true });
+
+    document.addEventListener("touchmove", (e) => {
+      if (ptrStartY === null) return;
+      const raw = e.touches[0].clientY - ptrStartY;
+      if (raw <= 0 || window.scrollY > 0) { ptrDist = 0; return; }
+      ptrDist = Math.min(raw / 2, 95); // gebremster Zug
+      const ptr = $("ptr");
+      ptr.style.transform = "translateX(-50%) translateY(" + ptrDist + "px)";
+      ptr.style.opacity = Math.min(1, ptrDist / 45);
+      $("ptrSpin").style.transform = "rotate(" + ptrDist * 4 + "deg)";
+    }, { passive: true });
+
+    document.addEventListener("touchend", () => {
+      if (ptrStartY === null) return;
+      const ptr = $("ptr");
+      if (ptrDist >= PTR_THRESHOLD) {
+        $("ptrSpin").style.transform = "";
+        ptr.classList.add("loading");
+        setTimeout(() => location.reload(), 150);
+      } else {
+        ptr.style.transform = "translateX(-50%)";
+        ptr.style.opacity = "0";
+      }
+      ptrStartY = null; ptrDist = 0;
+    });
 
     // ---- Offline-Hinweis ----
     addEventListener("online", () => { $("offlineNote").style.display = "none"; });
