@@ -215,7 +215,7 @@
     <form class="login-card" id="loginForm">
       <h1>CAROUD</h1>
       <p>UNTERNEHMENS-PANEL</p>
-      <input type="email" id="loginEmail" placeholder="E-Mail" autocomplete="username" required>
+      <input type="email" id="loginEmail" placeholder="E-Mail" autocomplete="username" required><!-- PANEL_VERSION 3 -->
       <input type="password" id="loginPass" placeholder="Passwort" autocomplete="current-password" required>
       <button type="submit">Anmelden</button>
       <div class="login-error" id="loginError"></div>
@@ -502,7 +502,7 @@
     function start(user) {
       if (started) return;
       started = true;
-      $("subTitle").textContent = user.email;
+      $("subTitle").textContent = user.email + " · v3";
       renderGreeting();
       switchTab("dash"); // App startet immer auf der Übersicht (Begrüßung)
 
