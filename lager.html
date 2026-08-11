@@ -131,6 +131,57 @@
     .stat span { font-size: 0.62rem; color: var(--grey); letter-spacing: 1px; text-transform: uppercase; }
     .stat.warn b { color: var(--orange); }
     .stat.out b { color: var(--red); }
+    .stat.gold b { color: var(--gold); font-size: 1.05rem; line-height: 1.7; }
+    .item .name { cursor: pointer; }
+    /* Historien-Sheet */
+    .sheet-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      z-index: 50;
+      align-items: flex-end;
+    }
+    .sheet-backdrop.open { display: flex; }
+    .sheet {
+      width: 100%;
+      max-height: 70dvh;
+      background: var(--ink-2);
+      border-top: 1px solid var(--ink-line);
+      border-radius: 18px 18px 0 0;
+      padding: 1rem 1.1rem calc(1.2rem + env(safe-area-inset-bottom));
+      overflow-y: auto;
+    }
+    .sheet-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.8rem;
+      gap: 0.8rem;
+    }
+    .sheet-head b { font-size: 1rem; }
+    .sheet-head button {
+      background: none;
+      border: 1px solid var(--ink-line);
+      color: var(--grey);
+      border-radius: 8px;
+      width: 34px; height: 34px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    .hist-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.8rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--ink-line);
+      font-size: 0.85rem;
+    }
+    .hist-row:last-child { border-bottom: none; }
+    .hist-row .when { color: var(--grey); }
+    .hist-row .delta.plus { color: var(--green); }
+    .hist-row .delta.minus { color: var(--red); }
+    .hist-empty { color: var(--grey); text-align: center; padding: 1.5rem 0; font-size: 0.85rem; }
     /* Produktliste */
     .cat-title {
       font-family: var(--serif);
@@ -239,9 +290,21 @@
       <div class="stat"><b id="statTotal">–</b><span>Stück gesamt</span></div>
       <div class="stat warn"><b id="statLow">–</b><span>Fast leer</span></div>
       <div class="stat out"><b id="statOut">–</b><span>Ausverkauft</span></div>
+      <div class="stat gold" id="statValueTile" style="display:none"><b id="statValue">–</b><span>Lagerwert</span></div>
     </div>
     <div id="list" class="loading">Lade Bestände…</div>
     <div class="footer-space"></div>
+  </div>
+
+  <!-- Buchungshistorie -->
+  <div class="sheet-backdrop" id="histBackdrop">
+    <div class="sheet">
+      <div class="sheet-head">
+        <b id="histTitle"></b>
+        <button type="button" id="histClose">✕</button>
+      </div>
+      <div class="sheet-body" id="histBody"></div>
+    </div>
   </div>
 
   <script src="js/products.js"></script>
@@ -251,8 +314,8 @@
       getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import {
-      getFirestore, collection, doc, onSnapshot, setDoc,
-      increment, serverTimestamp, enableIndexedDbPersistence
+      getFirestore, collection, doc, onSnapshot, setDoc, addDoc, getDoc, getDocs,
+      query, orderBy, limit, serverTimestamp, enableIndexedDbPersistence
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     // ---- Firebase-Konfiguration (Projekt caroud-lager) ----
@@ -274,6 +337,8 @@
 
     const $ = (id) => document.getElementById(id);
     const stock = {}; // productId -> Anzahl
+    const HAS_PRICES = PRODUCTS.some((p) => p.price > 0);
+    let webhookUrl = null; // Discord-Webhook aus config/discord (optional)
 
     // ---- Login ----
     $("loginForm").addEventListener("submit", async (e) => {
@@ -293,8 +358,14 @@
     onAuthStateChanged(auth, (user) => {
       $("loginView").style.display = user ? "none" : "flex";
       $("appView").style.display = user ? "block" : "none";
-      if (user) startListening();
+      if (user) { startListening(); loadConfig(); }
     });
+
+    function loadConfig() {
+      getDoc(doc(db, "config", "discord"))
+        .then((s) => { webhookUrl = s.exists() ? s.data().url : null; })
+        .catch(() => {});
+    }
 
     // ---- Firestore live ----
     let unsub = null;
@@ -308,18 +379,77 @@
       });
     }
 
-    function setStock(id, value) {
-      value = Math.max(0, value);
-      stock[id] = value; // sofortiges UI-Feedback
-      render();
-      setDoc(doc(db, "lager", id), { stock: value, updated: serverTimestamp() }, { merge: true });
-    }
-    function changeStock(id, delta) {
-      const next = Math.max(0, (stock[id] ?? 0) + delta);
-      stock[id] = next;
+    function applyStock(id, next) {
+      const p = PRODUCTS.find((x) => x.id === id);
+      const prev = stock[id] ?? 0;
+      next = Math.max(0, next);
+      if (next === prev) return;
+      stock[id] = next; // sofortiges UI-Feedback
       render();
       setDoc(doc(db, "lager", id), { stock: next, updated: serverTimestamp() }, { merge: true });
+      addDoc(collection(db, "lager", id, "historie"),
+        { ts: serverTimestamp(), delta: next - prev, neu: next }).catch(() => {});
+      setDoc(doc(db, "shopstatus", id),
+        { out: next === 0, low: next > 0 && next < LOW_STOCK, updated: serverTimestamp() },
+        { merge: true }).catch(() => {});
+      if (p) discordNotify(p, prev, next);
     }
+    function setStock(id, value) { applyStock(id, value); }
+    function changeStock(id, delta) { applyStock(id, (stock[id] ?? 0) + delta); }
+
+    // ---- Discord-Warnung bei "fast leer" / "ausverkauft" ----
+    function discordNotify(p, prev, next) {
+      if (!webhookUrl) return;
+      let type = null, msg = null;
+      if (prev > 0 && next === 0) {
+        type = "out"; msg = "🔴 **" + p.name + "** ist jetzt AUSVERKAUFT";
+      } else if (prev >= LOW_STOCK && next < LOW_STOCK && next > 0) {
+        type = "low"; msg = "🟠 **" + p.name + "** ist fast leer – nur noch **" + next + "** Stück";
+      }
+      if (!type) return;
+      const key = "caroud-notify-" + p.id + "-" + type;
+      const last = parseInt(localStorage.getItem(key) || "0", 10);
+      if (Date.now() - last < 6 * 3600 * 1000) return; // max. alle 6h pro Produkt
+      localStorage.setItem(key, String(Date.now()));
+      fetch(webhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: msg, username: "Caroud Lager" }),
+      }).catch(() => {});
+    }
+
+    // ---- Buchungshistorie ----
+    async function openHistory(p) {
+      $("histTitle").textContent = p.name;
+      $("histBody").innerHTML = '<div class="hist-empty">Lade Verlauf…</div>';
+      $("histBackdrop").classList.add("open");
+      try {
+        const snap = await getDocs(query(
+          collection(db, "lager", p.id, "historie"), orderBy("ts", "desc"), limit(20)));
+        if (snap.empty) {
+          $("histBody").innerHTML = '<div class="hist-empty">Noch keine Buchungen.</div>';
+          return;
+        }
+        const rows = [];
+        snap.forEach((d) => {
+          const e = d.data();
+          const when = e.ts && e.ts.toDate
+            ? e.ts.toDate().toLocaleString("de-DE", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })
+            : "gerade eben";
+          const sign = e.delta > 0 ? "+" + e.delta : String(e.delta);
+          rows.push('<div class="hist-row"><span class="when">' + when + "</span>" +
+            '<span class="delta ' + (e.delta > 0 ? "plus" : "minus") + '">' + sign + "</span>" +
+            "<span>→ " + e.neu + " Stück</span></div>");
+        });
+        $("histBody").innerHTML = rows.join("");
+      } catch (err) {
+        $("histBody").innerHTML = '<div class="hist-empty">Fehler: ' + err.code + "</div>";
+      }
+    }
+    $("histClose").addEventListener("click", () => $("histBackdrop").classList.remove("open"));
+    $("histBackdrop").addEventListener("click", (e) => {
+      if (e.target === $("histBackdrop")) $("histBackdrop").classList.remove("open");
+    });
 
     // ---- Rendern ----
     function statusClass(n) { return n === 0 ? "out" : n < LOW_STOCK ? "low" : "ok"; }
@@ -354,6 +484,7 @@
             "</div>";
           row.querySelector(".minus").addEventListener("click", () => changeStock(p.id, -1));
           row.querySelector(".plus").addEventListener("click", () => changeStock(p.id, +1));
+          row.querySelector(".name").addEventListener("click", () => openHistory(p));
           row.querySelector(".count").addEventListener("click", () => {
             const v = prompt("Bestand für „" + p.name + "“:", n);
             if (v !== null && v.trim() !== "" && !isNaN(v)) setStock(p.id, parseInt(v, 10));
@@ -370,6 +501,11 @@
       $("statTotal").textContent = total;
       $("statLow").textContent = low;
       $("statOut").textContent = out;
+      if (HAS_PRICES) {
+        const value = PRODUCTS.reduce((s, p) => s + (p.price || 0) * (stock[p.id] ?? 0), 0);
+        $("statValueTile").style.display = "";
+        $("statValue").textContent = value.toLocaleString("de-DE", { style: "currency", currency: "EUR" });
+      }
     }
 
     // ---- Offline-Hinweis ----
