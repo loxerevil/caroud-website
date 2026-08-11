@@ -69,11 +69,20 @@
     .topbar h1 { font-family: var(--serif); font-size: 1.15rem; font-weight: 500; letter-spacing: 3px; color: var(--gold); }
     .topbar .sub { font-size: 0.7rem; color: var(--grey); letter-spacing: 1px; }
     .logout { background: none; border: 1px solid var(--ink-line); color: var(--grey); border-radius: 8px; font-size: 0.75rem; padding: 0.45rem 0.8rem; cursor: pointer; }
+    .tabs-wrap { position: relative; }
     .tabs {
       display: flex; gap: 0.45rem; overflow-x: auto; padding: 0.15rem 0 0.7rem;
       scrollbar-width: none; -ms-overflow-style: none;
     }
     .tabs::-webkit-scrollbar { display: none; }
+    .tab-arrow {
+      position: absolute; top: 0; bottom: 0.55rem; width: 34px;
+      border: none; color: var(--gold); font-size: 1.25rem; line-height: 1;
+      z-index: 3; cursor: pointer; display: none; align-items: center; padding: 0;
+    }
+    .tab-arrow.show { display: flex; }
+    .tab-arrow.left { left: 0; justify-content: flex-start; background: linear-gradient(to right, var(--ink) 40%, transparent); }
+    .tab-arrow.right { right: 0; justify-content: flex-end; background: linear-gradient(to left, var(--ink) 40%, transparent); }
     .tab {
       flex-shrink: 0; background: var(--ink-2); border: 1px solid var(--ink-line); color: var(--grey);
       border-radius: 999px; font-size: 0.8rem; letter-spacing: 0.5px; padding: 0.45rem 0.95rem; cursor: pointer;
@@ -85,7 +94,12 @@
     .offline-note { display: none; background: var(--red); color: #fff; text-align: center; font-size: 0.78rem; padding: 0.4rem; letter-spacing: 1px; }
     /* ============ Bausteine ============ */
     .card { background: var(--ink-2); border: 1px solid var(--ink-line); border-radius: 14px; padding: 0.9rem; margin-bottom: 0.8rem; }
-    .sec-title { font-family: var(--serif); font-size: 0.95rem; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gold); margin: 1.1rem 0 0.55rem; }
+    .sec-title {
+      font-family: var(--serif); font-size: 0.95rem; letter-spacing: 2.5px; text-transform: uppercase;
+      color: var(--gold); margin: 1.1rem 0 0.55rem;
+      display: flex; align-items: center; gap: 0.8rem;
+    }
+    .sec-title::after { content: ""; flex: 1; height: 1px; background: var(--ink-line); }
     .sec-title:first-child { margin-top: 0.2rem; }
     .stats { display: flex; gap: 0.6rem; flex-wrap: wrap; }
     .stat { flex: 1; min-width: 90px; background: var(--ink-2); border: 1px solid var(--ink-line); border-radius: 12px; padding: 0.6rem 0.4rem; text-align: center; }
@@ -215,7 +229,7 @@
     <form class="login-card" id="loginForm">
       <h1>CAROUD</h1>
       <p>UNTERNEHMENS-PANEL</p>
-      <input type="email" id="loginEmail" placeholder="E-Mail" autocomplete="username" required><!-- PANEL_VERSION 3 -->
+      <input type="email" id="loginEmail" placeholder="E-Mail" autocomplete="username" required><!-- PANEL_VERSION 4 -->
       <input type="password" id="loginPass" placeholder="Passwort" autocomplete="current-password" required>
       <button type="submit">Anmelden</button>
       <div class="login-error" id="loginError"></div>
@@ -234,15 +248,19 @@
         </div>
         <button class="logout" id="logoutBtn">Abmelden</button>
       </div>
-      <nav class="tabs" id="tabBar">
-        <button class="tab" data-tab="dash">Übersicht</button>
-        <button class="tab" data-tab="lager">Lager</button>
-        <button class="tab" data-tab="aufgaben">Aufgaben</button>
-        <button class="tab" data-tab="finanzen">Finanzen</button>
-        <button class="tab" data-tab="produktion">Produktion</button>
-        <button class="tab" data-tab="bestellungen">Bestellungen</button>
-        <button class="tab" data-tab="notizen">Notizen</button>
-      </nav>
+      <div class="tabs-wrap">
+        <button class="tab-arrow left" id="tabLeft" tabindex="-1">‹</button>
+        <nav class="tabs" id="tabBar">
+          <button class="tab" data-tab="dash">Übersicht</button>
+          <button class="tab" data-tab="lager">Lager</button>
+          <button class="tab" data-tab="aufgaben">Aufgaben</button>
+          <button class="tab" data-tab="finanzen">Finanzen</button>
+          <button class="tab" data-tab="produktion">Produktion</button>
+          <button class="tab" data-tab="bestellungen">Bestellungen</button>
+          <button class="tab" data-tab="notizen">Notizen</button>
+        </nav>
+        <button class="tab-arrow right" id="tabRight" tabindex="-1">›</button>
+      </div>
     </div>
 
     <div class="content">
@@ -443,6 +461,8 @@
       return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
     };
     const HAS_PRICES = PRODUCTS.some((p) => p.price > 0);
+    const RANKS = { "samoo6723@gmail.com": "Chef", "e.caroud@gmail.de": "Admin" };
+    let rang = "Chef";
 
     // ---- Zustand ----
     const stock = {};
@@ -492,19 +512,37 @@
       btn.addEventListener("click", () => switchTab(btn.dataset.tab));
     });
     function switchTab(name) {
-      document.querySelectorAll(".tab").forEach((b) => b.classList.toggle("active", b.dataset.tab === name));
+      document.querySelectorAll(".tab").forEach((b) => {
+        const on = b.dataset.tab === name;
+        b.classList.toggle("active", on);
+        if (on) b.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+      });
       document.querySelectorAll("section[data-panel]").forEach((s) =>
         s.classList.toggle("active", s.dataset.panel === name));
       localStorage.setItem("caroud-panel-tab", name);
     }
 
+    // Pfeile zeigen, dass die Tab-Leiste seitlich schiebbar ist
+    const tabBar = $("tabBar");
+    function updateTabArrows() {
+      const max = tabBar.scrollWidth - tabBar.clientWidth;
+      $("tabLeft").classList.toggle("show", tabBar.scrollLeft > 6);
+      $("tabRight").classList.toggle("show", max > 6 && tabBar.scrollLeft < max - 6);
+    }
+    tabBar.addEventListener("scroll", updateTabArrows, { passive: true });
+    addEventListener("resize", updateTabArrows);
+    $("tabLeft").addEventListener("click", () => tabBar.scrollBy({ left: -180, behavior: "smooth" }));
+    $("tabRight").addEventListener("click", () => tabBar.scrollBy({ left: 180, behavior: "smooth" }));
+
     // ---- Start: alle Live-Listener ----
     function start(user) {
       if (started) return;
       started = true;
-      $("subTitle").textContent = user.email + " · v3";
+      rang = RANKS[user.email] || "Team";
+      $("subTitle").textContent = rang;
       renderGreeting();
       switchTab("dash"); // App startet immer auf der Übersicht (Begrüßung)
+      setTimeout(updateTabArrows, 50);
 
       getDoc(doc(db, "config", "discord"))
         .then((s) => { webhookUrl = s.exists() ? s.data().url : null; }).catch(() => {});
@@ -719,7 +757,7 @@
       const done = tasks.filter((t) => t.erledigt);
       const wrapO = $("taskListOpen");
       wrapO.innerHTML = "";
-      if (!open.length) wrapO.innerHTML = '<div class="empty">Keine offenen Aufgaben – stark! ✦</div>';
+      if (!open.length) wrapO.innerHTML = '<div class="empty">Keine offenen Aufgaben.</div>';
       open.forEach((t) => wrapO.appendChild(taskRow(t)));
       const wrapD = $("taskListDone");
       wrapD.innerHTML = "";
@@ -945,9 +983,9 @@
 
     function renderGreeting() {
       const h = new Date().getHours();
-      const gruss = h < 5 ? "Nachtschicht, Chef?" :
-                    h < 11 ? "Guten Morgen, Chef!" :
-                    h < 18 ? "Hallo Chef!" : "Guten Abend, Chef!";
+      const gruss = h < 5 ? "Nachtschicht, " + rang + "?" :
+                    h < 11 ? "Guten Morgen, " + rang + "!" :
+                    h < 18 ? "Hallo " + rang + "!" : "Guten Abend, " + rang + "!";
       $("greetTitle").textContent = gruss;
       $("greetQuote").textContent = "„" + SPRUECHE[Math.floor(Math.random() * SPRUECHE.length)] + "“";
     }
@@ -987,7 +1025,7 @@
         .sort((a, b) => (a.faellig || "9999").localeCompare(b.faellig || "9999")).slice(0, 3);
       const dt = $("dashTasks");
       dt.innerHTML = "";
-      if (!next.length) dt.innerHTML = '<div class="empty">Keine offenen Aufgaben. ✦</div>';
+      if (!next.length) dt.innerHTML = '<div class="empty">Keine offenen Aufgaben.</div>';
       next.forEach((t) => {
         const overdue = t.faellig && t.faellig < heute();
         const row = document.createElement("div");
