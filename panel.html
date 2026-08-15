@@ -148,7 +148,7 @@
     .frow > * { flex: 1; min-width: 0; }
     .frow input, .frow select, .frow textarea, .finput {
       width: 100%; background: var(--ink); border: 1px solid var(--ink-line); border-radius: 10px;
-      color: var(--paper); padding: 0.7rem 0.85rem; outline: none; font-size: 0.95rem;
+      color: var(--paper); padding: 0.7rem 0.85rem; outline: none; font-size: 1rem; /* 16px: kein iOS-Zoom */
     }
     .frow input:focus, .frow select:focus, .frow textarea:focus, .finput:focus { border-color: var(--gold-dark); }
     .frow select { -webkit-appearance: none; appearance: none; }
@@ -251,6 +251,11 @@
     .activity-row { display: flex; gap: 0.7rem; padding: 0.45rem 0; border-bottom: 1px solid var(--ink-line); font-size: 0.83rem; }
     .activity-row:last-child { border-bottom: none; }
     .activity-row .when { color: var(--grey); flex-shrink: 0; font-size: 0.75rem; padding-top: 0.1rem; }
+    .activity-row .who { color: var(--gold); flex-shrink: 0; font-size: 0.75rem; padding-top: 0.1rem; min-width: 3.2rem; }
+    .who-tag { color: var(--gold); font-size: 0.7rem; }
+    .zeit-warn { color: var(--orange); font-size: 0.8rem; margin-top: 0.6rem; }
+    .zeit-personen { display: flex; justify-content: center; gap: 1.4rem; color: var(--grey); font-size: 0.8rem; margin-top: 0.7rem; }
+    .zeit-personen b { color: var(--paper); font-weight: 600; }
     .note-card { background: var(--ink-2); border: 1px solid var(--ink-line); border-radius: 12px; padding: 0.8rem 0.9rem; margin-bottom: 0.55rem; }
     .note-card p { font-size: 0.9rem; white-space: pre-wrap; overflow-wrap: anywhere; cursor: pointer; }
     .note-card small { color: var(--grey); font-size: 0.7rem; display: block; margin-top: 0.4rem; }
@@ -270,7 +275,7 @@
     <form class="login-card" id="loginForm">
       <h1>CAROUD</h1>
       <p>UNTERNEHMENS-PANEL</p>
-      <input type="email" id="loginEmail" placeholder="E-Mail" autocomplete="username" required><!-- PANEL_VERSION 10 -->
+      <input type="email" id="loginEmail" placeholder="E-Mail" autocomplete="username" required><!-- PANEL_VERSION 11 -->
       <input type="password" id="loginPass" placeholder="Passwort" autocomplete="current-password" required>
       <button type="submit">Anmelden</button>
       <div class="login-error" id="loginError"></div>
@@ -360,11 +365,13 @@
             <button class="btn-gold" id="stempelBtn" style="flex:1.6; padding:1rem; font-size:1.05rem">Einstempeln</button>
           </div>
           <div class="muted" id="zeitAndere" style="margin-top:0.7rem"></div>
+          <div class="zeit-warn" id="zeitWarn" hidden></div>
         </div>
         <div class="stats">
           <div class="stat gold"><b id="zeitWoche" style="font-size:1.05rem;line-height:1.7">–</b><span>Diese Woche</span></div>
           <div class="stat"><b id="zeitGesamt" style="font-size:1.05rem;line-height:1.7">–</b><span>Projekt gesamt</span></div>
         </div>
+        <div class="zeit-personen" id="zeitPersonen"></div>
         <div class="sec-title">Einträge</div>
         <div id="zeitList"></div>
       </section>
@@ -373,7 +380,8 @@
       <section data-panel="finanzen">
         <div class="card">
           <div style="display:flex; justify-content:space-between; align-items:baseline; gap:0.8rem;">
-            <div><span class="muted">Ausgaben gesamt</span><br><b style="font-size:1.4rem" id="finSum">0,00 €</b></div>
+            <div><span class="muted">Ausgaben gesamt</span><br><b style="font-size:1.4rem" id="finSum">0,00 €</b>
+              <span class="muted" id="finMonat" style="margin-left:0.6rem"></span></div>
             <button class="btn-ghost" id="finBudgetBtn">Budget festlegen</button>
           </div>
           <div id="finBudgetWrap" hidden>
@@ -450,7 +458,7 @@
             </div>
           </form>
         </div>
-        <div class="muted" style="margin-bottom:0.5rem">Tipp: Auf den Status tippen, um ihn zu ändern (offen → bezahlt → verschickt).</div>
+        <div class="muted" style="margin-bottom:0.5rem">Status antippen: offen → bezahlt → verschickt</div>
         <div id="bestList"></div>
       </section>
 
@@ -558,18 +566,26 @@
         $("loginError").textContent = "Konnte Mail nicht senden (" + err.code + ")";
       }
     });
-    $("logoutBtn").addEventListener("click", () => signOut(auth));
+    // Abmelden lädt neu, damit kein Zustand des vorherigen Nutzers hängen bleibt
+    $("logoutBtn").addEventListener("click", () => signOut(auth).finally(() => location.reload()));
+
+    // Falls Firebase nicht antwortet: nach 6 s Login zeigen statt ewig Splash
+    const splashFallback = setTimeout(() => {
+      $("splash").style.display = "none";
+      if (!started) $("loginView").style.display = "flex";
+    }, 6000);
 
     onAuthStateChanged(auth, (user) => {
+      clearTimeout(splashFallback);
       $("splash").style.display = "none";
       $("loginView").style.display = user ? "none" : "flex";
       $("appView").style.display = user ? "block" : "none";
       if (user) start(user);
     });
 
-    // ---- Aktivitätslog ----
+    // ---- Aktivitätslog (mit Verursacher) ----
     function logActivity(text) {
-      addDoc(collection(db, "aktivitaet"), { ts: serverTimestamp(), text }).catch(() => {});
+      addDoc(collection(db, "aktivitaet"), { ts: serverTimestamp(), text, von: myName }).catch(() => {});
     }
 
     // ---- Tabs ----
@@ -800,7 +816,7 @@
       const titel = $("taskTitle").value.trim();
       if (!titel) return;
       addDoc(collection(db, "aufgaben"), {
-        titel, faellig: $("taskDue").value || null, erledigt: false, erstellt: serverTimestamp(),
+        titel, faellig: $("taskDue").value || null, erledigt: false, erstellt: serverTimestamp(), von: myName,
       });
       logActivity("Aufgabe angelegt: " + titel);
       $("taskTitle").value = ""; $("taskDue").value = "";
@@ -813,7 +829,9 @@
       row.innerHTML =
         '<input type="checkbox" class="task-check"' + (t.erledigt ? " checked" : "") + ">" +
         '<div class="grow"><b>' + esc(t.titel) + "</b>" +
-        (t.faellig ? '<small class="' + (overdue ? "due-over" : "") + '">fällig ' + fmtDatum(t.faellig) + (overdue ? " – überfällig!" : "") + "</small>" : "") +
+        ((t.faellig || t.von) ? '<small class="' + (overdue ? "due-over" : "") + '">' +
+          (t.faellig ? "fällig " + fmtDatum(t.faellig) + (overdue ? " – überfällig!" : "") : "") +
+          (t.faellig && t.von ? " · " : "") + (t.von ? "von " + esc(t.von) : "") + "</small>" : "") +
         "</div>" +
         '<button class="icon-btn" title="Löschen">✕</button>';
       row.querySelector(".task-check").addEventListener("change", (e) => {
@@ -867,6 +885,9 @@
     function renderFinanzen() {
       const sum = finSumme();
       $("finSum").textContent = eur(sum);
+      const monat = heute().slice(0, 7); // "2026-08"
+      const monatSum = ausgaben.filter((a) => (a.datum || "").startsWith(monat)).reduce((s, a) => s + (a.betrag || 0), 0);
+      $("finMonat").textContent = monatSum > 0 ? "diesen Monat " + eur(monatSum) : "";
       if (budget) {
         $("finBudgetWrap").hidden = false;
         $("finBudgetBtn").textContent = "Budget: " + eur(budget);
@@ -992,7 +1013,7 @@
       e.preventDefault();
       const text = $("noteText").value.trim();
       if (!text) return;
-      addDoc(collection(db, "notizen"), { text, erstellt: serverTimestamp(), geaendert: serverTimestamp() });
+      addDoc(collection(db, "notizen"), { text, erstellt: serverTimestamp(), geaendert: serverTimestamp(), von: myName });
       $("noteText").value = "";
     });
 
@@ -1021,7 +1042,8 @@
             if (confirm("Notiz löschen?")) { deleteDoc(doc(db, "notizen", n.id)); editNoteId = null; }
           });
         } else {
-          card.innerHTML = "<p>" + esc(n.text) + "</p><small>" + fmtTs(n.geaendert) + " · zum Bearbeiten tippen</small>";
+          card.innerHTML = "<p>" + esc(n.text) + "</p><small>" + fmtTs(n.geaendert) +
+            (n.von ? " · " + esc(n.von) : "") + " · zum Bearbeiten tippen</small>";
           card.querySelector("p").addEventListener("click", () => { editNoteId = n.id; renderNotizen(); });
         }
         wrap.appendChild(card);
@@ -1053,13 +1075,13 @@
           ende: serverTimestamp(), minuten,
           pausenMin: Math.round(pauseTotal(mine)), pauseStart: null,
         });
-        logActivity(myName + " ausgestempelt – " + fmtDauer(minuten));
+        logActivity("Ausgestempelt – " + fmtDauer(minuten));
       } else {
         addDoc(collection(db, "zeiten"), {
           email: myEmail, name: myName, start: serverTimestamp(), ende: null,
           minuten: 0, pausenMin: 0, pauseStart: null,
         });
-        logActivity(myName + " eingestempelt");
+        logActivity("Eingestempelt");
       }
     });
 
@@ -1105,20 +1127,35 @@
         ? '<span style="color:var(--green)">●</span> ' + esc(andere[0].name) + " ist gerade auch eingestempelt"
         : "";
 
+      // Hinweis, wenn eine Sitzung ungewöhnlich lange läuft (vergessen auszustempeln?)
+      const warn = $("zeitWarn");
+      if (mine && elapsedMin(mine) + pauseTotal(mine) > 12 * 60) {
+        warn.hidden = false;
+        warn.textContent = "Läuft seit über 12 Std – vergessen auszustempeln? Eintrag ggf. löschen und neu starten.";
+      } else warn.hidden = true;
+
       // Wochenstart: Montag 00:00
       const now = new Date();
       const monday = new Date(now);
       monday.setDate(now.getDate() - ((now.getDay() + 6) % 7));
       monday.setHours(0, 0, 0, 0);
       let woche = 0, gesamt = 0;
+      const proPerson = {};
       zeiten.forEach((z) => {
         const m = entryMin(z);
         gesamt += m;
         const s = z.start && z.start.toDate ? z.start.toDate() : now;
-        if (s >= monday) woche += m;
+        if (s >= monday) {
+          woche += m;
+          proPerson[z.name] = (proPerson[z.name] || 0) + m;
+        }
       });
       $("zeitWoche").textContent = fmtDauer(woche);
       $("zeitGesamt").textContent = fmtDauer(gesamt);
+      $("zeitPersonen").innerHTML = Object.keys(proPerson).length
+        ? Object.entries(proPerson).map(([n, m]) => "<span>" + esc(n) + " <b>" + fmtDauer(m) + "</b></span>").join("")
+        : "";
+      renderDash();
 
       const wrap = $("zeitList");
       wrap.innerHTML = "";
@@ -1204,6 +1241,17 @@
       const offeneBest = bestellungen.filter((b) => b.status === "offen").length;
       const umsatz = bestellungen.filter((b) => b.status !== "offen").reduce((s, b) => s + (b.betrag || 0), 0);
       const sum = finSumme();
+      // Zeit diese Woche + wer gerade eingestempelt ist
+      const now = new Date();
+      const monday = new Date(now);
+      monday.setDate(now.getDate() - ((now.getDay() + 6) % 7));
+      monday.setHours(0, 0, 0, 0);
+      let wocheMin = 0;
+      zeiten.forEach((z) => {
+        const s = z.start && z.start.toDate ? z.start.toDate() : now;
+        if (s >= monday) wocheMin += entryMin(z);
+      });
+      const aktiv = zeiten.filter((z) => !z.ende).map((z) => z.name);
       $("dashBiz").innerHTML =
         '<div class="stat"><b>' + offeneAufg + '</b><span>Offene Aufgaben</span></div>' +
         '<div class="stat warn"><b>' + offeneBest + '</b><span>Offene Bestellungen</span></div>' +
@@ -1212,7 +1260,10 @@
           "</b><span>Einnahmen</span></div>" +
         '<div class="stat' + (budget && sum > budget ? " out" : "") + '"><b style="font-size:1.05rem;line-height:1.7">' +
           sum.toLocaleString("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }) +
-          "</b><span>Ausgaben" + (budget ? " / " + budget.toLocaleString("de-DE", { maximumFractionDigits: 0 }) + " €" : "") + "</span></div>";
+          "</b><span>Ausgaben" + (budget ? " / " + budget.toLocaleString("de-DE", { maximumFractionDigits: 0 }) + " €" : "") + "</span></div>" +
+        '<div class="stat gold"><b style="font-size:1.05rem;line-height:1.7">' + fmtDauer(wocheMin) + "</b><span>Zeit diese Woche</span></div>" +
+        '<div class="stat' + (aktiv.length ? " green" : "") + '"><b style="font-size:1.05rem;line-height:1.7">' +
+          (aktiv.length ? esc(aktiv.join(" & ")) : "–") + "</b><span>" + (aktiv.length ? "Eingestempelt" : "Niemand eingestempelt") + "</span></div>";
 
       const next = tasks.filter((t) => !t.erledigt)
         .sort((a, b) => (a.faellig || "9999").localeCompare(b.faellig || "9999")).slice(0, 3);
@@ -1233,7 +1284,9 @@
       const act = $("dashActivity");
       if (!aktivitaet.length) act.innerHTML = '<div class="empty">Noch keine Aktivität.</div>';
       else act.innerHTML = aktivitaet.map((a) =>
-        '<div class="activity-row"><span class="when">' + fmtTs(a.ts) + "</span><span>" + esc(a.text) + "</span></div>").join("");
+        '<div class="activity-row"><span class="when">' + fmtTs(a.ts) + "</span>" +
+        (a.von ? '<span class="who">' + esc(a.von) + "</span>" : "") +
+        "<span>" + esc(a.text) + "</span></div>").join("");
     }
 
     // ---- Pull-to-Refresh (oben runterwischen = Seite neu laden) ----
