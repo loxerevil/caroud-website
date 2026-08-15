@@ -1120,11 +1120,11 @@ button { font-family: inherit; }
 /* ============ Eigener Mauszeiger (Auto-Silhouette, nur bei Maus) ============ */
 @media (hover: hover) and (pointer: fine) {
   html, body {
-    cursor: url("../img/cursor-car.png") 4 14, auto !important;
+    cursor: url("../img/cursor-car.png?v=2") 3 10, auto !important;
   }
   a, button, [role="button"], .product-card, .category-card, .filter-chip, [data-filter],
   label, select, summary, .btn, .qty-btn, .quick-add, .note-chip, .cart-item button {
-    cursor: url("../img/cursor-car-hover.png") 4 14, pointer !important;
+    cursor: url("../img/cursor-car-hover.png?v=2") 3 10, pointer !important;
   }
   input[type="text"], input[type="email"], input[type="search"], input[type="number"], textarea {
     cursor: text !important;
