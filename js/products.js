@@ -13,6 +13,7 @@ const CATEGORIES = [
   { name: "Duftbäume", type: "baum", color: "#2e5339" },
   { name: "Duftanhänger", type: "haenger", color: "#111111" },
   { name: "Lüftungsclips", type: "clip", color: "#3a3a3a" },
+  { name: "Pflege", type: "tuch", color: "#3d3d3d" },
   { name: "Bundles", type: "bundle", color: "#3b6ea5" },
 ];
 
@@ -223,5 +224,42 @@ const PRODUCTS = [
     price: 0, priceOld: null, bestseller: false,
     desc: "Nadelwald nach dem Regen – grün, klar, erdig – direkt aus der Lüftung. Clip fürs Lüftungsgitter, Refill nachkaufbar.",
     notes: ["Zeder", "Kiefer", "Vetiver"],
+  },
+  // ---- Pflege (Upsell / Waschzubehör) ----
+  {
+    id: "pflege-innenraum",
+    name: "Innenraum-Tuch",
+    type: "tuch", category: "Pflege",
+    color: "#4a4a4a", label: "Innenraum",
+    price: 0, priceOld: null, bestseller: false,
+    desc: "Weiches Mikrofasertuch für Cockpit, Armaturen und Display – nimmt Staub auf, statt ihn zu verteilen. Fusselfrei und schonend zu empfindlichen Oberflächen.",
+    notes: ["Mikrofaser", "Fusselfrei", "40 × 40 cm"],
+  },
+  {
+    id: "pflege-trockentuch",
+    name: "Trockentuch",
+    type: "tuch", category: "Pflege",
+    color: "#2b2b2b", label: "Trocken",
+    price: 0, priceOld: null, bestseller: false,
+    desc: "Extra saugstarkes Trockentuch für den Lack nach der Wäsche – trocknet große Flächen in einem Zug, streifenfrei und ohne Wasserflecken.",
+    notes: ["Extra saugstark", "Streifenfrei", "60 × 90 cm"],
+  },
+  {
+    id: "pflege-mikrofaser",
+    name: "Mikrofasertücher 3er-Set",
+    type: "tuch", category: "Pflege",
+    color: "#5c5c5c", label: "Mikrofaser",
+    price: 0, priceOld: null, bestseller: false,
+    desc: "Der Allrounder im Dreierpack: für Scheiben, Lack und Innenraum. Waschbar, langlebig und weich genug für jede Oberfläche.",
+    notes: ["3 Stück", "Allround", "Waschbar"],
+  },
+  {
+    id: "pflege-abzieher",
+    name: "Wasserabzieher",
+    type: "abzieher", category: "Pflege",
+    color: "#333333", label: "Abzieher",
+    price: 0, priceOld: null, bestseller: false,
+    desc: "Flexibler Wasserabzieher mit weicher Silikonlippe – zieht Scheiben und Lack in Sekunden trocken, ohne Kratzer und ohne Streifen.",
+    notes: ["Silikonlippe", "Kratzfrei", "Streifenfrei"],
   },
 ];

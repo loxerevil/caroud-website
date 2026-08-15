@@ -56,13 +56,40 @@ function bundleSVG(color, label) {
 }
 
 function tuchSVG(color, label) {
+  // gefaltetes Mikrofasertuch mit Waffelstruktur und goldener Kettelnaht
   return `
   <svg class="prod-art" viewBox="0 0 180 200" xmlns="http://www.w3.org/2000/svg">
-    <rect x="30" y="120" width="120" height="30" rx="6" fill="${color}"/>
-    <rect x="30" y="88" width="120" height="30" rx="6" fill="#5a5a5a"/>
-    <rect x="30" y="56" width="120" height="30" rx="6" fill="#777777"/>
-    <rect x="30" y="56" width="120" height="94" rx="6" fill="none" stroke="rgba(0,0,0,0.15)"/>
-    <text x="90" y="176" text-anchor="middle" font-size="11" font-weight="600" font-family="Georgia, serif" letter-spacing="1" letter-spacing="2" fill="#555">${label.toUpperCase()}</text>
+    <defs>
+      <pattern id="waffle-${label.replace(/\W/g, "")}" width="8" height="8" patternUnits="userSpaceOnUse">
+        <rect width="8" height="8" fill="${color}"/>
+        <rect x="1" y="1" width="6" height="6" rx="1.5" fill="rgba(255,255,255,0.07)"/>
+      </pattern>
+    </defs>
+    <path d="M28 70 Q90 56 152 70 V150 Q90 164 28 150 Z" fill="url(#waffle-${label.replace(/\W/g, "")})" stroke="#b9a06a" stroke-width="2.2"/>
+    <path d="M28 70 Q90 56 152 70 L146 92 Q90 78 34 92 Z" fill="rgba(0,0,0,0.22)"/>
+    <path d="M34 92 Q90 78 146 92" fill="none" stroke="#b9a06a" stroke-width="1.6"/>
+    <path d="M28 150 Q90 164 152 150" fill="none" stroke="#b9a06a" stroke-width="2.2"/>
+    <rect x="76" y="108" width="28" height="18" rx="2" fill="#fff" stroke="#ddd"/>
+    <text x="90" y="120" text-anchor="middle" font-size="7" font-weight="600" font-family="Georgia, serif" letter-spacing="0.8" fill="#111">CAROUD</text>
+    <text x="90" y="186" text-anchor="middle" font-size="10" font-weight="600" font-family="Georgia, serif" letter-spacing="2" fill="#555">${label.toUpperCase()}</text>
+  </svg>`;
+}
+
+function abzieherSVG(color, label) {
+  // Wasserabzieher: Griff + flexible Silikonlippe
+  return `
+  <svg class="prod-art" viewBox="0 0 180 200" xmlns="http://www.w3.org/2000/svg">
+    <rect x="82" y="30" width="16" height="70" rx="6" fill="${color}" stroke="rgba(0,0,0,0.2)"/>
+    <rect x="86" y="36" width="8" height="26" rx="4" fill="rgba(255,255,255,0.12)"/>
+    <path d="M40 100 H140 Q148 100 148 108 V116 Q148 124 140 124 H40 Q32 124 32 116 V108 Q32 100 40 100 Z" fill="${color}" stroke="rgba(0,0,0,0.2)"/>
+    <rect x="34" y="122" width="112" height="9" rx="3" fill="#b9a06a"/>
+    <path d="M34 131 Q90 138 146 131 L144 140 Q90 147 36 140 Z" fill="#8f8f8f"/>
+    <rect x="72" y="105" width="36" height="14" rx="2" fill="#fff" stroke="#ddd"/>
+    <text x="90" y="115" text-anchor="middle" font-size="7" font-weight="600" font-family="Georgia, serif" letter-spacing="0.8" fill="#111">CAROUD</text>
+    <g stroke="#9ec6d6" stroke-width="2" stroke-linecap="round" opacity="0.7">
+      <line x1="50" y1="156" x2="46" y2="170"/><line x1="90" y1="158" x2="90" y2="172"/><line x1="130" y1="156" x2="134" y2="170"/>
+    </g>
+    <text x="90" y="192" text-anchor="middle" font-size="10" font-weight="600" font-family="Georgia, serif" letter-spacing="2" fill="#555">${label.toUpperCase()}</text>
   </svg>`;
 }
 
@@ -103,6 +130,7 @@ function artFor(p) {
   if (p.type === "haenger") return haengerSVG(p.color, p.label);
   if (p.type === "clip") return clipSVG(p.color, p.label);
   if (p.type === "bundle") return bundleSVG(p.color, p.label);
+  if (p.type === "abzieher") return abzieherSVG(p.color, p.label);
   return tuchSVG(p.color, p.label);
 }
 
@@ -132,7 +160,7 @@ CATEGORIES.forEach((cat) => {
 
 // ---------- Filter & Produkt-Grid ----------
 
-const FILTERS = ["bestseller", "alle", "Duftsprays", "Duftbäume", "Duftanhänger", "Lüftungsclips", "Bundles"];
+const FILTERS = ["bestseller", "alle", "Duftsprays", "Duftbäume", "Duftanhänger", "Lüftungsclips", "Pflege", "Bundles"];
 const FILTER_LABELS = { bestseller: "Bestseller", alle: "Alle Produkte" };
 let activeFilter = "bestseller";
 
@@ -315,7 +343,7 @@ function openProductModal(id) {
       </div>
       <p class="modal-desc">${p.desc}</p>
       ${p.category === "Duftsprays" ? `<p class="gift-note">✦ Inklusive: Gratis-Duftbaum + Duftmuster</p>` : ""}
-      <p class="notes-label">${p.category === "Zubehör" || p.category === "Bundles" ? "Inhalt" : "Duftnoten"}</p>
+      <p class="notes-label">${p.category === "Bundles" ? "Inhalt" : p.category === "Pflege" ? "Details" : "Duftnoten"}</p>
       <div class="notes-row">${p.notes.map((n) => `<span class="note-chip">${n}</span>`).join("")}</div>
       <div class="modal-actions">
         <div class="qty-row">
