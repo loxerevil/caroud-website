@@ -261,6 +261,22 @@
     .note-card small { color: var(--grey); font-size: 0.7rem; display: block; margin-top: 0.4rem; }
     .note-actions { display: flex; gap: 0.5rem; margin-top: 0.55rem; }
     .dash-grid .stat.wide { grid-column: 1 / -1; }
+    /* Filterleiste (Bestellungen) */
+    .fchips { display: flex; gap: 0.45rem; overflow-x: auto; padding: 0.6rem 0; scrollbar-width: none; }
+    .fchips::-webkit-scrollbar { display: none; }
+    .fchip {
+      flex-shrink: 0; background: var(--ink-2); border: 1px solid var(--ink-line); color: var(--grey);
+      border-radius: 999px; font-size: 0.78rem; padding: 0.4rem 0.85rem; cursor: pointer;
+    }
+    .fchip.active { background: var(--gold); border-color: var(--gold); color: var(--ink); font-weight: 600; }
+    .toolbar { display: flex; justify-content: space-between; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem; }
+    /* Bestellpositionen */
+    .pos-list { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.55rem; }
+    .pos-tag {
+      display: flex; align-items: center; gap: 0.4rem; background: var(--ink); border: 1px solid var(--ink-line);
+      border-radius: 999px; padding: 0.3rem 0.55rem 0.3rem 0.75rem; font-size: 0.78rem;
+    }
+    .pos-tag button { background: none; border: none; color: var(--grey); cursor: pointer; font-size: 0.9rem; padding: 0 0.15rem; }
     .btn-gold:disabled { opacity: 0.5; }
     /* Kurze Rückmeldung unten (gespeichert / Fehler) */
     .toast {
@@ -289,7 +305,7 @@
     <form class="login-card" id="loginForm">
       <h1>CAROUD</h1>
       <p>UNTERNEHMENS-PANEL</p>
-      <input type="email" id="loginEmail" placeholder="E-Mail" autocomplete="username" required><!-- PANEL_VERSION 12 -->
+      <input type="email" id="loginEmail" placeholder="E-Mail" autocomplete="username" required><!-- PANEL_VERSION 13 -->
       <input type="password" id="loginPass" placeholder="Passwort" autocomplete="current-password" required>
       <button type="submit">Anmelden</button>
       <div class="login-error" id="loginError"></div>
@@ -426,6 +442,10 @@
             </div>
           </form>
         </div>
+        <div class="toolbar">
+          <span class="muted" id="finCount"></span>
+          <button class="btn-ghost" id="finExport" style="flex-shrink:0">CSV</button>
+        </div>
         <div id="finList"></div>
       </section>
 
@@ -466,14 +486,31 @@
                 <option>Sonstige</option>
               </select>
             </div>
-            <div class="frow"><input id="bestArtikel" placeholder="Artikel, z. B. 2× Midnight Spray" required></div>
+            <div class="frow"><select id="bestProdukt"></select></div>
+            <div class="frow">
+              <input id="bestMenge" type="number" min="1" value="1" title="Menge" style="flex:1">
+              <button type="button" class="btn-ghost" id="bestAdd" style="flex:2">Position hinzufügen</button>
+            </div>
+            <div class="pos-list" id="bestPos"></div>
+            <div class="frow"><input id="bestArtikel" placeholder="…oder Artikel frei eintippen"></div>
+            <label class="checkbox-row"><input type="checkbox" id="bestAbbuchen" checked> Menge direkt vom Lager abziehen</label>
             <div class="frow">
               <input id="bestBetrag" type="number" step="0.01" min="0" placeholder="Betrag €" required>
               <button class="btn-gold" type="submit">Bestellung anlegen</button>
             </div>
           </form>
         </div>
-        <div class="muted" style="margin-bottom:0.5rem">Status antippen: offen → bezahlt → verschickt</div>
+        <input class="finput" id="bestSearch" type="search" placeholder="Kunde oder Artikel suchen…">
+        <div class="fchips" id="bestFilter">
+          <button type="button" class="fchip active" data-status="alle">Alle</button>
+          <button type="button" class="fchip" data-status="offen">Offen</button>
+          <button type="button" class="fchip" data-status="bezahlt">Bezahlt</button>
+          <button type="button" class="fchip" data-status="verschickt">Verschickt</button>
+        </div>
+        <div class="toolbar">
+          <span class="muted">Status antippen: offen → bezahlt → verschickt</span>
+          <button class="btn-ghost" id="bestExport" style="flex-shrink:0">CSV</button>
+        </div>
         <div id="bestList"></div>
       </section>
 
@@ -572,6 +609,19 @@
     }
     const snapErr = (label) => (err) =>
       toast(label + " konnte nicht geladen werden (" + (err.code || err.message) + ")", true);
+
+    // CSV für Excel: Semikolon als Trenner, Komma als Dezimalzeichen, BOM für Umlaute
+    const csvNum = (n) => String((n || 0).toFixed(2)).replace(".", ",");
+    function csvDownload(dateiname, zeilen) {
+      const q = (v) => '"' + String(v ?? "").replace(/"/g, '""') + '"';
+      const text = "\uFEFF" + zeilen.map((r) => r.map(q).join(";")).join("\r\n");
+      const url = URL.createObjectURL(new Blob([text], { type: "text/csv;charset=utf-8" }));
+      const a = document.createElement("a");
+      a.href = url; a.download = dateiname;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      toast(dateiname + " erstellt");
+    }
 
     const HAS_PRICES = PRODUCTS.some((p) => p.price > 0);
     const RANKS = { "samoo6723@gmail.com": "Chef", "e.caroud@gmail.de": "Chef" };
@@ -939,6 +989,13 @@
       save(setDoc(doc(db, "einstellungen", "allgemein"), { budget: parseFloat(v) }, { merge: true }), "Budget gespeichert");
     });
 
+    $("finExport").addEventListener("click", () => {
+      const rows = [["Datum", "Betrag", "Kategorie", "Notiz", "Erfasst von"]];
+      ausgaben.forEach((a) =>
+        rows.push([fmtDatum(a.datum), csvNum(a.betrag), a.kategorie, a.notiz || "", a.von || ""]));
+      csvDownload("caroud-ausgaben-" + heute() + ".csv", rows);
+    });
+
     function finSumme() { return ausgaben.reduce((s, a) => s + (a.betrag || 0), 0); }
 
     function renderFinanzen() {
@@ -961,6 +1018,7 @@
         $("finBudgetWrap").hidden = true;
         $("finBudgetBtn").textContent = "Budget festlegen";
       }
+      $("finCount").textContent = ausgaben.length ? ausgaben.length + " Einträge" : "";
       const wrap = $("finList");
       wrap.innerHTML = "";
       if (!ausgaben.length) { wrap.innerHTML = '<div class="empty">Noch keine Ausgaben erfasst.</div>'; return; }
@@ -1024,18 +1082,83 @@
     // ================= BESTELLUNGEN =================
     const STATUS_FOLGE = { offen: "bezahlt", bezahlt: "verschickt", verschickt: "offen" };
 
+    // --- Positionen: Produkt + Menge, damit die Bestellung das Lager abbuchen kann ---
+    let bestPositionen = [];
+    $("bestProdukt").innerHTML = PRODUCTS
+      .map((p) => '<option value="' + p.id + '">' + esc(p.name) + "</option>").join("");
+
+    function renderBestPos() {
+      const wrap = $("bestPos");
+      wrap.innerHTML = "";
+      bestPositionen.forEach((pos, i) => {
+        const tag = document.createElement("span");
+        tag.className = "pos-tag";
+        tag.innerHTML = "<span>" + pos.menge + "× " + esc(pos.name) + "</span><button type=\"button\">✕</button>";
+        tag.querySelector("button").addEventListener("click", () => {
+          bestPositionen.splice(i, 1); renderBestPos();
+        });
+        wrap.appendChild(tag);
+      });
+    }
+
+    $("bestAdd").addEventListener("click", () => {
+      const pid = $("bestProdukt").value;
+      const menge = parseInt($("bestMenge").value, 10);
+      const p = PRODUCTS.find((x) => x.id === pid);
+      if (!p || isNaN(menge) || menge <= 0) { toast("Menge fehlt.", true); return; }
+      const vorhanden = bestPositionen.find((x) => x.id === pid);
+      if (vorhanden) vorhanden.menge += menge;
+      else bestPositionen.push({ id: pid, name: p.name, menge });
+      $("bestMenge").value = "1";
+      renderBestPos();
+    });
+
     $("bestForm").addEventListener("submit", (e) => {
       e.preventDefault();
       const betrag = parseFloat($("bestBetrag").value);
       const kunde = $("bestKunde").value.trim();
-      const artikel = $("bestArtikel").value.trim();
-      if (!kunde || !artikel || isNaN(betrag)) return;
+      const positionen = bestPositionen.slice();
+      const artikel = positionen.length
+        ? positionen.map((p) => p.menge + "× " + p.name).join(", ")
+        : $("bestArtikel").value.trim();
+      if (!kunde || isNaN(betrag)) return;
+      if (!artikel) { toast("Produkt hinzufügen oder Artikel eintippen.", true); return; }
+      const abbuchen = positionen.length > 0 && $("bestAbbuchen").checked;
       save(addDoc(collection(db, "bestellungen"), {
-        kunde, kanal: $("bestKanal").value, artikel, betrag,
+        kunde, kanal: $("bestKanal").value, artikel, positionen, gebucht: abbuchen, betrag,
         status: "offen", datum: heute(), erstellt: serverTimestamp(), von: myName,
       }), "Bestellung angelegt");
-      logActivity("Bestellung: " + kunde + " – " + artikel + " (" + eur(betrag) + ")");
+      if (abbuchen) positionen.forEach((p) => applyStock(p.id, (stock[p.id] ?? 0) - p.menge, "still"));
+      logActivity("Bestellung: " + kunde + " – " + artikel + " (" + eur(betrag) + ")" +
+        (abbuchen ? " · Lager abgebucht" : ""));
       $("bestKunde").value = ""; $("bestArtikel").value = ""; $("bestBetrag").value = "";
+      bestPositionen = []; renderBestPos();
+    });
+
+    // --- Suche und Statusfilter ---
+    let bestStatus = "alle";
+    $("bestSearch").addEventListener("input", renderBestellungen);
+    document.querySelectorAll("#bestFilter .fchip").forEach((c) => {
+      c.addEventListener("click", () => {
+        bestStatus = c.dataset.status;
+        document.querySelectorAll("#bestFilter .fchip").forEach((x) => x.classList.toggle("active", x === c));
+        renderBestellungen();
+      });
+    });
+
+    function bestGefiltert() {
+      const term = $("bestSearch").value.trim().toLowerCase();
+      return bestellungen.filter((b) =>
+        (bestStatus === "alle" || b.status === bestStatus) &&
+        (!term || (b.kunde || "").toLowerCase().includes(term) ||
+                  (b.artikel || "").toLowerCase().includes(term)));
+    }
+
+    $("bestExport").addEventListener("click", () => {
+      const rows = [["Datum", "Kunde", "Kanal", "Artikel", "Betrag", "Status", "Erfasst von"]];
+      bestGefiltert().forEach((b) =>
+        rows.push([fmtDatum(b.datum), b.kunde, b.kanal, b.artikel, csvNum(b.betrag), b.status, b.von || ""]));
+      csvDownload("caroud-bestellungen-" + heute() + ".csv", rows);
     });
 
     function renderBestellungen() {
@@ -1046,12 +1169,15 @@
       const wrap = $("bestList");
       wrap.innerHTML = "";
       if (!bestellungen.length) { wrap.innerHTML = '<div class="empty">Noch keine Bestellungen erfasst.</div>'; return; }
-      bestellungen.forEach((b) => {
+      const liste = bestGefiltert();
+      if (!liste.length) { wrap.innerHTML = '<div class="empty">Keine Bestellung passt zum Filter.</div>'; return; }
+      liste.forEach((b) => {
         const row = document.createElement("div");
         row.className = "lrow";
         row.innerHTML =
           '<div class="grow"><b>' + esc(b.kunde) + " – " + eur(b.betrag) + "</b>" +
-          "<small>" + esc(b.artikel) + " · " + esc(b.kanal) + " · " + fmtDatum(b.datum) + "</small></div>" +
+          "<small>" + esc(b.artikel) + " · " + esc(b.kanal) + " · " + fmtDatum(b.datum) +
+          (b.gebucht ? " · Lager abgebucht" : "") + "</small></div>" +
           '<button class="chip ' + b.status + '">' + b.status + "</button>" +
           '<button class="icon-btn" title="Löschen">✕</button>';
         row.querySelector(".chip").addEventListener("click", () => {
@@ -1060,7 +1186,13 @@
           if (next === "verschickt") logActivity("Bestellung verschickt: " + b.kunde + " – " + b.artikel);
         });
         row.querySelector(".icon-btn").addEventListener("click", () => {
-          if (confirm("Bestellung von „" + b.kunde + "“ löschen?")) save(deleteDoc(doc(db, "bestellungen", b.id)));
+          if (!confirm("Bestellung von „" + b.kunde + "“ löschen?")) return;
+          if (b.gebucht && b.positionen && b.positionen.length &&
+              confirm("Abgebuchte Menge wieder ins Lager zurückbuchen?")) {
+            b.positionen.forEach((p) => applyStock(p.id, (stock[p.id] ?? 0) + p.menge, "still"));
+            logActivity("Bestellung storniert, Lager zurückgebucht: " + b.kunde);
+          }
+          save(deleteDoc(doc(db, "bestellungen", b.id)));
         });
         wrap.appendChild(row);
       });
