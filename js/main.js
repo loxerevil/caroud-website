@@ -279,6 +279,18 @@ function zuDenProdukten(filter) {
   gleiteZu(ziel, 900);
 }
 
+// ---------- Formen-Vergleich: Tabs am Handy ----------
+
+const vtabs = document.querySelectorAll(".vtab");
+const vkarten = document.querySelectorAll(".vergleich-karte");
+vtabs.forEach((tab) => {
+  tab.addEventListener("click", () => {
+    const i = Number(tab.dataset.vtab);
+    vtabs.forEach((t, k) => t.classList.toggle("is-on", k === i));
+    vkarten.forEach((k, n) => k.classList.toggle("is-on", n === i));
+  });
+});
+
 // ---------- Kollektions-Kacheln ----------
 
 document.querySelectorAll("[data-koll]").forEach((kachel) => {

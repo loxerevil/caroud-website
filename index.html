@@ -27,7 +27,7 @@
   <meta name="twitter:image" content="https://caroud.de/img/og-image.png">
 
   <link rel="icon" type="image/png" href="img/favicon.png">
-  <link rel="stylesheet" href="css/style.css?v=25">
+  <link rel="stylesheet" href="css/style.css?v=26">
 
   <!-- Strukturierte Daten für Google. Produkt-Markup fehlt bewusst,
        solange keine echten Preise hinterlegt sind. -->
@@ -211,7 +211,7 @@
           <a href="#produkte" class="btn btn-gold">Düfte entdecken</a>
           <a href="#duefte" class="btn btn-outline">Die sieben Düfte</a>
         </div>
-        <p class="hero-note">Versandkostenfrei ohne Mindestbestellwert · Versand in 24 h · Made in Germany</p>
+        <p class="hero-note">Versandkostenfrei ohne Mindestbestellwert&nbsp;· Versand in&nbsp;24&nbsp;h&nbsp;· Made in Germany</p>
       </div>
       <div class="hero-produkt" id="heroArt" aria-hidden="true"></div>
     </div>
@@ -288,8 +288,14 @@
       Jeden der sieben Düfte gibt es in allen drei Formen. Der Unterschied liegt darin,
       wie der Duft in den Innenraum kommt.
     </p>
+    <!-- Nur am Handy sichtbar: schaltet zwischen den drei Karten -->
+    <div class="vergleich-tabs" role="tablist" aria-label="Form wählen">
+      <button type="button" class="vtab is-on" data-vtab="0">Spray</button>
+      <button type="button" class="vtab" data-vtab="1">Anhänger</button>
+      <button type="button" class="vtab" data-vtab="2">Clip</button>
+    </div>
     <div class="vergleich-grid">
-      <div class="vergleich-karte">
+      <div class="vergleich-karte is-on">
         <h3>Duftspray</h3>
         <dl>
           <dt>Wohin</dt><dd>Auf Fußmatten oder Textilsitze – nicht auf Leder, Kunststoff, Displays oder Haut.</dd>
@@ -354,7 +360,7 @@
           wie es aussieht. Entstanden aus der Leidenschaft für besondere Autos und feine Parfümerie,
           entwickeln wir Düfte, die zum Charakter deines Fahrzeugs passen: kraftvoll, elegant, niemals aufdringlich.
         </p>
-        <p>
+        <p class="about-more">
           Jeder Duft wird von uns so lange verfeinert, bis er im Innenraum genauso überzeugt wie auf dem Papier.
           Das Ergebnis sind Kompositionen, die jede Fahrt zu einem Erlebnis machen – vom kurzen Weg zur Arbeit
           bis zur Nachtfahrt über leere Straßen.
@@ -493,7 +499,7 @@
   <!-- Toast -->
   <div class="toast" id="toast" hidden></div>
 
-  <script src="js/products.js?v=25"></script>
-  <script src="js/main.js?v=25"></script>
+  <script src="js/products.js?v=26"></script>
+  <script src="js/main.js?v=26"></script>
 </body>
 </html>
