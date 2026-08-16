@@ -694,8 +694,18 @@ document.getElementById("newsletterForm").addEventListener("submit", (e) => {
 
 // ---------- Ladebildschirm: Sprühstoß-Übergang ----------
 
+// Der Vorhang läuft nur beim ersten Aufruf pro Sitzung. Wer zurückkommt oder
+// die Seite neu lädt, soll nicht jedes Mal warten müssen.
 const preloader = document.getElementById("preloader");
-if (preloader) {
+let introGesehen = false;
+try {
+  introGesehen = sessionStorage.getItem("caroud-intro") === "1";
+  sessionStorage.setItem("caroud-intro", "1");
+} catch (_) { /* privater Modus: dann eben jedes Mal */ }
+
+if (preloader && introGesehen) preloader.remove();
+
+if (preloader && !introGesehen) {
   document.body.style.overflow = "hidden";
   const mist = document.getElementById("mist");
   const origin = document.getElementById("sprayOrigin");
