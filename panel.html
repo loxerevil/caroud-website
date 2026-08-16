@@ -305,7 +305,7 @@
     <form class="login-card" id="loginForm">
       <h1>CAROUD</h1>
       <p>UNTERNEHMENS-PANEL</p>
-      <input type="email" id="loginEmail" placeholder="E-Mail" autocomplete="username" required><!-- PANEL_VERSION 13 -->
+      <input type="email" id="loginEmail" placeholder="E-Mail" autocomplete="username" required><!-- PANEL_VERSION 14 -->
       <input type="password" id="loginPass" placeholder="Passwort" autocomplete="current-password" required>
       <button type="submit">Anmelden</button>
       <div class="login-error" id="loginError"></div>
@@ -332,6 +332,7 @@
         <nav class="tabs" id="tabBar">
           <button class="tab" data-tab="dash">Übersicht</button>
           <button class="tab" data-tab="lager">Lager</button>
+          <button class="tab" data-tab="artikel">Artikel</button>
           <button class="tab" data-tab="aufgaben">Aufgaben</button>
           <button class="tab" data-tab="zeit">Zeit</button>
           <button class="tab" data-tab="finanzen">Finanzen</button>
@@ -365,7 +366,37 @@
       <section data-panel="lager">
         <div class="stats" id="lagerStats"></div>
         <input class="finput" id="lagerSearch" type="search" placeholder="Produkt suchen…" style="margin-top:0.8rem">
+        <div class="muted" style="margin:0.6rem 0 0">Eigene Artikel und Kategorien pflegst du im Tab „Artikel". Zahl antippen = Bestand direkt eingeben.</div>
         <div id="lagerList" class="empty">Lade Bestände…</div>
+      </section>
+
+      <!-- Artikel -->
+      <section data-panel="artikel">
+        <div class="card">
+          <form id="artForm">
+            <div class="frow"><input id="artName" placeholder="Name, z. B. Alu-Flasche 50 ml" required></div>
+            <div class="frow">
+              <input id="artKat" list="artKatListe" placeholder="Kategorie" required>
+              <datalist id="artKatListe"></datalist>
+            </div>
+            <div class="frow">
+              <select id="artTyp">
+                <option value="produkt">Produkt (verkäuflich)</option>
+                <option value="material">Material / Zubehör</option>
+              </select>
+            </div>
+            <div class="frow">
+              <input id="artPreis" type="number" step="0.01" min="0" placeholder="Einkaufspreis € (optional)">
+              <input id="artStart" type="number" min="0" placeholder="Startbestand">
+            </div>
+            <button class="btn-gold" type="submit" style="width:100%">Artikel anlegen</button>
+          </form>
+        </div>
+        <div class="muted" style="margin-bottom:0.5rem">
+          Artikel antippen zum Bearbeiten. Kategorie-Überschrift antippen zum Umbenennen.
+          Die Shop-Produkte kommen aus dem Shop-Katalog und stehen hier nicht — sie erscheinen aber im Lager.
+        </div>
+        <div id="artList"></div>
       </section>
 
       <!-- Aufgaben -->
@@ -623,13 +654,36 @@
       toast(dateiname + " erstellt");
     }
 
-    const HAS_PRICES = PRODUCTS.some((p) => p.price > 0);
+    // ---- Artikelstamm: Shop-Katalog (products.js) + eigene Artikel aus Firestore ----
+    // Shop-Produkte sind fest, eigene Artikel (Flaschen, Etiketten, Kartons …) legt das Panel an.
+    function alleArtikel() {
+      const ausShop = PRODUCTS.map((p) => ({
+        id: p.id, name: p.name, kategorie: p.category, color: p.color,
+        preis: p.price || 0, typ: "produkt", bundle: p.type === "bundle", shop: true,
+      }));
+      const eigene = artikel.map((a) => ({
+        id: a.id, name: a.name, kategorie: a.kategorie || "Sonstiges", color: a.color || "#7d766a",
+        preis: a.preis || 0, typ: a.typ || "produkt", bundle: false, shop: false,
+      }));
+      return ausShop.concat(eigene);
+    }
+    const findArtikel = (id) => alleArtikel().find((a) => a.id === id);
+    const hatPreise = () => alleArtikel().some((a) => a.preis > 0);
+    // Reihenfolge: erst die Shop-Kategorien, danach die eigenen alphabetisch
+    function kategorien() {
+      const ausShop = CATEGORIES.map((c) => c.name);
+      const eigene = [...new Set(artikel.map((a) => a.kategorie || "Sonstiges"))]
+        .filter((k) => !ausShop.includes(k))
+        .sort((a, b) => a.localeCompare(b, "de"));
+      return ausShop.concat(eigene);
+    }
     const RANKS = { "samoo6723@gmail.com": "Chef", "e.caroud@gmail.de": "Chef" };
     const NAMES = { "samoo6723@gmail.com": "Samed", "e.caroud@gmail.de": "Walid" };
     let rang = "Chef", myEmail = "", myName = "";
 
     // ---- Zustand ----
     const stock = {};
+    let artikel = [];
     let tasks = [], ausgaben = [], chargen = [], bestellungen = [], notizen = [], aktivitaet = [], zeiten = [];
     let budget = null;
     let webhookUrl = null;
@@ -726,9 +780,15 @@
         .then((s) => { webhookUrl = s.exists() ? s.data().url : null; }).catch(() => {});
 
       onSnapshot(collection(db, "lager"), (snap) => {
+        Object.keys(stock).forEach((k) => delete stock[k]); // gelöschte Artikel nicht stehen lassen
         snap.forEach((d) => { stock[d.id] = d.data().stock ?? 0; });
         renderLager(); renderDash();
       }, (err) => { $("lagerList").innerHTML = '<div class="empty">Fehler: ' + err.code + "</div>"; });
+
+      onSnapshot(query(collection(db, "artikel"), orderBy("name")), (snap) => {
+        artikel = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        renderArtikel(); renderLager(); renderDash(); fillPickers();
+      }, snapErr("Artikel"));
 
       onSnapshot(query(collection(db, "aufgaben"), orderBy("erstellt", "desc"), limit(200)), (snap) => {
         tasks = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
@@ -776,7 +836,7 @@
     function statusText(n) { return n === 0 ? "Ausverkauft" : n < LOW_STOCK ? "Fast leer" : "Auf Lager"; }
 
     function applyStock(id, next, quelle) {
-      const p = PRODUCTS.find((x) => x.id === id);
+      const p = findArtikel(id);
       const prev = stock[id] ?? 0;
       next = Math.max(0, next);
       if (next === prev) return;
@@ -785,9 +845,12 @@
       save(setDoc(doc(db, "lager", id), { stock: next, updated: serverTimestamp() }, { merge: true }));
       addDoc(collection(db, "lager", id, "historie"),
         { ts: serverTimestamp(), delta: next - prev, neu: next }).catch(() => {});
-      setDoc(doc(db, "shopstatus", id),
-        { out: next === 0, low: next > 0 && next < LOW_STOCK, updated: serverTimestamp() },
-        { merge: true }).catch(() => {});
+      // Spiegel für den Shop nur für echte Shop-Produkte, nicht für eigenes Material
+      if (p && p.shop) {
+        setDoc(doc(db, "shopstatus", id),
+          { out: next === 0, low: next > 0 && next < LOW_STOCK, updated: serverTimestamp() },
+          { merge: true }).catch(() => {});
+      }
       if (p) discordNotify(p, prev, next);
       if (p && quelle !== "still") {
         const diff = next - prev;
@@ -819,8 +882,9 @@
 
     function renderLager() {
       const term = $("lagerSearch").value.trim().toLowerCase();
+      const alle = alleArtikel();
       let total = 0, low = 0, out = 0;
-      PRODUCTS.forEach((p) => {
+      alle.forEach((p) => {
         const n = stock[p.id] ?? 0;
         total += n;
         if (n === 0) out++; else if (n < LOW_STOCK) low++;
@@ -829,8 +893,8 @@
         '<div class="stat"><b>' + total + '</b><span>Stück gesamt</span></div>' +
         '<div class="stat warn"><b>' + low + '</b><span>Fast leer</span></div>' +
         '<div class="stat out"><b>' + out + '</b><span>Ausverkauft</span></div>';
-      if (HAS_PRICES) {
-        const value = PRODUCTS.reduce((s, p) => s + (p.price || 0) * (stock[p.id] ?? 0), 0);
+      if (hatPreise()) {
+        const value = alle.reduce((s, p) => s + (p.preis || 0) * (stock[p.id] ?? 0), 0);
         statHtml += '<div class="stat gold"><b style="font-size:1.05rem;line-height:1.7">' + eur(value) + "</b><span>Lagerwert</span></div>";
       }
       $("lagerStats").innerHTML = statHtml;
@@ -838,13 +902,13 @@
       const list = $("lagerList");
       list.classList.remove("empty");
       const frag = document.createDocumentFragment();
-      CATEGORIES.forEach((cat) => {
-        const items = PRODUCTS.filter((p) => p.category === cat.name &&
+      kategorien().forEach((kat) => {
+        const items = alle.filter((p) => p.kategorie === kat &&
           (!term || p.name.toLowerCase().includes(term)));
         if (!items.length) return;
         const h = document.createElement("div");
         h.className = "cat-title";
-        h.textContent = cat.name;
+        h.textContent = kat;
         frag.appendChild(h);
         items.forEach((p) => {
           const n = stock[p.id] ?? 0;
@@ -901,6 +965,122 @@
     $("histBackdrop").addEventListener("click", (e) => {
       if (e.target === $("histBackdrop")) $("histBackdrop").classList.remove("open");
     });
+
+    // ================= ARTIKEL =================
+    let editArtId = null;
+
+    $("artForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = $("artName").value.trim();
+      const kat = $("artKat").value.trim() || "Sonstiges";
+      if (!name) return;
+      if (alleArtikel().some((a) => a.name.toLowerCase() === name.toLowerCase())) {
+        toast("„" + name + "“ gibt es schon.", true); return;
+      }
+      const preis = parseFloat($("artPreis").value);
+      const start = parseInt($("artStart").value, 10);
+      // ID lokal erzeugen: so lässt sich der Startbestand sofort buchen, auch offline
+      const ref = doc(collection(db, "artikel"));
+      save(setDoc(ref, {
+        name, kategorie: kat, typ: $("artTyp").value,
+        preis: isNaN(preis) ? 0 : preis, erstellt: serverTimestamp(), von: myName,
+      }), "Artikel angelegt");
+      if (start > 0) applyStock(ref.id, start, "still");
+      logActivity("Artikel angelegt: " + name + (start > 0 ? " (Startbestand " + start + ")" : ""));
+      $("artName").value = ""; $("artPreis").value = ""; $("artStart").value = "";
+    });
+
+    function artRow(a) {
+      const n = stock[a.id] ?? 0;
+      const row = document.createElement("div");
+      row.className = "lrow";
+      row.style.cursor = "pointer";
+      row.innerHTML =
+        '<div class="grow"><b>' + esc(a.name) + "</b><small>" +
+        (a.typ === "material" ? "Material" : "Produkt") + " · " + n + " auf Lager" +
+        (a.preis ? " · " + eur(a.preis) + " EK" : "") + "</small></div>" +
+        '<span class="muted">›</span>';
+      row.addEventListener("click", () => { editArtId = a.id; renderArtikel(); });
+      return row;
+    }
+
+    function artEditCard(a) {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML =
+        '<div class="frow"><input class="e-name" value="' + esc(a.name) + '" placeholder="Name"></div>' +
+        '<div class="frow"><input class="e-kat" list="artKatListe" value="' + esc(a.kategorie || "") + '" placeholder="Kategorie"></div>' +
+        '<div class="frow"><select class="e-typ">' +
+          '<option value="produkt"' + (a.typ !== "material" ? " selected" : "") + ">Produkt (verkäuflich)</option>" +
+          '<option value="material"' + (a.typ === "material" ? " selected" : "") + ">Material / Zubehör</option>" +
+        "</select></div>" +
+        '<div class="frow"><input class="e-preis" type="number" step="0.01" min="0" value="' +
+          (a.preis || "") + '" placeholder="Einkaufspreis € (optional)"></div>' +
+        '<div class="note-actions">' +
+          "<button class=\"btn-gold\" data-save>Speichern</button>" +
+          "<button class=\"btn-ghost\" data-cancel>Abbrechen</button>" +
+          '<button class="btn-ghost" data-del style="color:var(--red)">Löschen</button>' +
+        "</div>";
+      card.querySelector("[data-save]").addEventListener("click", () => {
+        const name = card.querySelector(".e-name").value.trim();
+        if (!name) { toast("Name fehlt.", true); return; }
+        const preis = parseFloat(card.querySelector(".e-preis").value);
+        save(updateDoc(doc(db, "artikel", a.id), {
+          name,
+          kategorie: card.querySelector(".e-kat").value.trim() || "Sonstiges",
+          typ: card.querySelector(".e-typ").value,
+          preis: isNaN(preis) ? 0 : preis,
+        }), "Artikel gespeichert");
+        editArtId = null; renderArtikel();
+      });
+      card.querySelector("[data-cancel]").addEventListener("click", () => { editArtId = null; renderArtikel(); });
+      card.querySelector("[data-del]").addEventListener("click", () => {
+        const n = stock[a.id] ?? 0;
+        if (!confirm("„" + a.name + "“ löschen?" +
+          (n > 0 ? "\nAchtung: " + n + " Stück stehen noch im Lager." : ""))) return;
+        save(deleteDoc(doc(db, "artikel", a.id)));
+        deleteDoc(doc(db, "lager", a.id)).catch(() => {});
+        logActivity("Artikel gelöscht: " + a.name);
+        editArtId = null; renderArtikel();
+      });
+      return card;
+    }
+
+    // Kategorie umbenennen: alle Artikel darin werden mitgezogen
+    function renameKategorie(alt) {
+      const eingabe = prompt("Kategorie umbenennen:", alt);
+      if (eingabe === null) return;
+      const neu = eingabe.trim();
+      if (!neu || neu === alt) return;
+      const betroffen = artikel.filter((a) => (a.kategorie || "Sonstiges") === alt);
+      betroffen.forEach((a) => save(updateDoc(doc(db, "artikel", a.id), { kategorie: neu })));
+      toast(betroffen.length + (betroffen.length === 1 ? " Artikel" : " Artikel") + " auf „" + neu + "“ umgestellt");
+      logActivity("Kategorie umbenannt: " + alt + " → " + neu);
+    }
+
+    function renderArtikel() {
+      const wrap = $("artList");
+      wrap.innerHTML = "";
+      if (!artikel.length) {
+        wrap.innerHTML = '<div class="empty">Noch keine eigenen Artikel.<br>Leg oben zum Beispiel „Alu-Flasche 50 ml" in der Kategorie „Verpackung" an.</div>';
+        return;
+      }
+      const shopKats = CATEGORIES.map((c) => c.name);
+      const kats = [...new Set(artikel.map((a) => a.kategorie || "Sonstiges"))]
+        .sort((a, b) => a.localeCompare(b, "de"));
+      kats.forEach((kat) => {
+        const h = document.createElement("div");
+        h.className = "cat-title";
+        h.textContent = kat;
+        if (!shopKats.includes(kat)) {
+          h.style.cursor = "pointer";
+          h.addEventListener("click", () => renameKategorie(kat));
+        }
+        wrap.appendChild(h);
+        artikel.filter((a) => (a.kategorie || "Sonstiges") === kat)
+          .forEach((a) => wrap.appendChild(editArtId === a.id ? artEditCard(a) : artRow(a)));
+      });
+    }
 
     // ================= AUFGABEN =================
     $("taskForm").addEventListener("submit", (e) => {
@@ -1039,16 +1219,29 @@
 
     // ================= PRODUKTION =================
     $("prodDatum").value = heute();
-    $("prodProdukt").innerHTML = PRODUCTS
-      .filter((p) => p.type !== "bundle")
-      .map((p) => '<option value="' + p.id + '">' + esc(p.name) + "</option>").join("");
+
+    // Auswahllisten neu füllen, wenn sich der Artikelstamm ändert (Auswahl bleibt erhalten)
+    function fillPickers() {
+      const opt = (a) => '<option value="' + a.id + '">' + esc(a.name) + "</option>";
+      const verkaeuflich = alleArtikel().filter((a) => a.typ === "produkt");
+      const setze = (id, liste) => {
+        const sel = $(id);
+        if (!sel) return;
+        const vorher = sel.value;
+        sel.innerHTML = liste.map(opt).join("");
+        if (liste.some((a) => a.id === vorher)) sel.value = vorher;
+      };
+      setze("prodProdukt", verkaeuflich.filter((a) => !a.bundle));
+      setze("bestProdukt", verkaeuflich);
+      $("artKatListe").innerHTML = kategorien().map((k) => '<option value="' + esc(k) + '">').join("");
+    }
 
     $("prodForm").addEventListener("submit", (e) => {
       e.preventDefault();
       const menge = parseInt($("prodMenge").value, 10);
       if (isNaN(menge) || menge <= 0) return;
       const pid = $("prodProdukt").value;
-      const p = PRODUCTS.find((x) => x.id === pid);
+      const p = findArtikel(pid);
       save(addDoc(collection(db, "produktion"), {
         produktId: pid, produktName: p ? p.name : pid, menge,
         notiz: $("prodNotiz").value.trim(), datum: $("prodDatum").value || heute(),
@@ -1084,8 +1277,7 @@
 
     // --- Positionen: Produkt + Menge, damit die Bestellung das Lager abbuchen kann ---
     let bestPositionen = [];
-    $("bestProdukt").innerHTML = PRODUCTS
-      .map((p) => '<option value="' + p.id + '">' + esc(p.name) + "</option>").join("");
+    fillPickers();
 
     function renderBestPos() {
       const wrap = $("bestPos");
@@ -1104,7 +1296,7 @@
     $("bestAdd").addEventListener("click", () => {
       const pid = $("bestProdukt").value;
       const menge = parseInt($("bestMenge").value, 10);
-      const p = PRODUCTS.find((x) => x.id === pid);
+      const p = findArtikel(pid);
       if (!p || isNaN(menge) || menge <= 0) { toast("Menge fehlt.", true); return; }
       const vorhanden = bestPositionen.find((x) => x.id === pid);
       if (vorhanden) vorhanden.menge += menge;
@@ -1464,8 +1656,9 @@
     }
 
     function renderDash() {
+      const alle = alleArtikel();
       let total = 0, low = 0, out = 0;
-      PRODUCTS.forEach((p) => {
+      alle.forEach((p) => {
         const n = stock[p.id] ?? 0;
         total += n;
         if (n === 0) out++; else if (n < LOW_STOCK) low++;
@@ -1474,8 +1667,8 @@
         '<div class="stat"><b>' + total + '</b><span>Stück gesamt</span></div>' +
         '<div class="stat warn"><b>' + low + '</b><span>Fast leer</span></div>' +
         '<div class="stat out"><b>' + out + '</b><span>Ausverkauft</span></div>';
-      if (HAS_PRICES) {
-        const value = PRODUCTS.reduce((s, p) => s + (p.price || 0) * (stock[p.id] ?? 0), 0);
+      if (hatPreise()) {
+        const value = alle.reduce((s, p) => s + (p.preis || 0) * (stock[p.id] ?? 0), 0);
         lagerHtml += '<div class="stat gold"><b style="font-size:1.05rem;line-height:1.7">' + eur(value) + "</b><span>Lagerwert</span></div>";
       }
       $("dashLager").innerHTML = lagerHtml;
