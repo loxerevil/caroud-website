@@ -1017,12 +1017,16 @@ button { font-family: inherit; }
 
 .scent-card:hover { transform: translateY(-5px); border-color: var(--gold); }
 
-.scent-swatch img {
-  display: block;
+.scent-swatch {
+  display: flex;
+  justify-content: center;
   width: 100%;
-  max-width: 74px;
-  height: 104px;
-  object-fit: contain;
+}
+
+.scent-swatch svg {
+  display: block;
+  width: auto;
+  height: 134px;
   filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.55));
 }
 

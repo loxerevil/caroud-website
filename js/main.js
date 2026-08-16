@@ -263,10 +263,9 @@ if (scentGrid) {
     card.style.background =
       `linear-gradient(165deg, ${rgba(s.color, 0.5)} 0%, rgba(255,255,255,0.03) 78%),` +
       `linear-gradient(rgba(255,255,255,0.075), rgba(255,255,255,0.075))`;
+    // Die Sprühflasche mit Etikett – nicht das nackte Etikett, das wäre ein Rechteck
     card.innerHTML = `
-      <span class="scent-swatch">
-        <img src="img/produkte/haenger-${s.key}.webp" alt="" loading="lazy">
-      </span>
+      <span class="scent-swatch">${artFor(byId("spray-" + s.key))}</span>
       <span class="scent-name">${s.name}</span>
       <span class="scent-notes">${s.notes.slice(0, 3).join(" · ")}</span>`;
     card.addEventListener("click", () => openProductModal("spray-" + s.key));
