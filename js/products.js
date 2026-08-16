@@ -2,7 +2,7 @@
 // Caroud – Produktdaten
 //
 // Die sieben Düfte stehen zentral in SCENTS. Daraus werden die
-// Linien Duftspray, Duftanhänger, Duftbaum und Lüftungsclip erzeugt –
+// Linien Duftspray, Duftanhänger und Lüftungsclip erzeugt –
 // ein neuer Duft muss also nur EINMAL eingetragen werden.
 //
 //   type:       "spray" | "baum" | "haenger" | "clip" | "tuch" | "abzieher" | "bundle"
@@ -16,7 +16,6 @@ const CATEGORIES = [
   { name: "Duftsprays", type: "spray", color: "#111111" },
   { name: "Duftanhänger", type: "haenger", color: "#111111" },
   { name: "Lüftungsclips", type: "clip", color: "#3a3a3a" },
-  { name: "Duftbäume", type: "baum", color: "#2e5339" },
   { name: "Pflege", type: "tuch", color: "#3d3d3d" },
   { name: "Bundles", type: "bundle", color: "#3b6ea5" },
 ];
@@ -87,8 +86,6 @@ const LINES = [
     text: (s) => s.short + " Als schlichter Anhänger für den Rückspiegel – dezent im Look, präsent im Duft." },
   { type: "clip",    category: "Lüftungsclips", suffix: "Lüftungsclip",
     text: (s) => s.short + " Als Clip fürs Lüftungsgitter: duftet über den Luftstrom der Klimaanlage, Refill nachkaufbar." },
-  { type: "baum",    category: "Duftbäume",     suffix: "Duftbaum",
-    text: (s) => s.short + " Als klassischer Duftbaum für den Rückspiegel – langanhaltend." },
 ];
 
 const SCENT_PRODUCTS = [];
