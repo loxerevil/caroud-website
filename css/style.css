@@ -197,9 +197,20 @@ button { font-family: inherit; }
 
 .head-nav a:hover { color: var(--gold); border-bottom-color: var(--gold); }
 
-@media (min-width: 1100px) {
+@media (min-width: 1180px) {
   .site-header .menu-toggle { display: none; }
-  .head-nav { display: flex; gap: 1.4rem; }
+  /* Drei gleich breite Spalten, damit das Logo exakt in der Mitte sitzt –
+     mit space-between wanderte es nach rechts, weil die Leiste links
+     viel breiter ist als die zwei Icons rechts */
+  .site-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    padding: 0 2.4rem;
+  }
+  .head-nav { display: flex; gap: 1.5rem; justify-self: start; white-space: nowrap; }
+  .site-header .logo { justify-self: center; }
+  .header-actions { justify-self: end; }
 }
 
 .logo img { height: 26px; width: auto; }
