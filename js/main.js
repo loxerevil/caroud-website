@@ -160,6 +160,41 @@ function byId(id) {
   return PRODUCTS.find((p) => p.id === id);
 }
 
+// Hex-Farbe mit Transparenz, für Verläufe in der jeweiligen Duftfarbe
+function rgba(hex, a) {
+  const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
+  return `rgba(${r}, ${g}, ${b}, ${a})`;
+}
+
+// ---------- Hero: Produkt zeigen ----------
+
+const heroArt = document.getElementById("heroArt");
+if (heroArt) heroArt.innerHTML = artFor(byId("spray-midnight"));
+
+// ---------- Die sieben Düfte ----------
+
+const scentGrid = document.getElementById("scentGrid");
+if (scentGrid) {
+  SCENTS.forEach((s) => {
+    const card = document.createElement("button");
+    card.className = "scent-card";
+    card.type = "button";
+    // Grundton in Weiß darunter, sonst verschwinden dunkle Düfte wie Midnight
+    // und Carbon auf dem schwarzen Band
+    card.style.background =
+      `linear-gradient(165deg, ${rgba(s.color, 0.5)} 0%, rgba(255,255,255,0.03) 78%),` +
+      `linear-gradient(rgba(255,255,255,0.075), rgba(255,255,255,0.075))`;
+    card.innerHTML = `
+      <span class="scent-swatch">
+        <img src="img/produkte/haenger-${s.key}.webp" alt="" loading="lazy">
+      </span>
+      <span class="scent-name">${s.name}</span>
+      <span class="scent-notes">${s.notes.slice(0, 3).join(" · ")}</span>`;
+    card.addEventListener("click", () => openProductModal("spray-" + s.key));
+    scentGrid.appendChild(card);
+  });
+}
+
 // ---------- Kategorien ----------
 
 const categoryGrid = document.getElementById("categoryGrid");
@@ -256,7 +291,7 @@ function renderProducts() {
     const card = document.createElement("div");
     card.className = "product-card";
     card.innerHTML = `
-      <div class="product-media">
+      <div class="product-media" style="background:linear-gradient(170deg, ${rgba(p.color, 0.13)} 0%, #ffffff 62%)">
         ${p.priceOld ? `<span class="sale-badge">Sparen ${euro(saving)}</span>` : ""}
         ${artFor(p)}
         <button class="quick-add">+ In den Warenkorb</button>

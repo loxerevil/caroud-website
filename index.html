@@ -27,7 +27,7 @@
   <meta name="twitter:image" content="https://caroud.de/img/og-image.png">
 
   <link rel="icon" type="image/png" href="img/favicon.png">
-  <link rel="stylesheet" href="css/style.css?v=15">
+  <link rel="stylesheet" href="css/style.css?v=16">
 
   <!-- Strukturierte Daten für Google. Produkt-Markup fehlt bewusst,
        solange keine echten Preise hinterlegt sind. -->
@@ -124,6 +124,7 @@
     </button>
     <ul class="menu-list">
       <li><a href="#top">Home</a></li>
+      <li><a href="#duefte">Die sieben Düfte</a></li>
       <li><a href="#produkte" data-filter="alle">Alle Produkte</a></li>
       <li><a href="#produkte" data-filter="bestseller">Bestseller</a></li>
       <li><a href="#produkte" data-filter="Duftsprays">Duftsprays</a></li>
@@ -182,11 +183,20 @@
     <video class="hero-video" src="img/hero-video.mp4" poster="img/hero-poster.jpg"
            autoplay muted loop playsinline preload="metadata" aria-hidden="true"></video>
     <div class="hero-inner">
-      <h1 class="sr-only">Caroud – Fine Fragrance for the Drive</h1>
-      <div class="hero-cta">
-        <a href="#produkte" class="btn btn-gold">Jetzt shoppen</a>
-        <a href="#marke" class="btn btn-outline">Unsere Marke</a>
+      <div class="hero-text">
+        <p class="hero-kicker">Fine Fragrance for the Drive</p>
+        <h1 class="hero-title">Parfüm für<br>dein Auto.</h1>
+        <p class="hero-sub">
+          Sieben Düfte, entwickelt für den Innenraum – als Spray, als Anhänger
+          für den Rückspiegel und als Clip fürs Lüftungsgitter.
+        </p>
+        <div class="hero-cta">
+          <a href="#produkte" class="btn btn-gold">Düfte entdecken</a>
+          <a href="#duefte" class="btn btn-outline">Die sieben Düfte</a>
+        </div>
+        <p class="hero-note">Versandkostenfrei ohne Mindestbestellwert · Versand in 24 h · Made in Germany</p>
       </div>
+      <div class="hero-produkt" id="heroArt" aria-hidden="true"></div>
     </div>
     <div class="hero-scroll">▾</div>
   </section>
@@ -221,6 +231,19 @@
       <h3>Langanhaltend</h3>
       <p>Bis zu 8 Wochen Duft – entwickelt für den Innenraum deines Autos.</p>
     </div>
+  </section>
+
+  <!-- Die sieben Düfte -->
+  <section class="scent-band reveal" id="duefte">
+    <div class="scent-head">
+      <p class="brand-kicker">Sieben Düfte</p>
+      <h2>Such dir deinen aus.</h2>
+      <p class="scent-intro">
+        Jeden Duft gibt es in allen drei Formen – als Spray, als Anhänger und als Lüftungsclip.
+        Tipp einen an, um ihn kennenzulernen.
+      </p>
+    </div>
+    <div class="scent-grid" id="scentGrid"></div>
   </section>
 
   <!-- Kategorien -->
@@ -389,7 +412,7 @@
   <!-- Toast -->
   <div class="toast" id="toast" hidden></div>
 
-  <script src="js/products.js?v=15"></script>
-  <script src="js/main.js?v=15"></script>
+  <script src="js/products.js?v=16"></script>
+  <script src="js/main.js?v=16"></script>
 </body>
 </html>
