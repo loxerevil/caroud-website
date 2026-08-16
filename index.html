@@ -29,7 +29,7 @@
   <link rel="icon" type="image/png" href="img/favicon.png">
   <!-- Überschriftenschrift vorladen, damit der Hero-Titel nicht erst in Georgia aufblitzt -->
   <link rel="preload" href="fonts/playfair-400.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/style.css?v=29">
+  <link rel="stylesheet" href="css/style.css?v=30">
 
   <!-- Strukturierte Daten für Google. Produkt-Markup fehlt bewusst,
        solange keine echten Preise hinterlegt sind. -->
@@ -270,6 +270,25 @@
         </span>
       </button>
     </div>
+    <!-- Zweite Reihe, flacher: Bundles (Sparpreis) und Pflege -->
+    <div class="koll-grid koll-grid-2">
+      <button class="koll-tile koll-tile-wide" type="button" data-koll="Bundles">
+        <img src="img/kollektion-bundles.webp" alt="Caroud Bundles" width="1000" height="500" loading="lazy">
+        <span class="koll-inner">
+          <span class="koll-kicker">Spray + Anhänger im Set</span>
+          <span class="koll-title">Bundles</span>
+          <span class="koll-btn">Jetzt entdecken</span>
+        </span>
+      </button>
+      <button class="koll-tile koll-tile-wide" type="button" data-koll="Pflege">
+        <img src="img/kollektion-pflege.webp" alt="Caroud Pflege" width="1000" height="500" loading="lazy">
+        <span class="koll-inner">
+          <span class="koll-kicker">Tücher &amp; Zubehör</span>
+          <span class="koll-title">Pflege</span>
+          <span class="koll-btn">Jetzt entdecken</span>
+        </span>
+      </button>
+    </div>
   </section>
 
   <!-- Produkte -->
@@ -330,22 +349,34 @@
   <!-- Vertrauen: direkt unter den Produkten, wo die Kaufentscheidung fällt -->
   <section class="section usp-row reveal">
     <div class="usp">
-      <div class="usp-icon">✦</div>
+      <div class="usp-icon" aria-hidden="true">
+        <!-- Paket -->
+        <svg viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>
+      </div>
       <h3>Versandkostenfrei</h3>
       <p>Immer und ohne Mindestbestellwert – auch bei einem einzelnen Duftanhänger.</p>
     </div>
     <div class="usp">
-      <div class="usp-icon">➤</div>
+      <div class="usp-icon" aria-hidden="true">
+        <!-- Lieferwagen -->
+        <svg viewBox="0 0 24 24"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.6"/><circle cx="17" cy="17.5" r="1.6"/></svg>
+      </div>
       <h3>Versand in 24h</h3>
       <p>Werktags bestellt, werktags raus. Aus Deutschland, in die ganze EU.</p>
     </div>
     <div class="usp">
-      <div class="usp-icon">◆</div>
+      <div class="usp-icon" aria-hidden="true">
+        <!-- Rückgabe -->
+        <svg viewBox="0 0 24 24"><path d="M9 6H16a4 4 0 0 1 0 8H5"/><path d="M8 10.5L4.5 14 8 17.5"/></svg>
+      </div>
       <h3>14 Tage Rückgabe</h3>
       <p>Duft nicht getroffen? Ungeöffnet zurück, ohne Diskussion.</p>
     </div>
     <div class="usp">
-      <div class="usp-icon">✧</div>
+      <div class="usp-icon" aria-hidden="true">
+        <!-- Uhr -->
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>
+      </div>
       <h3>Langanhaltend</h3>
       <p>Der Duftanhänger hält 4 bis 8 Wochen – entwickelt für den Innenraum.</p>
     </div>
@@ -370,7 +401,7 @@
         <a href="#produkte" class="btn btn-gold">Jetzt ansehen</a>
       </div>
       <div class="about-media">
-        <img src="img/about.png" alt="Luxuriöses Fahrzeug-Interieur mit Caroud Duft">
+        <img src="img/about.webp" alt="Fahrzeug-Innenraum" width="505" height="586" loading="lazy">
       </div>
     </div>
   </section>
@@ -501,7 +532,7 @@
   <!-- Toast -->
   <div class="toast" id="toast" hidden></div>
 
-  <script src="js/products.js?v=29"></script>
-  <script src="js/main.js?v=29"></script>
+  <script src="js/products.js?v=30"></script>
+  <script src="js/main.js?v=30"></script>
 </body>
 </html>

@@ -45,26 +45,25 @@ function haengerSVG(color, label, img) {
 }
 
 function bundleSVG(color, label) {
+  // Spray + zwei Anhänger, zusammengesetzt aus den echten Etiketten –
+  // Starter (schwarz) und Signature (rot) unterscheiden sich in der Flaschenfarbe
+  const sprayKey = color === "#8e1b1b" ? "redline" : "midnight";
   return `
   <svg class="prod-art" viewBox="0 0 180 200" xmlns="http://www.w3.org/2000/svg">
-    <g transform="translate(20 30) scale(0.72)">
+    <g transform="translate(14 22) scale(0.76)">
       <rect x="52" y="4" width="16" height="14" rx="2" fill="#222"/>
       <rect x="44" y="18" width="32" height="16" rx="3" fill="#1b1b1b"/>
       <path d="M38 40 Q38 34 46 34 H74 Q82 34 82 40 L86 60 V186 Q86 194 78 194 H42 Q34 194 34 186 V60 Z" fill="${color}" stroke="rgba(0,0,0,0.15)"/>
-      <rect x="42" y="88" width="36" height="46" rx="3" fill="#fff" stroke="#ddd"/>
-      <text x="60" y="106" text-anchor="middle" font-size="9" font-weight="600" font-family="Georgia, serif" letter-spacing="1" fill="#111">CAROUD</text>
+      <image href="img/produkte/spray-${sprayKey}.webp" x="42" y="88" width="36" height="46" preserveAspectRatio="xMidYMid slice"/>
     </g>
-    <g transform="translate(85 65) scale(0.62)">
-      <path d="M70 4 Q90 24 70 44 Q50 24 70 4" fill="none" stroke="#333" stroke-width="2.5"/>
-      <path d="M52 44 H88 Q92 44 92 50 L90 62 H98 Q104 62 104 70 V184 Q104 192 96 192 H44 Q36 192 36 184 V70 Q36 62 42 62 H50 L48 50 Q48 44 52 44 Z" fill="#2b2b2b" stroke="rgba(0,0,0,0.18)"/>
-      <rect x="48" y="92" width="44" height="52" rx="3" fill="#fff" stroke="#ddd"/>
+    <g transform="translate(88 58)">
+      <path d="M31 2 Q42 12 31 22 Q20 12 31 2" fill="none" stroke="#333" stroke-width="1.6"/>
+      <image href="img/produkte/haenger-carbon.webp" x="4" y="20" width="54" height="99" preserveAspectRatio="xMidYMid meet"/>
     </g>
-    <g transform="translate(120 85) scale(0.52)">
-      <path d="M70 4 Q90 24 70 44 Q50 24 70 4" fill="none" stroke="#333" stroke-width="2.5"/>
-      <path d="M52 44 H88 Q92 44 92 50 L90 62 H98 Q104 62 104 70 V184 Q104 192 96 192 H44 Q36 192 36 184 V70 Q36 62 42 62 H50 L48 50 Q48 44 52 44 Z" fill="#b9a06a" stroke="rgba(0,0,0,0.18)"/>
-      <rect x="48" y="92" width="44" height="52" rx="3" fill="#fff" stroke="#ddd"/>
+    <g transform="translate(122 84)">
+      <path d="M26 2 Q35 10 26 18 Q17 10 26 2" fill="none" stroke="#333" stroke-width="1.4"/>
+      <image href="img/produkte/haenger-sunroof.webp" x="3" y="16" width="46" height="84" preserveAspectRatio="xMidYMid meet"/>
     </g>
-    <text x="90" y="196" text-anchor="middle" font-size="11" font-weight="600" font-family="Georgia, serif" letter-spacing="1" letter-spacing="2" fill="#555">${label.toUpperCase()}</text>
   </svg>`;
 }
 
