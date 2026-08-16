@@ -1055,6 +1055,59 @@ button { font-family: inherit; }
 
 .notes-row { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-bottom: 1.6rem; }
 
+/* Denselben Duft in einer anderen Linie anbieten */
+.cross-row { display: flex; gap: 0.6rem; margin-bottom: 1.6rem; }
+.cross-card {
+  flex: 1;
+  min-width: 0;
+  background: #f7f5f1;
+  border: 1px solid #e6e2da;
+  border-radius: 4px;
+  padding: 0.6rem 0.4rem 0.5rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+.cross-card:hover { border-color: var(--gold); transform: translateY(-2px); }
+.cross-art { display: block; width: 100%; }
+.cross-art svg { display: block; width: 100%; height: 62px; }
+.cross-name {
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--grey);
+  text-align: center;
+}
+
+/* Duft-Finder unter den Kategorie-Chips */
+.finder-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin: -1.4rem 0 2.2rem;
+}
+.finder-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--grey);
+}
+.finder-chips { margin-bottom: 0; }
+.chip-sm { padding: 0.35rem 0.9rem; font-size: 0.72rem; }
+
+/* Ankündigungsleiste wechselt zwischen mehreren Botschaften */
+.announce-msg { display: none; }
+.announce-msg.is-on { display: inline-block; animation: announce-in 0.45s ease; }
+@keyframes announce-in {
+  from { opacity: 0; transform: translateY(-3px); }
+  to { opacity: 1; transform: none; }
+}
+
 .note-chip {
   border: 1px solid #ddd;
   padding: 0.3rem 0.85rem;

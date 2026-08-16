@@ -195,26 +195,60 @@ FILTERS.forEach((f) => {
   filterChips.appendChild(chip);
 });
 
+// ---------- Duft-Finder ----------
+// Zweite Filterebene: nach Duftrichtung statt nach Produktart.
+// Pflege und Bundles haben keine Duftrichtung und fallen dabei bewusst raus.
+let activeFamily = "alle";
+const familyChips = document.getElementById("familyChips");
+
+[{ key: "alle", name: "Alle Düfte" }].concat(FAMILIEN).forEach((f) => {
+  const chip = document.createElement("button");
+  chip.className = "chip chip-sm";
+  chip.dataset.family = f.key;
+  chip.textContent = f.name;
+  chip.addEventListener("click", () => setFamily(f.key));
+  familyChips.appendChild(chip);
+});
+
+function setFamily(k) {
+  activeFamily = k;
+  familyChips.querySelectorAll(".chip").forEach((c) => {
+    c.classList.toggle("active", c.dataset.family === k);
+  });
+  updateProductTitle();
+  renderProducts();
+}
+
+function updateProductTitle() {
+  const basis = FILTER_LABELS[activeFilter] || activeFilter;
+  const fam = FAMILIEN.find((f) => f.key === activeFamily);
+  productTitle.textContent = fam ? basis + " · " + fam.name : basis;
+}
+
 function setFilter(f) {
   activeFilter = f;
   filterChips.querySelectorAll(".chip").forEach((c) => {
     c.classList.toggle("active", c.dataset.filter === f);
   });
-  productTitle.textContent = FILTER_LABELS[f] || f;
+  updateProductTitle();
   renderProducts();
 }
 
 function filteredProducts() {
-  if (activeFilter === "alle") return PRODUCTS;
-  if (activeFilter === "bestseller") return PRODUCTS.filter((p) => p.bestseller);
-  return PRODUCTS.filter((p) => p.category === activeFilter);
+  let list = PRODUCTS;
+  if (activeFilter === "bestseller") list = list.filter((p) => p.bestseller);
+  else if (activeFilter !== "alle") list = list.filter((p) => p.category === activeFilter);
+  if (activeFamily !== "alle") list = list.filter((p) => p.familie === activeFamily);
+  return list;
 }
 
 function renderProducts() {
   productGrid.innerHTML = "";
   const list = filteredProducts();
   if (!list.length) {
-    productGrid.innerHTML = `<p class="grid-empty">Hier ist noch nichts – bald mehr!</p>`;
+    productGrid.innerHTML = activeFamily !== "alle"
+      ? `<p class="grid-empty">In dieser Duftrichtung gibt es hier nichts – wähle eine andere Kategorie.</p>`
+      : `<p class="grid-empty">Hier ist noch nichts – bald mehr!</p>`;
     return;
   }
   list.forEach((p) => {
@@ -241,6 +275,7 @@ function renderProducts() {
   });
 }
 
+setFamily("alle");
 setFilter("bestseller");
 
 // ---------- Warenkorb ----------
@@ -349,6 +384,8 @@ function openProductModal(id) {
   if (!p) return;
   modalQty = 1;
   const saving = p.priceOld ? p.priceOld - p.price : 0;
+  // Denselben Duft in den anderen beiden Linien anbieten
+  const geschwister = p.scent ? PRODUCTS.filter((x) => x.scent === p.scent && x.id !== p.id) : [];
   modalBody.innerHTML = `
     <div class="modal-art">${artFor(p)}</div>
     <div class="modal-info">
@@ -363,6 +400,15 @@ function openProductModal(id) {
       ${p.category === "Duftsprays" ? `<p class="gift-note">✦ Inklusive: Gratis-Duftmuster</p>` : ""}
       <p class="notes-label">${p.category === "Bundles" ? "Inhalt" : p.category === "Pflege" ? "Details" : "Duftnoten"}</p>
       <div class="notes-row">${p.notes.map((n) => `<span class="note-chip">${n}</span>`).join("")}</div>
+      ${geschwister.length ? `
+        <p class="notes-label">${p.label} gibt es auch als</p>
+        <div class="cross-row">
+          ${geschwister.map((g) => `
+            <button class="cross-card" type="button" data-cross="${g.id}">
+              <span class="cross-art">${artFor(g)}</span>
+              <span class="cross-name">${g.linieName}</span>
+            </button>`).join("")}
+        </div>` : ""}
       <div class="modal-actions">
         <div class="qty-row">
           <button class="qty-btn" data-mminus>−</button>
@@ -372,6 +418,9 @@ function openProductModal(id) {
         <button class="btn btn-dark" id="modalAdd">In den Warenkorb</button>
       </div>
     </div>`;
+  modalBody.querySelectorAll("[data-cross]").forEach((b) => {
+    b.addEventListener("click", () => openProductModal(b.dataset.cross));
+  });
   modalBody.querySelector("[data-mminus]").addEventListener("click", () => {
     modalQty = Math.max(1, modalQty - 1);
     document.getElementById("modalQtyVal").textContent = modalQty;
@@ -512,6 +561,19 @@ const observer = new IntersectionObserver(
   { threshold: 0.12 }
 );
 document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
+
+// ---------- Ankündigungsleiste ----------
+// Wechselt alle 4 Sekunden, damit alle drei Botschaften gelesen werden.
+
+const announceMsgs = document.querySelectorAll(".announce-msg");
+if (announceMsgs.length > 1) {
+  let announceIdx = 0;
+  setInterval(() => {
+    announceMsgs[announceIdx].classList.remove("is-on");
+    announceIdx = (announceIdx + 1) % announceMsgs.length;
+    announceMsgs[announceIdx].classList.add("is-on");
+  }, 4000);
+}
 
 // ---------- Newsletter (Demo) ----------
 

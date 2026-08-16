@@ -27,7 +27,42 @@
   <meta name="twitter:image" content="https://caroud.de/img/og-image.png">
 
   <link rel="icon" type="image/png" href="img/favicon.png">
-  <link rel="stylesheet" href="css/style.css?v=14">
+  <link rel="stylesheet" href="css/style.css?v=15">
+
+  <!-- Strukturierte Daten für Google. Produkt-Markup fehlt bewusst,
+       solange keine echten Preise hinterlegt sind. -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://caroud.de/#organisation",
+        "name": "Caroud",
+        "url": "https://caroud.de/",
+        "logo": "https://caroud.de/img/logo-full.png",
+        "image": "https://caroud.de/img/og-image.png",
+        "slogan": "Fine Fragrance for the Drive",
+        "description": "Premium-Autodüfte aus Deutschland: Duftsprays, Duftanhänger und Lüftungsclips.",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Bochumer Straße 318",
+          "postalCode": "46282",
+          "addressLocality": "Dorsten",
+          "addressCountry": "DE"
+        }
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://caroud.de/#website",
+        "url": "https://caroud.de/",
+        "name": "Caroud",
+        "inLanguage": "de-DE",
+        "publisher": { "@id": "https://caroud.de/#organisation" }
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
 
@@ -55,9 +90,11 @@
     <div class="mist" id="mist"></div>
   </div>
 
-  <!-- Ankündigungsleiste -->
+  <!-- Ankündigungsleiste: wechselt zwischen den Botschaften (siehe main.js) -->
   <div class="announcement-bar">
-    <span>CODE: CAROUD10 – 10% RABATT&nbsp;&nbsp;|&nbsp;&nbsp;GRATIS DUFTMUSTER ZU JEDEM DUFTSPRAY&nbsp;&nbsp;|&nbsp;&nbsp;VERSANDKOSTENFREI IN DER EU</span>
+    <span class="announce-msg is-on">VERSANDKOSTENFREI – OHNE MINDESTBESTELLWERT</span>
+    <span class="announce-msg">CODE: CAROUD10 – 10% RABATT AUF DEINE ERSTE BESTELLUNG</span>
+    <span class="announce-msg">GRATIS DUFTMUSTER ZU JEDEM DUFTSPRAY</span>
   </div>
 
   <!-- Header -->
@@ -142,7 +179,8 @@
 
   <!-- Hero -->
   <section class="hero" id="top">
-    <video class="hero-video" src="img/hero-video.mp4" autoplay muted loop playsinline aria-hidden="true"></video>
+    <video class="hero-video" src="img/hero-video.mp4" poster="img/hero-poster.jpg"
+           autoplay muted loop playsinline preload="metadata" aria-hidden="true"></video>
     <div class="hero-inner">
       <h1 class="sr-only">Caroud – Fine Fragrance for the Drive</h1>
       <div class="hero-cta">
@@ -161,6 +199,30 @@
     </div>
   </div>
 
+  <!-- Vertrauen: steht bewusst direkt hinter dem Hero -->
+  <section class="section usp-row reveal">
+    <div class="usp">
+      <div class="usp-icon">✦</div>
+      <h3>Versandkostenfrei</h3>
+      <p>Immer und ohne Mindestbestellwert – auch bei einem einzelnen Duftanhänger.</p>
+    </div>
+    <div class="usp">
+      <div class="usp-icon">➤</div>
+      <h3>Versand in 24h</h3>
+      <p>Werktags bestellt, werktags raus. Aus Deutschland, in die ganze EU.</p>
+    </div>
+    <div class="usp">
+      <div class="usp-icon">◆</div>
+      <h3>14 Tage Rückgabe</h3>
+      <p>Duft nicht getroffen? Ungeöffnet zurück, ohne Diskussion.</p>
+    </div>
+    <div class="usp">
+      <div class="usp-icon">✧</div>
+      <h3>Langanhaltend</h3>
+      <p>Bis zu 8 Wochen Duft – entwickelt für den Innenraum deines Autos.</p>
+    </div>
+  </section>
+
   <!-- Kategorien -->
   <section class="section reveal" id="kategorien">
     <h2 class="section-title">Kategorien</h2>
@@ -171,6 +233,10 @@
   <section class="section section-alt reveal" id="produkte">
     <h2 class="section-title" id="productTitle">Bestseller</h2>
     <div class="filter-chips" id="filterChips"></div>
+    <div class="finder-row">
+      <span class="finder-label">Duftrichtung</span>
+      <div class="filter-chips finder-chips" id="familyChips"></div>
+    </div>
     <div class="product-grid" id="productGrid"></div>
   </section>
 
@@ -211,24 +277,6 @@
   </section>
 
   <!-- Vorteile -->
-  <section class="section usp-row reveal">
-    <div class="usp">
-      <div class="usp-icon">✦</div>
-      <h3>Langanhaltend</h3>
-      <p>Bis zu 8 Wochen Duft – entwickelt für den Innenraum deines Autos.</p>
-    </div>
-    <div class="usp">
-      <div class="usp-icon">➤</div>
-      <h3>Schneller Versand</h3>
-      <p>Versand innerhalb von 24h – immer kostenlos in der EU.</p>
-    </div>
-    <div class="usp">
-      <div class="usp-icon">◆</div>
-      <h3>Schlichtes Design</h3>
-      <p>Dezent im Auto, stark im Duft. Kein Schnickschnack.</p>
-    </div>
-  </section>
-
   <!-- Kundenstimmen -->
   <section class="section section-alt reveal">
     <h2 class="section-title">Was unsere Kunden sagen</h2>
@@ -341,7 +389,7 @@
   <!-- Toast -->
   <div class="toast" id="toast" hidden></div>
 
-  <script src="js/products.js?v=14"></script>
-  <script src="js/main.js?v=14"></script>
+  <script src="js/products.js?v=15"></script>
+  <script src="js/main.js?v=15"></script>
 </body>
 </html>
