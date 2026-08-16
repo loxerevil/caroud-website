@@ -12,10 +12,12 @@
 //   notes:      Duftnoten, werden in der Detailansicht als Chips angezeigt
 // ============================================================
 
+// Bilder: die gedruckten Etiketten, gerendert aus den Druck-PDFs
+// (img/produkte/<typ>-<duft>.png). Ohne img zeichnet main.js die Ersatzgrafik.
 const CATEGORIES = [
-  { name: "Duftsprays", type: "spray", color: "#111111" },
-  { name: "Duftanhänger", type: "haenger", color: "#111111" },
-  { name: "Lüftungsclips", type: "clip", color: "#3a3a3a" },
+  { name: "Duftsprays", type: "spray", color: "#111111", img: "img/produkte/spray-midnight.png" },
+  { name: "Duftanhänger", type: "haenger", color: "#111111", img: "img/produkte/haenger-midnight.png" },
+  { name: "Lüftungsclips", type: "clip", color: "#3a3a3a", img: "img/produkte/clip-carbon.png" },
   { name: "Pflege", type: "tuch", color: "#3d3d3d" },
   { name: "Bundles", type: "bundle", color: "#3b6ea5" },
 ];
@@ -96,6 +98,7 @@ LINES.forEach((line) => {
       name: s.name + " " + line.suffix,
       type: line.type, category: line.category,
       color: s.color, label: s.name,
+      img: "img/produkte/" + line.type + "-" + s.key + ".png",
       price: 0, priceOld: null, bestseller: !!s.bestseller[line.type],
       desc: line.text(s),
       notes: s.notes,

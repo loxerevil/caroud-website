@@ -4,21 +4,34 @@
 
 // ---------- SVG-Platzhalter ----------
 
-function sprayBottleSVG(color, label) {
+// Liegt ein echtes Etikett vor (img), wird es auf die Platzhalter-Form gelegt.
+// Ohne img bleibt die gezeichnete Ersatzgrafik stehen.
+function sprayBottleSVG(color, label, img) {
+  const etikett = img
+    ? `<image href="${img}" x="42" y="88" width="36" height="46" preserveAspectRatio="xMidYMid slice"/>`
+    : `<rect x="42" y="88" width="36" height="46" rx="3" fill="#fff" stroke="#ddd"/>
+       <text x="60" y="103" text-anchor="middle" font-size="9" font-weight="600" font-family="Georgia, serif" letter-spacing="1" fill="#111">CAROUD</text>
+       <rect x="48" y="109" width="24" height="4" rx="2" fill="${color}" stroke="rgba(0,0,0,0.2)"/>
+       <text x="60" y="124" text-anchor="middle" font-size="7" font-family="Georgia, serif" fill="#555">${label}</text>
+       <text x="60" y="131" text-anchor="middle" font-size="5" font-family="Georgia, serif" fill="#999">- est. 2026 -</text>`;
   return `
   <svg class="prod-art" viewBox="0 0 120 200" xmlns="http://www.w3.org/2000/svg">
     <rect x="52" y="4" width="16" height="14" rx="2" fill="#222"/>
     <rect x="44" y="18" width="32" height="16" rx="3" fill="#1b1b1b"/>
     <path d="M38 40 Q38 34 46 34 H74 Q82 34 82 40 L86 60 V186 Q86 194 78 194 H42 Q34 194 34 186 V60 Z" fill="${color}" stroke="rgba(0,0,0,0.15)"/>
-    <rect x="42" y="88" width="36" height="46" rx="3" fill="#fff" stroke="#ddd"/>
-    <text x="60" y="103" text-anchor="middle" font-size="9" font-weight="600" font-family="Georgia, serif" letter-spacing="1" fill="#111">CAROUD</text>
-    <rect x="48" y="109" width="24" height="4" rx="2" fill="${color}" stroke="rgba(0,0,0,0.2)"/>
-    <text x="60" y="124" text-anchor="middle" font-size="7" font-family="Georgia, serif" fill="#555">${label}</text>
-    <text x="60" y="131" text-anchor="middle" font-size="5" font-family="Georgia, serif" fill="#999">- est. 2026 -</text>
+    ${etikett}
   </svg>`;
 }
 
-function haengerSVG(color, label) {
+function haengerSVG(color, label, img) {
+  // Das Anhänger-PDF ist bereits die komplette Stanzform – nur die Schnur kommt dazu.
+  if (img) {
+    return `
+    <svg class="prod-art" viewBox="0 0 140 200" xmlns="http://www.w3.org/2000/svg">
+      <path d="M70 2 Q90 22 70 42 Q50 22 70 2" fill="none" stroke="#333" stroke-width="2.5"/>
+      <image href="${img}" x="27" y="38" width="86" height="158" preserveAspectRatio="xMidYMid meet"/>
+    </svg>`;
+  }
   return `
   <svg class="prod-art" viewBox="0 0 140 200" xmlns="http://www.w3.org/2000/svg">
     <path d="M70 4 Q90 24 70 44 Q50 24 70 4" fill="none" stroke="#333" stroke-width="2.5"/>
@@ -105,7 +118,18 @@ function baumSVG(color, label) {
   </svg>`;
 }
 
-function clipSVG(color, label) {
+function clipSVG(color, label, img) {
+  // Der echte Clip-Sticker ist rund (Ø 45 mm), deshalb sitzt er als Medaillon im Gitter.
+  const medaillon = img
+    ? `<circle cx="70" cy="74" r="45" fill="${color}" stroke="rgba(0,0,0,0.18)"/>
+       <image href="${img}" x="25" y="29" width="90" height="90" preserveAspectRatio="xMidYMid meet"/>`
+    : `<rect x="30" y="24" width="80" height="104" rx="16" fill="${color}" stroke="rgba(0,0,0,0.18)"/>
+       <rect x="34" y="28" width="72" height="96" rx="13" fill="none" stroke="rgba(255,255,255,0.14)"/>
+       <rect x="42" y="58" width="56" height="40" rx="4" fill="#fff" stroke="#ddd"/>
+       <text x="70" y="74" text-anchor="middle" font-size="10" font-weight="600" font-family="Georgia, serif" letter-spacing="1" fill="#111">CAROUD</text>
+       <rect x="56" y="81" width="28" height="4" rx="2" fill="${color}" stroke="rgba(0,0,0,0.2)"/>
+       <text x="70" y="96" text-anchor="middle" font-size="7.5" font-family="Georgia, serif" fill="#555">${label}</text>
+       <text x="70" y="116" text-anchor="middle" font-size="5.5" font-family="Georgia, serif" fill="#999">- est. 2026 -</text>`;
   return `
   <svg class="prod-art" viewBox="0 0 140 200" xmlns="http://www.w3.org/2000/svg">
     <g opacity="0.55">
@@ -113,22 +137,16 @@ function clipSVG(color, label) {
       <rect x="24" y="164" width="92" height="9" rx="3" fill="#7c7c7c"/>
       <rect x="24" y="178" width="92" height="9" rx="3" fill="#8f8f8f"/>
     </g>
-    <path d="M60 122 V152 Q60 160 68 160 H72 Q80 160 80 152 V122" fill="none" stroke="#444" stroke-width="4" stroke-linecap="round"/>
-    <rect x="30" y="24" width="80" height="104" rx="16" fill="${color}" stroke="rgba(0,0,0,0.18)"/>
-    <rect x="34" y="28" width="72" height="96" rx="13" fill="none" stroke="rgba(255,255,255,0.14)"/>
-    <rect x="42" y="58" width="56" height="40" rx="4" fill="#fff" stroke="#ddd"/>
-    <text x="70" y="74" text-anchor="middle" font-size="10" font-weight="600" font-family="Georgia, serif" letter-spacing="1" fill="#111">CAROUD</text>
-    <rect x="56" y="81" width="28" height="4" rx="2" fill="${color}" stroke="rgba(0,0,0,0.2)"/>
-    <text x="70" y="96" text-anchor="middle" font-size="7.5" font-family="Georgia, serif" fill="#555">${label}</text>
-    <text x="70" y="116" text-anchor="middle" font-size="5.5" font-family="Georgia, serif" fill="#999">- est. 2026 -</text>
+    <path d="M60 118 V152 Q60 160 68 160 H72 Q80 160 80 152 V118" fill="none" stroke="#444" stroke-width="4" stroke-linecap="round"/>
+    ${medaillon}
   </svg>`;
 }
 
 function artFor(p) {
-  if (p.type === "spray") return sprayBottleSVG(p.color, p.label);
+  if (p.type === "spray") return sprayBottleSVG(p.color, p.label, p.img);
   if (p.type === "baum") return baumSVG(p.color, p.label);
-  if (p.type === "haenger") return haengerSVG(p.color, p.label);
-  if (p.type === "clip") return clipSVG(p.color, p.label);
+  if (p.type === "haenger") return haengerSVG(p.color, p.label, p.img);
+  if (p.type === "clip") return clipSVG(p.color, p.label, p.img);
   if (p.type === "bundle") return bundleSVG(p.color, p.label);
   if (p.type === "abzieher") return abzieherSVG(p.color, p.label);
   return tuchSVG(p.color, p.label);
@@ -149,7 +167,7 @@ CATEGORIES.forEach((cat) => {
   const card = document.createElement("button");
   card.className = "category-card";
   card.innerHTML = `
-    <div class="cat-art">${artFor({ type: cat.type, color: cat.color, label: cat.name })}</div>
+    <div class="cat-art">${artFor({ type: cat.type, color: cat.color, label: cat.name, img: cat.img })}</div>
     <span class="cat-label">${cat.name}</span>`;
   card.addEventListener("click", () => {
     setFilter(cat.name);
@@ -342,7 +360,7 @@ function openProductModal(id) {
         ${p.priceOld ? `<span class="sale-badge" style="position:static;margin-left:0.6rem;">Sparen ${euro(saving)}</span>` : ""}
       </div>
       <p class="modal-desc">${p.desc}</p>
-      ${p.category === "Duftsprays" ? `<p class="gift-note">✦ Inklusive: Gratis-Duftbaum + Duftmuster</p>` : ""}
+      ${p.category === "Duftsprays" ? `<p class="gift-note">✦ Inklusive: Gratis-Duftmuster</p>` : ""}
       <p class="notes-label">${p.category === "Bundles" ? "Inhalt" : p.category === "Pflege" ? "Details" : "Duftnoten"}</p>
       <div class="notes-row">${p.notes.map((n) => `<span class="note-chip">${n}</span>`).join("")}</div>
       <div class="modal-actions">
