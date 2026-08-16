@@ -177,12 +177,26 @@ if (heroArt) {
 
   const mistLayer = heroArt.querySelector(".mist-layer");
   const sprayHit = heroArt.querySelector(".spray-hit");
+  let fuehrtRunter = null;
+
+  // Wenn der Nebel verflogen ist, den Besucher zu den Duftsprays mitnehmen
+  function runterZuDenSprays() {
+    const hero = document.querySelector(".hero");
+    // Nur, wenn er in der Zwischenzeit nicht selbst weitergescrollt hat
+    if (hero.getBoundingClientRect().bottom < window.innerHeight * 0.5) return;
+    setFamily("alle");
+    setFilter("Duftsprays");
+    document.getElementById("produkte").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 
   // Sprühstoß: Nebeltropfen fliegen gestreut nach oben und verwehen
   function spruehen() {
     heroArt.classList.add("spraying");
     heroArt.classList.remove("hint");
     setTimeout(() => heroArt.classList.remove("spraying"), 480);
+    // Bei mehrfachem Drücken zählt erst der letzte Stoß
+    clearTimeout(fuehrtRunter);
+    fuehrtRunter = setTimeout(runterZuDenSprays, 1150);
 
     // Breite Streuung bei Verzögerung und Weite – sonst fliegt ein geschlossener
     // Klumpen davon statt einer Wolke, die am Kopf hängt und sich auflöst
