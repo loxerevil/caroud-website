@@ -270,6 +270,17 @@
     }
     .fchip.active { background: var(--gold); border-color: var(--gold); color: var(--ink); font-weight: 600; }
     .toolbar { display: flex; justify-content: space-between; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem; }
+    .flabel { display: block; font-size: 0.66rem; color: var(--grey); letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 0.28rem; }
+    /* Zähler an der Tab-Leiste (Nachbestellen) */
+    .tab-badge {
+      display: inline-block; min-width: 18px; margin-left: 0.4rem; padding: 0 4px;
+      border-radius: 999px; background: var(--red); color: #fff;
+      font-size: 0.65rem; font-weight: 700; line-height: 17px; text-align: center;
+    }
+    .tab-badge.zero { display: none; }
+    .tab.active .tab-badge { background: var(--ink); color: var(--gold); }
+    .order-actions { display: flex; gap: 0.5rem; margin-bottom: 0.8rem; }
+    .order-actions button { flex: 1; }
     /* Bestellpositionen */
     .pos-list { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.55rem; }
     .pos-tag {
@@ -305,7 +316,7 @@
     <form class="login-card" id="loginForm">
       <h1>CAROUD</h1>
       <p>UNTERNEHMENS-PANEL</p>
-      <input type="email" id="loginEmail" placeholder="E-Mail" autocomplete="username" required><!-- PANEL_VERSION 14 -->
+      <input type="email" id="loginEmail" placeholder="E-Mail" autocomplete="username" required><!-- PANEL_VERSION 15 -->
       <input type="password" id="loginPass" placeholder="Passwort" autocomplete="current-password" required>
       <button type="submit">Anmelden</button>
       <div class="login-error" id="loginError"></div>
@@ -332,6 +343,7 @@
         <nav class="tabs" id="tabBar">
           <button class="tab" data-tab="dash">Übersicht</button>
           <button class="tab" data-tab="lager">Lager</button>
+          <button class="tab" data-tab="nachbestellen">Nachbestellen<span class="tab-badge zero" id="orderBadge">0</span></button>
           <button class="tab" data-tab="artikel">Artikel</button>
           <button class="tab" data-tab="aufgaben">Aufgaben</button>
           <button class="tab" data-tab="zeit">Zeit</button>
@@ -370,6 +382,20 @@
         <div id="lagerList" class="empty">Lade Bestände…</div>
       </section>
 
+      <!-- Nachbestellen -->
+      <section data-panel="nachbestellen">
+        <div class="order-actions">
+          <button class="btn-ghost" type="button" id="orderWhatsapp">Per WhatsApp</button>
+          <button class="btn-ghost" type="button" id="orderCopy">Kopieren</button>
+          <button class="btn-ghost" type="button" id="orderDiscord">An Discord</button>
+        </div>
+        <div class="muted" style="margin-bottom:0.5rem">
+          Alles, was auf oder unter dem Mindestbestand liegt. Die Fehlmenge füllt auf den
+          Sollbestand auf — ist keiner gesetzt, auf das Doppelte des Mindestbestands.
+        </div>
+        <div id="orderList"></div>
+      </section>
+
       <!-- Artikel -->
       <section data-panel="artikel">
         <div class="card">
@@ -386,9 +412,22 @@
               </select>
             </div>
             <div class="frow">
-              <input id="artPreis" type="number" step="0.01" min="0" placeholder="Einkaufspreis € (optional)">
-              <input id="artStart" type="number" min="0" placeholder="Startbestand">
+              <div><label class="flabel">Einheit</label>
+                <input class="finput" id="artEinheit" placeholder="Stück"></div>
+              <div><label class="flabel">Startbestand</label>
+                <input class="finput" id="artStart" type="number" min="0" step="1" inputmode="numeric" placeholder="0"></div>
             </div>
+            <div class="frow">
+              <div><label class="flabel">Mindestbestand</label>
+                <input class="finput" id="artMin" type="number" min="0" step="1" inputmode="numeric" value="5"></div>
+              <div><label class="flabel">Soll (auffüllen auf)</label>
+                <input class="finput" id="artSoll" type="number" min="0" step="1" inputmode="numeric" placeholder="optional"></div>
+            </div>
+            <div class="frow">
+              <div><label class="flabel">Einkaufspreis €</label>
+                <input class="finput" id="artPreis" type="number" step="0.01" min="0" placeholder="optional"></div>
+            </div>
+            <div class="muted" style="margin-bottom:0.6rem">Unter dem Mindestbestand landet der Artikel automatisch im Tab „Nachbestellen".</div>
             <button class="btn-gold" type="submit" style="width:100%">Artikel anlegen</button>
           </form>
         </div>
@@ -580,7 +619,7 @@
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import {
       getFirestore, collection, doc, onSnapshot, setDoc, addDoc, updateDoc, deleteDoc,
-      getDoc, getDocs, query, orderBy, limit, serverTimestamp, enableIndexedDbPersistence
+      getDoc, getDocs, query, orderBy, limit, serverTimestamp, increment, enableIndexedDbPersistence
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     // ---- Firebase (Projekt caroud-lager) ----
@@ -656,14 +695,19 @@
 
     // ---- Artikelstamm: Shop-Katalog (products.js) + eigene Artikel aus Firestore ----
     // Shop-Produkte sind fest, eigene Artikel (Flaschen, Etiketten, Kartons …) legt das Panel an.
+    // Mindestbestand, Sollbestand und Einheit stehen im lager-Dokument — so lassen sie
+    // sich auch für die festen Shop-Produkte pflegen, ohne products.js anzufassen.
+    const cfgOf = (id) => lagerCfg[id] || { min: LOW_STOCK, soll: 0, einheit: "Stück" };
     function alleArtikel() {
       const ausShop = PRODUCTS.map((p) => ({
         id: p.id, name: p.name, kategorie: p.category, color: p.color,
         preis: p.price || 0, typ: "produkt", bundle: p.type === "bundle", shop: true,
+        ...cfgOf(p.id),
       }));
       const eigene = artikel.map((a) => ({
         id: a.id, name: a.name, kategorie: a.kategorie || "Sonstiges", color: a.color || "#7d766a",
         preis: a.preis || 0, typ: a.typ || "produkt", bundle: false, shop: false,
+        ...cfgOf(a.id),
       }));
       return ausShop.concat(eigene);
     }
@@ -682,7 +726,8 @@
     let rang = "Chef", myEmail = "", myName = "";
 
     // ---- Zustand ----
-    const stock = {};
+    const stock = {};     // id -> Bestand
+    const lagerCfg = {};  // id -> { min, soll, einheit } aus dem lager-Dokument
     let artikel = [];
     let tasks = [], ausgaben = [], chargen = [], bestellungen = [], notizen = [], aktivitaet = [], zeiten = [];
     let budget = null;
@@ -780,8 +825,18 @@
         .then((s) => { webhookUrl = s.exists() ? s.data().url : null; }).catch(() => {});
 
       onSnapshot(collection(db, "lager"), (snap) => {
-        Object.keys(stock).forEach((k) => delete stock[k]); // gelöschte Artikel nicht stehen lassen
-        snap.forEach((d) => { stock[d.id] = d.data().stock ?? 0; });
+        // gelöschte Artikel nicht stehen lassen
+        Object.keys(stock).forEach((k) => delete stock[k]);
+        Object.keys(lagerCfg).forEach((k) => delete lagerCfg[k]);
+        snap.forEach((d) => {
+          const v = d.data();
+          stock[d.id] = v.stock ?? 0;
+          lagerCfg[d.id] = {
+            min: Number.isFinite(v.min) ? v.min : LOW_STOCK,
+            soll: Number.isFinite(v.soll) ? v.soll : 0,
+            einheit: v.einheit || "Stück",
+          };
+        });
         renderLager(); renderDash();
       }, (err) => { $("lagerList").innerHTML = '<div class="empty">Fehler: ' + err.code + "</div>"; });
 
@@ -832,30 +887,61 @@
     }
 
     // ================= LAGER =================
-    function statusClass(n) { return n === 0 ? "out" : n < LOW_STOCK ? "low" : "ok"; }
-    function statusText(n) { return n === 0 ? "Ausverkauft" : n < LOW_STOCK ? "Fast leer" : "Auf Lager"; }
+    // "Fast leer" hängt am Mindestbestand des Artikels, nicht mehr an einer festen Zahl.
+    const bestandVon = (a) => stock[a.id] ?? 0;
+    function statusClass(a) {
+      const n = bestandVon(a);
+      return n === 0 ? "out" : (a.min > 0 && n <= a.min) ? "low" : "ok";
+    }
+    function statusText(a) {
+      const n = bestandVon(a);
+      if (n === 0) return "Ausverkauft";
+      if (a.min > 0 && n <= a.min) return "Fast leer";
+      return "Auf Lager";
+    }
 
-    function applyStock(id, next, quelle) {
+    // Nach jeder Buchung: Verlauf schreiben, Shop spiegeln, ggf. Discord melden
+    function afterStock(id, prev, next, quelle) {
       const p = findArtikel(id);
+      addDoc(collection(db, "lager", id, "historie"),
+        { ts: serverTimestamp(), delta: next - prev, neu: next, von: myName }).catch(() => {});
+      // Spiegel für den Shop nur für echte Shop-Produkte, nicht für eigenes Material
+      if (p && p.shop) {
+        setDoc(doc(db, "shopstatus", id),
+          { out: next === 0, low: next > 0 && p.min > 0 && next <= p.min, updated: serverTimestamp() },
+          { merge: true }).catch(() => {});
+      }
+      if (p) discordNotify(p, prev, next);
+      if (p && quelle !== "still") {
+        const diff = next - prev;
+        logActivity("Lager: " + p.name + " " + (diff > 0 ? "+" + diff : diff) +
+          " → " + next + " " + p.einheit);
+      }
+    }
+
+    // Relative Buchung (+/−, Produktion, Bestellung): per increment(), damit sich zwei
+    // gleichzeitige Buchungen addieren statt sich gegenseitig zu überschreiben.
+    function applyDelta(id, delta, quelle) {
+      const prev = stock[id] ?? 0;
+      const next = Math.max(0, prev + delta);
+      const wirklich = next - prev;
+      if (!wirklich) return;
+      stock[id] = next;
+      renderLager(); renderDash();
+      save(setDoc(doc(db, "lager", id),
+        { stock: increment(wirklich), updated: serverTimestamp() }, { merge: true }));
+      afterStock(id, prev, next, quelle);
+    }
+
+    // Absoluter Wert (Inventur, Startbestand) — hier ist increment() nicht sinnvoll.
+    function applyStock(id, next, quelle) {
       const prev = stock[id] ?? 0;
       next = Math.max(0, next);
       if (next === prev) return;
       stock[id] = next;
       renderLager(); renderDash();
       save(setDoc(doc(db, "lager", id), { stock: next, updated: serverTimestamp() }, { merge: true }));
-      addDoc(collection(db, "lager", id, "historie"),
-        { ts: serverTimestamp(), delta: next - prev, neu: next }).catch(() => {});
-      // Spiegel für den Shop nur für echte Shop-Produkte, nicht für eigenes Material
-      if (p && p.shop) {
-        setDoc(doc(db, "shopstatus", id),
-          { out: next === 0, low: next > 0 && next < LOW_STOCK, updated: serverTimestamp() },
-          { merge: true }).catch(() => {});
-      }
-      if (p) discordNotify(p, prev, next);
-      if (p && quelle !== "still") {
-        const diff = next - prev;
-        logActivity("Lager: " + p.name + " " + (diff > 0 ? "+" + diff : diff) + " → " + next + " Stück");
-      }
+      afterStock(id, prev, next, quelle);
     }
 
     function discordNotify(p, prev, next) {
@@ -863,8 +949,8 @@
       let type = null, msg = null;
       if (prev > 0 && next === 0) {
         type = "out"; msg = "🔴 **" + p.name + "** ist jetzt AUSVERKAUFT";
-      } else if (prev >= LOW_STOCK && next < LOW_STOCK && next > 0) {
-        type = "low"; msg = "🟠 **" + p.name + "** ist fast leer – nur noch **" + next + "** Stück";
+      } else if (p.min > 0 && prev > p.min && next <= p.min && next > 0) {
+        type = "low"; msg = "🟠 **" + p.name + "** wird knapp – nur noch **" + next + "** " + p.einheit;
       }
       if (!type) return;
       const key = "caroud-notify-" + p.id + "-" + type;
@@ -885,16 +971,17 @@
       const alle = alleArtikel();
       let total = 0, low = 0, out = 0;
       alle.forEach((p) => {
-        const n = stock[p.id] ?? 0;
+        const n = bestandVon(p);
         total += n;
-        if (n === 0) out++; else if (n < LOW_STOCK) low++;
+        if (n === 0) out++; else if (p.min > 0 && n <= p.min) low++;
       });
       let statHtml =
-        '<div class="stat"><b>' + total + '</b><span>Stück gesamt</span></div>' +
+        '<div class="stat"><b>' + total + '</b><span>Einheiten gesamt</span></div>' +
+        '<div class="stat"><b>' + alle.length + '</b><span>Artikel</span></div>' +
         '<div class="stat warn"><b>' + low + '</b><span>Fast leer</span></div>' +
         '<div class="stat out"><b>' + out + '</b><span>Ausverkauft</span></div>';
       if (hatPreise()) {
-        const value = alle.reduce((s, p) => s + (p.preis || 0) * (stock[p.id] ?? 0), 0);
+        const value = alle.reduce((s, p) => s + (p.preis || 0) * bestandVon(p), 0);
         statHtml += '<div class="stat gold"><b style="font-size:1.05rem;line-height:1.7">' + eur(value) + "</b><span>Lagerwert</span></div>";
       }
       $("lagerStats").innerHTML = statHtml;
@@ -910,61 +997,175 @@
         h.className = "cat-title";
         h.textContent = kat;
         frag.appendChild(h);
-        items.forEach((p) => {
-          const n = stock[p.id] ?? 0;
-          const row = document.createElement("div");
-          row.className = "item";
-          row.innerHTML =
-            '<div class="dot" style="background:' + p.color + '"></div>' +
-            '<div class="name"><b>' + esc(p.name) + "</b><span class=\"" + statusClass(n) + "\">" + statusText(n) + "</span></div>" +
-            '<div class="qty">' +
-              '<button type="button" class="minus"' + (n === 0 ? " disabled" : "") + ">&minus;</button>" +
-              '<div class="count ' + statusClass(n) + '">' + n + "</div>" +
-              '<button type="button" class="plus">+</button>' +
-            "</div>";
-          row.querySelector(".minus").addEventListener("click", () => applyStock(p.id, (stock[p.id] ?? 0) - 1));
-          row.querySelector(".plus").addEventListener("click", () => applyStock(p.id, (stock[p.id] ?? 0) + 1));
-          row.querySelector(".count").addEventListener("click", () => {
-            const v = prompt("Bestand für „" + p.name + "“:", n);
-            if (v !== null && v.trim() !== "" && !isNaN(v)) applyStock(p.id, parseInt(v, 10));
-          });
-          row.querySelector(".name").addEventListener("click", () => openHistory(p));
-          frag.appendChild(row);
-        });
+        items.forEach((p) => frag.appendChild(lagerRow(p)));
       });
       list.innerHTML = "";
       if (!frag.childNodes.length) list.innerHTML = '<div class="empty">Kein Produkt gefunden.</div>';
       else list.appendChild(frag);
+      renderNachbestellen();
     }
 
-    async function openHistory(p) {
+    function lagerRow(p, zeigeBedarf) {
+      const n = bestandVon(p);
+      const row = document.createElement("div");
+      row.className = "item";
+      row.innerHTML =
+        '<div class="dot" style="background:' + p.color + '"></div>' +
+        '<div class="name"><b>' + esc(p.name) + "</b><span class=\"" + statusClass(p) + "\">" +
+          (zeigeBedarf
+            ? "fehlen " + fehlmenge(p) + " " + esc(p.einheit)
+            : statusText(p) + (p.min > 0 ? " · min. " + p.min : "")) +
+        "</span></div>" +
+        '<div class="qty">' +
+          '<button type="button" class="minus"' + (n === 0 ? " disabled" : "") + ">&minus;</button>" +
+          '<div class="count ' + statusClass(p) + '">' + n + "</div>" +
+          '<button type="button" class="plus">+</button>' +
+        "</div>";
+      row.querySelector(".minus").addEventListener("click", () => applyDelta(p.id, -1));
+      row.querySelector(".plus").addEventListener("click", () => applyDelta(p.id, 1));
+      row.querySelector(".count").addEventListener("click", () => {
+        const v = prompt("Bestand für „" + p.name + "“ (" + p.einheit + "):", n);
+        if (v !== null && v.trim() !== "" && !isNaN(v)) applyStock(p.id, parseInt(v, 10));
+      });
+      row.querySelector(".name").addEventListener("click", () => openItem(p));
+      return row;
+    }
+
+    // Artikel antippen: Mindestbestand, Soll und Einheit einstellen + Verlauf ansehen.
+    // Die Einstellungen liegen im lager-Dokument, deshalb geht das auch für Shop-Produkte.
+    async function openItem(p) {
+      const n = bestandVon(p);
       $("histTitle").textContent = p.name;
-      $("histBody").innerHTML = '<div class="hist-empty">Lade Verlauf…</div>';
+      $("histBody").innerHTML =
+        '<div class="muted" style="margin-bottom:0.9rem">' + esc(p.kategorie) + " · " + n + " " +
+          esc(p.einheit) + (p.shop ? " · aus dem Shop-Katalog" : "") + "</div>" +
+        '<div class="frow">' +
+          '<div><label class="flabel">Mindestbestand</label>' +
+            '<input class="finput s-min" type="number" min="0" step="1" inputmode="numeric" value="' + p.min + '"></div>' +
+          '<div><label class="flabel">Soll (auffüllen auf)</label>' +
+            '<input class="finput s-soll" type="number" min="0" step="1" inputmode="numeric" value="' +
+              (p.soll || "") + '" placeholder="optional"></div>' +
+        "</div>" +
+        '<div class="frow"><div><label class="flabel">Einheit</label>' +
+          '<input class="finput s-einheit" value="' + esc(p.einheit) + '" placeholder="Stück"></div></div>' +
+        '<button class="btn-gold" id="sSave" style="width:100%">Einstellungen speichern</button>' +
+        '<div class="sec-title">Verlauf</div>' +
+        '<div id="histRows"><div class="hist-empty">Lade Verlauf…</div></div>';
       $("histBackdrop").classList.add("open");
+
+      $("sSave").addEventListener("click", () => {
+        const body = $("histBody");
+        const min = Math.max(0, parseInt(body.querySelector(".s-min").value, 10) || 0);
+        const soll = Math.max(0, parseInt(body.querySelector(".s-soll").value, 10) || 0);
+        const einheit = body.querySelector(".s-einheit").value.trim() || "Stück";
+        save(setDoc(doc(db, "lager", p.id), { min, soll, einheit }, { merge: true }), "Gespeichert");
+      });
+
       try {
         const snap = await getDocs(query(
           collection(db, "lager", p.id, "historie"), orderBy("ts", "desc"), limit(20)));
         if (snap.empty) {
-          $("histBody").innerHTML = '<div class="hist-empty">Noch keine Buchungen.</div>';
+          $("histRows").innerHTML = '<div class="hist-empty">Noch keine Buchungen.</div>';
           return;
         }
         const rows = [];
         snap.forEach((d) => {
           const e = d.data();
           const sign = e.delta > 0 ? "+" + e.delta : String(e.delta);
-          rows.push('<div class="hist-row"><span class="when">' + fmtTs(e.ts) + "</span>" +
+          rows.push('<div class="hist-row"><span class="when">' + fmtTs(e.ts) +
+            (e.von ? " · " + esc(e.von) : "") + "</span>" +
             '<span class="delta ' + (e.delta > 0 ? "plus" : "minus") + '">' + sign + "</span>" +
-            "<span>→ " + e.neu + " Stück</span></div>");
+            "<span>→ " + e.neu + "</span></div>");
         });
-        $("histBody").innerHTML = rows.join("");
+        $("histRows").innerHTML = rows.join("");
       } catch (err) {
-        $("histBody").innerHTML = '<div class="hist-empty">Fehler: ' + err.code + "</div>";
+        const box = $("histRows");
+        if (box) box.innerHTML = '<div class="hist-empty">Fehler: ' + err.code + "</div>";
       }
     }
     $("histClose").addEventListener("click", () => $("histBackdrop").classList.remove("open"));
     $("histBackdrop").addEventListener("click", (e) => {
       if (e.target === $("histBackdrop")) $("histBackdrop").classList.remove("open");
     });
+
+    // ================= NACHBESTELLEN =================
+    // Nur Artikel, die wirklich geführt werden (also schon ein lager-Dokument haben).
+    // Sonst stünde jedes nie gebuchte Shop-Produkt sofort auf der Nachbestellliste.
+    const wirdGefuehrt = (a) => !!lagerCfg[a.id];
+    const brauchtNachschub = (a) => {
+      if (!wirdGefuehrt(a)) return false;
+      const n = bestandVon(a);
+      return n === 0 || (a.min > 0 && n <= a.min);
+    };
+    // Wird nur für Artikel auf der Nachbestellliste angezeigt, deshalb mindestens 1 —
+    // sonst stünde bei Soll = Mindestbestand „fehlen 0" da.
+    function fehlmenge(a) {
+      const ziel = a.soll > 0 ? a.soll : Math.max(a.min * 2, a.min + 1, 1);
+      return Math.max(1, ziel - bestandVon(a));
+    }
+    function nachbestellListe() {
+      return alleArtikel().filter(brauchtNachschub).sort((x, y) =>
+        x.kategorie.localeCompare(y.kategorie, "de") || x.name.localeCompare(y.name, "de"));
+    }
+    function nachbestellText() {
+      const rows = nachbestellListe();
+      if (!rows.length) return "";
+      const zeilen = ["CAROUD – Nachbestellen (" + fmtDatum(heute()) + ")", ""];
+      let kat = null;
+      rows.forEach((a) => {
+        if (a.kategorie !== kat) { kat = a.kategorie; zeilen.push("— " + kat.toUpperCase() + " —"); }
+        zeilen.push("• " + a.name + ": " + fehlmenge(a) + " " + a.einheit +
+          " (Bestand " + bestandVon(a) + ")");
+      });
+      return zeilen.join("\n");
+    }
+
+    $("orderWhatsapp").addEventListener("click", () => {
+      const text = nachbestellText();
+      if (!text) { toast("Nichts nachzubestellen."); return; }
+      // Öffnet WhatsApp mit fertigem Text, Empfänger wird dort ausgewählt
+      location.href = "https://wa.me/?text=" + encodeURIComponent(text);
+    });
+    $("orderCopy").addEventListener("click", async () => {
+      const text = nachbestellText();
+      if (!text) { toast("Nichts nachzubestellen."); return; }
+      try { await navigator.clipboard.writeText(text); toast("Liste kopiert"); }
+      catch { toast("Kopieren hat nicht geklappt", true); }
+    });
+    $("orderDiscord").addEventListener("click", () => {
+      const text = nachbestellText();
+      if (!text) { toast("Nichts nachzubestellen."); return; }
+      if (!webhookUrl) { toast("Kein Discord-Webhook hinterlegt.", true); return; }
+      fetch(webhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: "```\n" + text + "\n```", username: "Caroud Lager" }),
+      }).then(() => toast("An Discord geschickt")).catch(() => toast("Senden fehlgeschlagen", true));
+    });
+
+    function renderNachbestellen() {
+      const rows = nachbestellListe();
+      const badge = $("orderBadge");
+      badge.textContent = rows.length;
+      badge.classList.toggle("zero", rows.length === 0);
+      const wrap = $("orderList");
+      wrap.innerHTML = "";
+      if (!rows.length) {
+        wrap.innerHTML = '<div class="empty">Alles ausreichend auf Lager.</div>';
+        return;
+      }
+      let kat = null;
+      rows.forEach((a) => {
+        if (a.kategorie !== kat) {
+          kat = a.kategorie;
+          const h = document.createElement("div");
+          h.className = "cat-title";
+          h.textContent = kat;
+          wrap.appendChild(h);
+        }
+        wrap.appendChild(lagerRow(a, true));
+      });
+    }
 
     // ================= ARTIKEL =================
     let editArtId = null;
@@ -979,25 +1180,33 @@
       }
       const preis = parseFloat($("artPreis").value);
       const start = parseInt($("artStart").value, 10);
+      const einheit = $("artEinheit").value.trim() || "Stück";
+      const min = Math.max(0, parseInt($("artMin").value, 10) || 0);
+      const soll = Math.max(0, parseInt($("artSoll").value, 10) || 0);
       // ID lokal erzeugen: so lässt sich der Startbestand sofort buchen, auch offline
       const ref = doc(collection(db, "artikel"));
       save(setDoc(ref, {
         name, kategorie: kat, typ: $("artTyp").value,
         preis: isNaN(preis) ? 0 : preis, erstellt: serverTimestamp(), von: myName,
       }), "Artikel angelegt");
+      // Mindestbestand, Soll und Einheit gehören zum Lagerdokument
+      save(setDoc(doc(db, "lager", ref.id), { min, soll, einheit }, { merge: true }));
       if (start > 0) applyStock(ref.id, start, "still");
-      logActivity("Artikel angelegt: " + name + (start > 0 ? " (Startbestand " + start + ")" : ""));
+      logActivity("Artikel angelegt: " + name + (start > 0 ? " (Startbestand " + start + " " + einheit + ")" : ""));
       $("artName").value = ""; $("artPreis").value = ""; $("artStart").value = "";
+      $("artEinheit").value = ""; $("artSoll").value = "";
     });
 
     function artRow(a) {
       const n = stock[a.id] ?? 0;
+      const cfg = cfgOf(a.id);
       const row = document.createElement("div");
       row.className = "lrow";
       row.style.cursor = "pointer";
       row.innerHTML =
         '<div class="grow"><b>' + esc(a.name) + "</b><small>" +
-        (a.typ === "material" ? "Material" : "Produkt") + " · " + n + " auf Lager" +
+        (a.typ === "material" ? "Material" : "Produkt") + " · " + n + " " + esc(cfg.einheit) +
+        (cfg.min > 0 ? " · min. " + cfg.min : "") +
         (a.preis ? " · " + eur(a.preis) + " EK" : "") + "</small></div>" +
         '<span class="muted">›</span>';
       row.addEventListener("click", () => { editArtId = a.id; renderArtikel(); });
@@ -1014,8 +1223,20 @@
           '<option value="produkt"' + (a.typ !== "material" ? " selected" : "") + ">Produkt (verkäuflich)</option>" +
           '<option value="material"' + (a.typ === "material" ? " selected" : "") + ">Material / Zubehör</option>" +
         "</select></div>" +
-        '<div class="frow"><input class="e-preis" type="number" step="0.01" min="0" value="' +
-          (a.preis || "") + '" placeholder="Einkaufspreis € (optional)"></div>' +
+        '<div class="frow">' +
+          '<div><label class="flabel">Einheit</label>' +
+            '<input class="finput e-einheit" value="' + esc(cfgOf(a.id).einheit) + '"></div>' +
+          '<div><label class="flabel">Einkaufspreis €</label>' +
+            '<input class="finput e-preis" type="number" step="0.01" min="0" value="' +
+              (a.preis || "") + '" placeholder="optional"></div>' +
+        "</div>" +
+        '<div class="frow">' +
+          '<div><label class="flabel">Mindestbestand</label>' +
+            '<input class="finput e-min" type="number" min="0" step="1" inputmode="numeric" value="' + cfgOf(a.id).min + '"></div>' +
+          '<div><label class="flabel">Soll (auffüllen auf)</label>' +
+            '<input class="finput e-soll" type="number" min="0" step="1" inputmode="numeric" value="' +
+              (cfgOf(a.id).soll || "") + '" placeholder="optional"></div>' +
+        "</div>" +
         '<div class="note-actions">' +
           "<button class=\"btn-gold\" data-save>Speichern</button>" +
           "<button class=\"btn-ghost\" data-cancel>Abbrechen</button>" +
@@ -1031,6 +1252,11 @@
           typ: card.querySelector(".e-typ").value,
           preis: isNaN(preis) ? 0 : preis,
         }), "Artikel gespeichert");
+        save(setDoc(doc(db, "lager", a.id), {
+          einheit: card.querySelector(".e-einheit").value.trim() || "Stück",
+          min: Math.max(0, parseInt(card.querySelector(".e-min").value, 10) || 0),
+          soll: Math.max(0, parseInt(card.querySelector(".e-soll").value, 10) || 0),
+        }, { merge: true }));
         editArtId = null; renderArtikel();
       });
       card.querySelector("[data-cancel]").addEventListener("click", () => { editArtId = null; renderArtikel(); });
@@ -1247,7 +1473,7 @@
         notiz: $("prodNotiz").value.trim(), datum: $("prodDatum").value || heute(),
         gebucht: $("prodBuchen").checked, erstellt: serverTimestamp(), von: myName,
       }), "Charge angelegt");
-      if ($("prodBuchen").checked) applyStock(pid, (stock[pid] ?? 0) + menge, "still");
+      if ($("prodBuchen").checked) applyDelta(pid, menge, "still");
       logActivity("Produktion: " + menge + "× " + (p ? p.name : pid) +
         ($("prodBuchen").checked ? " (ins Lager gebucht)" : ""));
       $("prodMenge").value = ""; $("prodNotiz").value = "";
@@ -1320,7 +1546,7 @@
         kunde, kanal: $("bestKanal").value, artikel, positionen, gebucht: abbuchen, betrag,
         status: "offen", datum: heute(), erstellt: serverTimestamp(), von: myName,
       }), "Bestellung angelegt");
-      if (abbuchen) positionen.forEach((p) => applyStock(p.id, (stock[p.id] ?? 0) - p.menge, "still"));
+      if (abbuchen) positionen.forEach((p) => applyDelta(p.id, -p.menge, "still"));
       logActivity("Bestellung: " + kunde + " – " + artikel + " (" + eur(betrag) + ")" +
         (abbuchen ? " · Lager abgebucht" : ""));
       $("bestKunde").value = ""; $("bestArtikel").value = ""; $("bestBetrag").value = "";
@@ -1381,7 +1607,7 @@
           if (!confirm("Bestellung von „" + b.kunde + "“ löschen?")) return;
           if (b.gebucht && b.positionen && b.positionen.length &&
               confirm("Abgebuchte Menge wieder ins Lager zurückbuchen?")) {
-            b.positionen.forEach((p) => applyStock(p.id, (stock[p.id] ?? 0) + p.menge, "still"));
+            b.positionen.forEach((p) => applyDelta(p.id, p.menge, "still"));
             logActivity("Bestellung storniert, Lager zurückgebucht: " + b.kunde);
           }
           save(deleteDoc(doc(db, "bestellungen", b.id)));
@@ -1659,17 +1885,19 @@
       const alle = alleArtikel();
       let total = 0, low = 0, out = 0;
       alle.forEach((p) => {
-        const n = stock[p.id] ?? 0;
+        const n = bestandVon(p);
         total += n;
-        if (n === 0) out++; else if (n < LOW_STOCK) low++;
+        if (n === 0) out++; else if (p.min > 0 && n <= p.min) low++;
       });
+      const nachschub = nachbestellListe().length;
       let lagerHtml =
-        '<div class="stat"><b>' + total + '</b><span>Stück gesamt</span></div>' +
+        '<div class="stat"><b>' + total + '</b><span>Einheiten gesamt</span></div>' +
         '<div class="stat warn"><b>' + low + '</b><span>Fast leer</span></div>' +
-        '<div class="stat out"><b>' + out + '</b><span>Ausverkauft</span></div>';
+        '<div class="stat out"><b>' + out + '</b><span>Ausverkauft</span></div>' +
+        '<div class="stat' + (nachschub ? " out" : "") + '"><b>' + nachschub + "</b><span>Nachbestellen</span></div>";
       if (hatPreise()) {
-        const value = alle.reduce((s, p) => s + (p.preis || 0) * (stock[p.id] ?? 0), 0);
-        lagerHtml += '<div class="stat gold"><b style="font-size:1.05rem;line-height:1.7">' + eur(value) + "</b><span>Lagerwert</span></div>";
+        const value = alle.reduce((s, p) => s + (p.preis || 0) * bestandVon(p), 0);
+        lagerHtml += '<div class="stat gold wide"><b style="font-size:1.05rem;line-height:1.7">' + eur(value) + "</b><span>Lagerwert</span></div>";
       }
       $("dashLager").innerHTML = lagerHtml;
 
