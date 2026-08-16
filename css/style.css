@@ -976,6 +976,87 @@ button { font-family: inherit; }
 
 .brand-text { color: #bdbdbd; font-size: 1rem; }
 
+/* ============ Kollektions-Kacheln ============ */
+.koll-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.4rem;
+}
+
+.koll-tile {
+  position: relative;
+  display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  overflow: hidden;
+  aspect-ratio: 1;
+}
+
+.koll-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.koll-tile:hover img,
+.koll-tile:focus-visible img { transform: scale(1.06); }
+
+.koll-inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 1.5rem;
+  text-align: center;
+  color: var(--white);
+  background: rgba(12, 11, 10, 0.55);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.koll-tile:hover .koll-inner,
+.koll-tile:focus-visible .koll-inner { opacity: 1; }
+
+.koll-kicker {
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.koll-title {
+  font-family: var(--serif);
+  font-size: clamp(1.4rem, 2.4vw, 2rem);
+  line-height: 1.15;
+}
+
+.koll-btn {
+  margin-top: 0.9rem;
+  background: var(--gold);
+  color: var(--black);
+  padding: 0.7rem 1.6rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* Ohne Mauszeiger gibt es kein Hover – dann steht die Beschriftung dauerhaft da */
+@media (hover: none) {
+  .koll-inner { opacity: 1; background: rgba(12, 11, 10, 0.42); }
+}
+
+@media (max-width: 860px) {
+  .koll-grid { grid-template-columns: 1fr; gap: 1rem; }
+  .koll-tile { aspect-ratio: 16 / 10; }
+}
+
 /* ============ Die sieben Düfte ============ */
 .scent-band {
   background: var(--ink);

@@ -180,40 +180,11 @@ if (heroArt) {
   let fuehrtRunter = null;
   let scrollBeimKlick = 0;
 
-  // Eigene Scroll-Animation statt scrollIntoView({behavior:"smooth"}):
-  // läuft in jedem Browser gleich und lässt sich sauber auf den Header absetzen.
-  function gleiteZu(zielY, dauer) {
-    const startY = window.scrollY;
-    const weg = zielY - startY;
-    if (Math.abs(weg) < 4) return;
-    const t0 = performance.now();
-    (function schritt(t) {
-      const p = Math.min(1, (t - t0) / dauer);
-      const e = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
-      window.scrollTo(0, startY + weg * e);
-      if (p < 1) requestAnimationFrame(schritt);
-    })(t0);
-    // Sicherheitsnetz: kommen keine Frames, wenigstens hart hinspringen.
-    // Nur wenn sich gar nichts bewegt hat – sonst würde es jemanden zurückreißen,
-    // der während der Fahrt selbst gescrollt hat.
-    setTimeout(() => {
-      if (Math.abs(window.scrollY - startY) < 8) window.scrollTo(0, zielY);
-    }, dauer + 250);
-  }
-
-  // Wenn der Nebel verflogen ist, den Besucher zu den Duftsprays mitnehmen
+  // Wenn der Nebel verflogen ist, den Besucher zu den Duftsprays mitnehmen.
+  // Nur abbrechen, wenn er in der Zwischenzeit selbst gescrollt hat.
   function runterZuDenSprays() {
-    // Nur abbrechen, wenn er in der Zwischenzeit selbst gescrollt hat –
-    // eine Prüfung auf die Hero-Position war zu streng und blockierte am Desktop,
-    // sobald man vorher ein Stück nach unten gescrollt hatte
     if (Math.abs(window.scrollY - scrollBeimKlick) > 60) return;
-    setFamily("alle");
-    setFilter("Duftsprays");
-    const kopf = document.getElementById("siteHeader");
-    const versatz = kopf ? kopf.getBoundingClientRect().height + 8 : 8;
-    const ziel = document.getElementById("produkte").getBoundingClientRect().top
-      + window.scrollY - versatz;
-    gleiteZu(ziel, 900);
+    zuDenProdukten("Duftsprays");
   }
 
   // Sprühstoß: Nebeltropfen fliegen gestreut nach oben und verwehen
@@ -273,20 +244,45 @@ if (scentGrid) {
   });
 }
 
-// ---------- Kategorien ----------
+// ---------- Zu den Produkten führen ----------
+// Eigene Scroll-Animation: läuft in jedem Browser gleich und setzt sauber
+// unter dem klebenden Header ab.
 
-const categoryGrid = document.getElementById("categoryGrid");
-CATEGORIES.forEach((cat) => {
-  const card = document.createElement("button");
-  card.className = "category-card";
-  card.innerHTML = `
-    <div class="cat-art">${artFor({ type: cat.type, color: cat.color, label: cat.name, img: cat.img })}</div>
-    <span class="cat-label">${cat.name}</span>`;
-  card.addEventListener("click", () => {
-    setFilter(cat.name);
-    document.getElementById("produkte").scrollIntoView({ behavior: "smooth" });
-  });
-  categoryGrid.appendChild(card);
+function gleiteZu(zielY, dauer) {
+  const startY = window.scrollY;
+  const weg = zielY - startY;
+  if (Math.abs(weg) < 4) return;
+  const t0 = performance.now();
+  (function schritt(t) {
+    const p = Math.min(1, (t - t0) / dauer);
+    const e = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+    window.scrollTo(0, startY + weg * e);
+    if (p < 1) requestAnimationFrame(schritt);
+  })(t0);
+  // Sicherheitsnetz: kommen keine Frames, wenigstens hart hinspringen.
+  // Nur wenn sich gar nichts bewegt hat – sonst würde es jemanden zurückreißen,
+  // der während der Fahrt selbst gescrollt hat.
+  setTimeout(() => {
+    if (Math.abs(window.scrollY - startY) < 8) window.scrollTo(0, zielY);
+  }, dauer + 250);
+}
+
+function zuDenProdukten(filter) {
+  if (filter) {
+    setFamily("alle");
+    setFilter(filter);
+  }
+  const kopf = document.getElementById("siteHeader");
+  const versatz = kopf ? kopf.getBoundingClientRect().height + 8 : 8;
+  const ziel = document.getElementById("produkte").getBoundingClientRect().top
+    + window.scrollY - versatz;
+  gleiteZu(ziel, 900);
+}
+
+// ---------- Kollektions-Kacheln ----------
+
+document.querySelectorAll("[data-koll]").forEach((kachel) => {
+  kachel.addEventListener("click", () => zuDenProdukten(kachel.dataset.koll));
 });
 
 // ---------- Filter & Produkt-Grid ----------

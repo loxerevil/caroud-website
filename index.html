@@ -27,7 +27,7 @@
   <meta name="twitter:image" content="https://caroud.de/img/og-image.png">
 
   <link rel="icon" type="image/png" href="img/favicon.png">
-  <link rel="stylesheet" href="css/style.css?v=21">
+  <link rel="stylesheet" href="css/style.css?v=22">
 
   <!-- Strukturierte Daten für Google. Produkt-Markup fehlt bewusst,
        solange keine echten Preise hinterlegt sind. -->
@@ -222,10 +222,35 @@
     <div class="scent-grid" id="scentGrid"></div>
   </section>
 
-  <!-- Kategorien -->
+  <!-- Kollektionen -->
   <section class="section reveal" id="kategorien">
-    <h2 class="section-title">Kategorien</h2>
-    <div class="category-grid" id="categoryGrid"></div>
+    <h2 class="section-title">Kollektionen</h2>
+    <div class="koll-grid">
+      <button class="koll-tile" type="button" data-koll="Duftsprays">
+        <img src="img/kollektion-sprays.webp" alt="Caroud Duftsprays" width="900" height="900" loading="lazy">
+        <span class="koll-inner">
+          <span class="koll-kicker">Autodüfte</span>
+          <span class="koll-title">Duftsprays</span>
+          <span class="koll-btn">Jetzt entdecken</span>
+        </span>
+      </button>
+      <button class="koll-tile" type="button" data-koll="Duftanhänger">
+        <img src="img/kollektion-anhaenger.webp" alt="Caroud Duftanhänger" width="900" height="900" loading="lazy">
+        <span class="koll-inner">
+          <span class="koll-kicker">Für den Rückspiegel</span>
+          <span class="koll-title">Duftanhänger</span>
+          <span class="koll-btn">Jetzt entdecken</span>
+        </span>
+      </button>
+      <button class="koll-tile" type="button" data-koll="Lüftungsclips">
+        <img src="img/kollektion-clips.webp" alt="Caroud Lüftungsclips" width="900" height="900" loading="lazy">
+        <span class="koll-inner">
+          <span class="koll-kicker">Fürs Lüftungsgitter</span>
+          <span class="koll-title">Lüftungsclips</span>
+          <span class="koll-btn">Jetzt entdecken</span>
+        </span>
+      </button>
+    </div>
   </section>
 
   <!-- Produkte -->
@@ -412,7 +437,7 @@
   <!-- Toast -->
   <div class="toast" id="toast" hidden></div>
 
-  <script src="js/products.js?v=21"></script>
-  <script src="js/main.js?v=21"></script>
+  <script src="js/products.js?v=22"></script>
+  <script src="js/main.js?v=22"></script>
 </body>
 </html>
