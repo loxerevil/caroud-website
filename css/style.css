@@ -68,7 +68,7 @@ button { font-family: inherit; }
 
 .preloader-bottle {
   position: relative;
-  width: 96px;
+  width: 112px;
   margin: 0 auto 1.2rem;
   opacity: 0;
   animation: pl-fade 0.7s 0.1s ease forwards;
