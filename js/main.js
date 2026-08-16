@@ -496,6 +496,26 @@ renderCart();
 
 // ---------- Produkt-Modal ----------
 
+// Fakten je Form – Quelle sind die Etikettentexte und das FAQ (siehe Formen-Vergleich)
+const FAKTEN = {
+  spray: [
+    ["Wohin", "Auf Fußmatten oder Textilsitze"],
+    ["Nicht auf", "Leder, Kunststoff, Displays, Haut"],
+    ["Wie", "1–2 Sprühstöße, wann immer du magst"],
+    ["Inhalt", "100 ml"],
+  ],
+  haenger: [
+    ["Wohin", "An den Rückspiegel"],
+    ["Wie", "Aufhängen und liegen lassen"],
+    ["Hält", "4 bis 8 Wochen, je nach Belüftung"],
+  ],
+  clip: [
+    ["Wohin", "Ins Lüftungsgitter der Klimaanlage"],
+    ["Wie", "Einklipsen, Refill später nachkaufen"],
+    ["Wirkung", "Stärker, sobald die Lüftung läuft"],
+  ],
+};
+
 const productModal = document.getElementById("productModal");
 const modalBody = document.getElementById("modalBody");
 let modalQty = 1;
@@ -507,8 +527,11 @@ function openProductModal(id) {
   const saving = p.priceOld ? p.priceOld - p.price : 0;
   // Denselben Duft in den anderen beiden Linien anbieten
   const geschwister = p.scent ? PRODUCTS.filter((x) => x.scent === p.scent && x.id !== p.id) : [];
+  // Fakten zur Form – dieselben Angaben wie im Vergleich, direkt am Produkt
+  const fakten = FAKTEN[p.type] || [];
+  const tint = p.color ? `background:linear-gradient(170deg, ${rgba(p.color, 0.22)} 0%, #f5f5f4 70%)` : "";
   modalBody.innerHTML = `
-    <div class="modal-art">${artFor(p)}</div>
+    <div class="modal-art" style="${tint}">${artFor(p)}</div>
     <div class="modal-info">
       <p class="modal-category">${p.category}</p>
       <h3>${p.name}</h3>
@@ -521,6 +544,10 @@ function openProductModal(id) {
       ${p.category === "Duftsprays" ? `<p class="gift-note">✦ Inklusive: Gratis-Duftmuster</p>` : ""}
       <p class="notes-label">${p.category === "Bundles" ? "Inhalt" : p.category === "Pflege" ? "Details" : "Duftnoten"}</p>
       <div class="notes-row">${p.notes.map((n) => `<span class="note-chip">${n}</span>`).join("")}</div>
+      ${fakten.length ? `
+        <dl class="fakten">
+          ${fakten.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")}
+        </dl>` : ""}
       ${geschwister.length ? `
         <p class="notes-label">${p.label} gibt es auch als</p>
         <div class="cross-row">
