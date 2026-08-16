@@ -1,240 +1,114 @@
 // ============================================================
 // Caroud – Produktdaten
-// Hier trägst du deine eigenen Produkte ein.
-//   type:      "spray" | "baum" | "haenger" | "bundle"  (bestimmt das Platzhalter-Bild)
-//   category:  "Duftsprays" | "Duftbäume" | "Duftanhänger" | "Bundles"
-//   priceOld:  Streichpreis (null = kein Sale-Badge)
+//
+// Die sieben Düfte stehen zentral in SCENTS. Daraus werden die
+// Linien Duftspray, Duftanhänger, Duftbaum und Lüftungsclip erzeugt –
+// ein neuer Duft muss also nur EINMAL eingetragen werden.
+//
+//   type:       "spray" | "baum" | "haenger" | "clip" | "tuch" | "abzieher" | "bundle"
+//   category:   Anzeige-Kategorie
+//   priceOld:   Streichpreis (null = kein Sale-Badge)
 //   bestseller: true = erscheint in der Start-Ansicht "Bestseller"
-//   notes:     Duftnoten, werden in der Detailansicht als Chips angezeigt
+//   notes:      Duftnoten, werden in der Detailansicht als Chips angezeigt
 // ============================================================
 
 const CATEGORIES = [
   { name: "Duftsprays", type: "spray", color: "#111111" },
-  { name: "Duftbäume", type: "baum", color: "#2e5339" },
   { name: "Duftanhänger", type: "haenger", color: "#111111" },
   { name: "Lüftungsclips", type: "clip", color: "#3a3a3a" },
+  { name: "Duftbäume", type: "baum", color: "#2e5339" },
   { name: "Pflege", type: "tuch", color: "#3d3d3d" },
   { name: "Bundles", type: "bundle", color: "#3b6ea5" },
 ];
 
-const PRODUCTS = [
+// ---- Die Caroud-Düfte ----
+//   key:   ID-Bestandteil (klein)
+//   name:  Duftname (so auch auf dem Etikett)
+//   color: Farbe der Platzhalter-Grafik
+//   short: Kurzbeschreibung für Anhänger/Baum/Clip
+//   spray: ausführliche Beschreibung für das Duftspray
+const SCENTS = [
   {
-    id: "spray-midnight",
-    name: "Midnight Duftspray",
-    type: "spray", category: "Duftsprays",
-    color: "#111111", label: "Midnight",
-    price: 0, priceOld: null, bestseller: true,
-    desc: "Dunkel, elegant, souverän. Midnight legt sich wie ein Maßanzug über deinen Innenraum – würzig-holzig mit einem Hauch Amber.",
+    key: "midnight", name: "Midnight", color: "#111111",
     notes: ["Oud", "Amber", "Schwarzer Pfeffer"],
+    short: "Dunkel, elegant, souverän – würzig-holzig mit einem Hauch Amber.",
+    spray: "Dunkel, elegant, souverän. Midnight legt sich wie ein Maßanzug über deinen Innenraum – würzig-holzig mit einem Hauch Amber.",
+    bestseller: { spray: true, haenger: true, clip: true, baum: true },
   },
   {
-    id: "spray-airflow",
-    name: "Airflow Duftspray",
-    type: "spray", category: "Duftsprays",
-    color: "#a9c4d4", label: "Airflow",
-    price: 0, priceOld: null, bestseller: true,
-    desc: "Frische Luft, die durch die Lüftung strömt: spritzige Zitrus, grüner Tee und ein Hauch Ingwer auf einem klaren, sauberen Fundament. Für den Kopf-frei-Moment am Morgen.",
+    key: "airflow", name: "Airflow", color: "#a9c4d4",
     notes: ["Zitrus", "Grüner Tee", "Ingwer", "Ambroxan"],
+    short: "Frische Luft aus der Lüftung: Zitrus, grüner Tee und ein Hauch Ingwer.",
+    spray: "Frische Luft, die durch die Lüftung strömt: spritzige Zitrus, grüner Tee und ein Hauch Ingwer auf einem klaren, sauberen Fundament. Für den Kopf-frei-Moment am Morgen.",
+    bestseller: { spray: true, haenger: false, clip: true, baum: false },
   },
   {
-    id: "spray-velour",
-    name: "Velour Duftspray",
-    type: "spray", category: "Duftsprays",
-    color: "#7a5a2e", label: "Velour",
-    price: 0, priceOld: null, bestseller: true,
-    desc: "Weich wie Velours: warmer Honig, süßer Tabak und Vanille, aufgehellt von Bergamotte und Lavendel. Ein Duft, der den Innenraum wie eine Lounge wirken lässt.",
+    key: "velour", name: "Velour", color: "#7a5a2e",
     notes: ["Honig", "Tabak", "Vanille", "Lavendel"],
+    short: "Weich wie Velours: warmer Honig, süßer Tabak und Vanille.",
+    spray: "Weich wie Velours: warmer Honig, süßer Tabak und Vanille, aufgehellt von Bergamotte und Lavendel. Ein Duft, der den Innenraum wie eine Lounge wirken lässt.",
+    bestseller: { spray: true, haenger: false, clip: false, baum: false },
   },
   {
-    id: "spray-redline",
-    name: "Redline Duftspray",
-    type: "spray", category: "Duftsprays",
-    color: "#8e1b1b", label: "Redline",
-    price: 0, priceOld: null, bestseller: true,
-    desc: "Bis an den roten Bereich: dunkle Kirsche, bittersüße Mandel und Tonkabohne. Verführerisch, intensiv, unvergesslich.",
+    key: "redline", name: "Redline", color: "#8e1b1b",
     notes: ["Schwarze Kirsche", "Bittermandel", "Tonkabohne"],
+    short: "Bis an den roten Bereich: dunkle Kirsche, bittersüße Mandel und Tonka.",
+    spray: "Bis an den roten Bereich: dunkle Kirsche, bittersüße Mandel und Tonkabohne. Verführerisch, intensiv, unvergesslich.",
+    bestseller: { spray: true, haenger: true, clip: false, baum: true },
   },
   {
-    id: "spray-carbon",
-    name: "Carbon Duftspray",
-    type: "spray", category: "Duftsprays",
-    color: "#2a2a2a", label: "Carbon",
-    price: 0, priceOld: null, bestseller: false,
-    desc: "Dunkel und kompromisslos: rauchiges Oud, ein Funken Himbeere und Weihrauch, getragen von Benzoe. Der Duft für Nachtfahrten.",
+    key: "carbon", name: "Carbon", color: "#2a2a2a",
     notes: ["Oud", "Himbeere", "Weihrauch", "Benzoe"],
+    short: "Dunkel und kompromisslos: rauchiges Oud, ein Funken Himbeere, Weihrauch.",
+    spray: "Dunkel und kompromisslos: rauchiges Oud, ein Funken Himbeere und Weihrauch, getragen von Benzoe. Der Duft für Nachtfahrten.",
+    bestseller: { spray: false, haenger: false, clip: false, baum: false },
   },
   {
-    id: "spray-sunroof",
-    name: "Sunroof Duftspray",
-    type: "spray", category: "Duftsprays",
-    color: "#e0a83a", label: "Sunroof",
-    price: 0, priceOld: null, bestseller: false,
-    desc: "Dach auf, Sonne rein: saftige Zitrusfrüchte und süße Sommerfrucht auf weichem Moschus. Leicht, fröhlich, macht gute Laune bei jeder Fahrt.",
+    key: "sunroof", name: "Sunroof", color: "#e0a83a",
     notes: ["Zitrus", "Sommerfrucht", "Weißer Moschus"],
+    short: "Dach auf, Sonne rein: saftige Zitrusfrüchte und süße Sommerfrucht.",
+    spray: "Dach auf, Sonne rein: saftige Zitrusfrüchte und süße Sommerfrucht auf weichem Moschus. Leicht, fröhlich, macht gute Laune bei jeder Fahrt.",
+    bestseller: { spray: false, haenger: true, clip: false, baum: false },
   },
   {
-    id: "spray-ignition",
-    name: "Ignition Duftspray",
-    type: "spray", category: "Duftsprays",
-    color: "#c98a2c", label: "Ignition",
-    price: 0, priceOld: null, bestseller: false,
-    desc: "Der Funke, der alles startet: reife Ananas, goldener Honig und cremige Vanille. Süß, warm und sofort präsent.",
+    key: "ignition", name: "Ignition", color: "#c98a2c",
     notes: ["Ananas", "Honig", "Vanille", "Tonkabohne"],
+    short: "Der Funke, der alles startet: reife Ananas, goldener Honig, cremige Vanille.",
+    spray: "Der Funke, der alles startet: reife Ananas, goldener Honig und cremige Vanille. Süß, warm und sofort präsent.",
+    bestseller: { spray: false, haenger: false, clip: true, baum: false },
   },
-  {
-    id: "haenger-midnight",
-    name: "Midnight Duftanhänger",
-    type: "haenger", category: "Duftanhänger",
-    color: "#111111", label: "Midnight",
-    price: 0, priceOld: null, bestseller: true,
-    desc: "Der Bestseller-Duft als schlichter Anhänger für den Rückspiegel – dezent im Look, präsent im Duft.",
-    notes: ["Oud", "Amber", "Schwarzer Pfeffer"],
-  },
-  {
-    id: "haenger-ocean",
-    name: "Ocean Duftanhänger",
-    type: "haenger", category: "Duftanhänger",
-    color: "#2b7a8c", label: "Ocean",
-    price: 0, priceOld: null, bestseller: true,
-    desc: "Frische Meeresbrise für jeden Tag – hängt leicht, duftet lang.",
-    notes: ["Meersalz", "Minze", "Treibholz"],
-  },
-  {
-    id: "haenger-sunset",
-    name: "Sunset Duftanhänger",
-    type: "haenger", category: "Duftanhänger",
-    color: "#c98a2c", label: "Sunset",
-    price: 0, priceOld: null, bestseller: false,
-    desc: "Goldene Stunde zum Aufhängen: warm, weich, unaufdringlich.",
-    notes: ["Safran", "Honig", "Leder"],
-  },
-  {
-    id: "haenger-cherry",
-    name: "Cherry Duftanhänger",
-    type: "haenger", category: "Duftanhänger",
-    color: "#8e1b1b", label: "Cherry",
-    price: 0, priceOld: null, bestseller: true,
-    desc: "Dunkle Kirsche und Vanille im Taschenformat – der süße Klassiker.",
-    notes: ["Kirsche", "Mandel", "Vanille"],
-  },
-  {
-    id: "haenger-forest",
-    name: "Forest Duftanhänger",
-    type: "haenger", category: "Duftanhänger",
-    color: "#2e5339", label: "Forest",
-    price: 0, priceOld: null, bestseller: false,
-    desc: "Nadelwald nach dem Regen: grün, klar, erdig. Für alle, die es natürlich mögen.",
-    notes: ["Zeder", "Kiefer", "Vetiver"],
-  },
-  {
-    id: "haenger-blanc",
-    name: "Blanc Duftanhänger",
-    type: "haenger", category: "Duftanhänger",
-    color: "#e8e4da", label: "Blanc",
-    price: 0, priceOld: null, bestseller: false,
-    desc: "Puristisch weiß, puristisch sauber: frische Wäsche und weißer Moschus.",
-    notes: ["Baumwollblüte", "Weißer Moschus", "Iris"],
-  },
-  {
-    id: "bundle-starter",
-    name: "Starter Bundle",
-    type: "bundle", category: "Bundles",
-    color: "#111111", label: "Starter",
-    price: 0, priceOld: null, bestseller: true,
-    desc: "Der perfekte Einstieg: 1 Duftspray deiner Wahl + 2 Duftanhänger. Spare gegenüber dem Einzelkauf.",
-    notes: ["1× Spray", "2× Anhänger"],
-  },
-  {
-    id: "bundle-signature",
-    name: "Signature Bundle",
-    type: "bundle", category: "Bundles",
-    color: "#8e1b1b", label: "Signature",
-    price: 0, priceOld: null, bestseller: false,
-    desc: "Für Sammler: 2 Duftsprays + 3 Duftanhänger – frei kombinierbar aus allen Düften.",
-    notes: ["2× Spray", "3× Anhänger"],
-  },
-  {
-    id: "baum-midnight",
-    name: "Midnight Duftbaum",
-    type: "baum", category: "Duftbäume",
-    color: "#111111", label: "Midnight",
-    price: 0, priceOld: null, bestseller: true,
-    desc: "Der Signature-Duft als klassischer Duftbaum für den Rückspiegel – dunkel, elegant, langanhaltend.",
-    notes: ["Oud", "Amber", "Schwarzer Pfeffer"],
-  },
-  {
-    id: "baum-forest",
-    name: "Forest Duftbaum",
-    type: "baum", category: "Duftbäume",
-    color: "#2e5339", label: "Forest",
-    price: 0, priceOld: null, bestseller: false,
-    desc: "Nadelwald nach dem Regen – grün, klar, erdig. Der Klassiker unter den Klassikern.",
-    notes: ["Zeder", "Kiefer", "Vetiver"],
-  },
-  {
-    id: "baum-cherry",
-    name: "Cherry Duftbaum",
-    type: "baum", category: "Duftbäume",
-    color: "#8e1b1b", label: "Cherry",
-    price: 0, priceOld: null, bestseller: true,
-    desc: "Dunkle Kirsche und Vanille als Duftbaum – süß, ohne aufdringlich zu sein.",
-    notes: ["Kirsche", "Mandel", "Vanille"],
-  },
-  {
-    id: "baum-golden",
-    name: "Golden Hour Duftbaum",
-    type: "baum", category: "Duftbäume",
-    color: "#c98a2c", label: "Golden",
-    price: 0, priceOld: null, bestseller: false,
-    desc: "Warmes Abendlicht zum Aufhängen – Safran, Honig und weiches Leder.",
-    notes: ["Safran", "Honig", "Leder"],
-  },
-  {
-    id: "clip-midnight",
-    name: "Midnight Lüftungsclip",
-    type: "clip", category: "Lüftungsclips",
-    color: "#111111", label: "Midnight",
-    price: 0, priceOld: null, bestseller: true,
-    desc: "Der Signature-Duft als Lüftungsclip: wird vorne ins Lüftungsgitter der Klimaanlage gesteckt und duftet über den Luftstrom. Mit austauschbarem Refill.",
-    notes: ["Oud", "Amber", "Schwarzer Pfeffer"],
-  },
-  {
-    id: "clip-silver",
-    name: "Silver Sky Lüftungsclip",
-    type: "clip", category: "Lüftungsclips",
-    color: "#b9b9b9", label: "Silver",
-    price: 0, priceOld: null, bestseller: false,
-    desc: "Frische Zitrus-Bergamotte direkt aus der Lüftung – kühl und sauber. Clip fürs Lüftungsgitter, Refill nachkaufbar.",
-    notes: ["Bergamotte", "Zitrus", "Weißer Moschus"],
-  },
-  {
-    id: "clip-vanilla",
-    name: "Vanilla Cloud Lüftungsclip",
-    type: "clip", category: "Lüftungsclips",
-    color: "#e8ddc4", label: "Vanilla",
-    price: 0, priceOld: null, bestseller: true,
-    desc: "Cremige Vanille über den Luftstrom verteilt – warm und einladend. Clip fürs Lüftungsgitter, Refill nachkaufbar.",
-    notes: ["Vanille", "Tonkabohne", "Sandelholz"],
-  },
-  {
-    id: "clip-ocean",
-    name: "Ocean Breeze Lüftungsclip",
-    type: "clip", category: "Lüftungsclips",
-    color: "#2b7a8c", label: "Ocean",
-    price: 0, priceOld: null, bestseller: false,
-    desc: "Salzige Meeresbrise, sobald die Lüftung läuft – frisch und weit. Clip fürs Lüftungsgitter, Refill nachkaufbar.",
-    notes: ["Meersalz", "Minze", "Treibholz"],
-  },
-  {
-    id: "clip-forest",
-    name: "Forest Lüftungsclip",
-    type: "clip", category: "Lüftungsclips",
-    color: "#2e5339", label: "Forest",
-    price: 0, priceOld: null, bestseller: false,
-    desc: "Nadelwald nach dem Regen – grün, klar, erdig – direkt aus der Lüftung. Clip fürs Lüftungsgitter, Refill nachkaufbar.",
-    notes: ["Zeder", "Kiefer", "Vetiver"],
-  },
-  // ---- Pflege (Upsell / Waschzubehör) ----
+];
+
+// ---- Linien aus den Düften erzeugen ----
+const LINES = [
+  { type: "spray",   category: "Duftsprays",    suffix: "Duftspray",
+    text: (s) => s.spray },
+  { type: "haenger", category: "Duftanhänger",  suffix: "Duftanhänger",
+    text: (s) => s.short + " Als schlichter Anhänger für den Rückspiegel – dezent im Look, präsent im Duft." },
+  { type: "clip",    category: "Lüftungsclips", suffix: "Lüftungsclip",
+    text: (s) => s.short + " Als Clip fürs Lüftungsgitter: duftet über den Luftstrom der Klimaanlage, Refill nachkaufbar." },
+  { type: "baum",    category: "Duftbäume",     suffix: "Duftbaum",
+    text: (s) => s.short + " Als klassischer Duftbaum für den Rückspiegel – langanhaltend." },
+];
+
+const SCENT_PRODUCTS = [];
+LINES.forEach((line) => {
+  SCENTS.forEach((s) => {
+    SCENT_PRODUCTS.push({
+      id: line.type + "-" + s.key,
+      name: s.name + " " + line.suffix,
+      type: line.type, category: line.category,
+      color: s.color, label: s.name,
+      price: 0, priceOld: null, bestseller: !!s.bestseller[line.type],
+      desc: line.text(s),
+      notes: s.notes,
+    });
+  });
+});
+
+// ---- Weitere Produkte ----
+const OTHER_PRODUCTS = [
+  // Pflege (Upsell / Waschzubehör)
   {
     id: "pflege-innenraum",
     name: "Innenraum-Tuch",
@@ -271,4 +145,25 @@ const PRODUCTS = [
     desc: "Flexibler Wasserabzieher mit weicher Silikonlippe – zieht Scheiben und Lack in Sekunden trocken, ohne Kratzer und ohne Streifen.",
     notes: ["Silikonlippe", "Kratzfrei", "Streifenfrei"],
   },
+  // Bundles
+  {
+    id: "bundle-starter",
+    name: "Starter Bundle",
+    type: "bundle", category: "Bundles",
+    color: "#111111", label: "Starter",
+    price: 0, priceOld: null, bestseller: true,
+    desc: "Der perfekte Einstieg: 1 Duftspray deiner Wahl + 2 Duftanhänger. Spare gegenüber dem Einzelkauf.",
+    notes: ["1× Spray", "2× Anhänger"],
+  },
+  {
+    id: "bundle-signature",
+    name: "Signature Bundle",
+    type: "bundle", category: "Bundles",
+    color: "#8e1b1b", label: "Signature",
+    price: 0, priceOld: null, bestseller: false,
+    desc: "Für Sammler: 2 Duftsprays + 3 Duftanhänger – frei kombinierbar aus allen Düften.",
+    notes: ["2× Spray", "3× Anhänger"],
+  },
 ];
+
+const PRODUCTS = SCENT_PRODUCTS.concat(OTHER_PRODUCTS);

@@ -160,7 +160,7 @@ CATEGORIES.forEach((cat) => {
 
 // ---------- Filter & Produkt-Grid ----------
 
-const FILTERS = ["bestseller", "alle", "Duftsprays", "Duftbäume", "Duftanhänger", "Lüftungsclips", "Pflege", "Bundles"];
+const FILTERS = ["bestseller", "alle", "Duftsprays", "Duftanhänger", "Lüftungsclips", "Duftbäume", "Pflege", "Bundles"];
 const FILTER_LABELS = { bestseller: "Bestseller", alle: "Alle Produkte" };
 let activeFilter = "bestseller";
 
