@@ -316,7 +316,7 @@
     <form class="login-card" id="loginForm">
       <h1>CAROUD</h1>
       <p>UNTERNEHMENS-PANEL</p>
-      <input type="email" id="loginEmail" placeholder="E-Mail" autocomplete="username" required><!-- PANEL_VERSION 15 -->
+      <input type="email" id="loginEmail" placeholder="E-Mail" autocomplete="username" required><!-- PANEL_VERSION 16 -->
       <input type="password" id="loginPass" placeholder="Passwort" autocomplete="current-password" required>
       <button type="submit">Anmelden</button>
       <div class="login-error" id="loginError"></div>
@@ -372,6 +372,35 @@
         <div id="dashTasks"></div>
         <div class="sec-title">Letzte Aktivität</div>
         <div class="card" id="dashActivity"><div class="empty">Noch keine Aktivität.</div></div>
+
+        <div class="sec-title">WhatsApp-Warnungen</div>
+        <div class="card" id="waBox">
+          <div class="muted" style="margin-bottom:0.7rem">
+            Bei „fast leer" und „ausverkauft" bekommst du eine WhatsApp-Nachricht – privat, an deine Nummer.
+            Jeder richtet das einmal für sich ein:
+          </div>
+          <details style="margin:0 0 0.8rem">
+            <summary>So kommst du an deinen Schlüssel (2 Minuten)</summary>
+            <div class="muted" style="margin-top:0.5rem; line-height:1.6">
+              1. Nummer <b style="color:var(--paper)">+34 694 23 41 84</b> als Kontakt speichern (Name egal, z. B. „CallMeBot").<br>
+              2. Diesem Kontakt per WhatsApp schreiben: <b style="color:var(--paper)">I allow callmebot to send me messages</b><br>
+              3. Der Bot antwortet mit deinem Schlüssel („Your APIKEY is …"). Den hier eintragen.<br>
+              Kommt keine Antwort: kurz warten, ggf. später erneut. Der Bot schreibt nur an die Nummer, die ihn aktiviert hat – deshalb macht das jeder selbst.
+            </div>
+          </details>
+          <div class="frow">
+            <input class="finput" id="waPhone" type="tel" placeholder="Deine Nummer, z. B. +4915112345678" autocomplete="tel">
+          </div>
+          <div class="frow">
+            <input class="finput" id="waKeyInput" placeholder="Schlüssel vom Bot (Zahlen)" autocomplete="off">
+          </div>
+          <label class="checkbox-row"><input type="checkbox" id="waAktiv"> Warnungen an mich schicken</label>
+          <div style="display:flex; gap:0.6rem">
+            <button class="btn-gold" id="waSave" style="flex:1">Speichern</button>
+            <button class="btn-ghost" id="waTest">Test senden</button>
+          </div>
+          <div class="muted" id="waAndere" style="margin-top:0.7rem"></div>
+        </div>
       </section>
 
       <!-- Lager -->
@@ -824,6 +853,12 @@
       getDoc(doc(db, "config", "discord"))
         .then((s) => { webhookUrl = s.exists() ? s.data().url : null; }).catch(() => {});
 
+      // WhatsApp-Empfänger (je Person: Nummer + Schlüssel), live
+      onSnapshot(doc(db, "einstellungen", "whatsapp"), (snap) => {
+        waEmpfaenger = snap.exists() ? (snap.data().empfaenger || {}) : {};
+        renderWaSettings();
+      }, () => {});
+
       onSnapshot(collection(db, "lager"), (snap) => {
         // gelöschte Artikel nicht stehen lassen
         Object.keys(stock).forEach((k) => delete stock[k]);
@@ -944,25 +979,75 @@
       afterStock(id, prev, next, quelle);
     }
 
+    // Warnung bei Abwärts-Kreuzung (fast leer / ausverkauft): Discord-Kanal und
+    // WhatsApp-Privatnachricht an jeden, der sich im Panel eingetragen hat.
+    // Ein Cooldown von 6 Stunden pro Artikel und Art, damit +/- nicht spammt.
     function discordNotify(p, prev, next) {
-      if (!webhookUrl) return;
-      let type = null, msg = null;
+      let type = null, kurz = null;
       if (prev > 0 && next === 0) {
-        type = "out"; msg = "🔴 **" + p.name + "** ist jetzt AUSVERKAUFT";
+        type = "out"; kurz = p.name + " ist jetzt AUSVERKAUFT";
       } else if (p.min > 0 && prev > p.min && next <= p.min && next > 0) {
-        type = "low"; msg = "🟠 **" + p.name + "** wird knapp – nur noch **" + next + "** " + p.einheit;
+        type = "low"; kurz = p.name + " wird knapp – nur noch " + next + " " + p.einheit;
       }
       if (!type) return;
       const key = "caroud-notify-" + p.id + "-" + type;
       const last = parseInt(localStorage.getItem(key) || "0", 10);
       if (Date.now() - last < 6 * 3600 * 1000) return;
       localStorage.setItem(key, String(Date.now()));
-      fetch(webhookUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: msg, username: "Caroud Lager" }),
-      }).catch(() => {});
+      if (webhookUrl) {
+        const md = (type === "out" ? "🔴 **" : "🟠 **") + p.name + "**" + kurz.slice(p.name.length);
+        fetch(webhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ content: md, username: "Caroud Lager" }),
+        }).catch(() => {});
+      }
+      whatsappSenden("[Caroud Lager] " + kurz + " – von " + myName);
     }
+
+    // ---- WhatsApp über CallMeBot (kostenlos, nur an die Nummer, die den Bot aktiviert hat) ----
+    let waEmpfaenger = {};   // { emailKey: { name, phone, apikey, aktiv } }
+    const waKey = (email) => email.replace(/[.#$/\[\]]/g, "_");
+
+    function whatsappSenden(text, nurAn) {
+      Object.values(waEmpfaenger).forEach((e) => {
+        if (!e || !e.aktiv || !e.phone || !e.apikey) return;
+        if (nurAn && e.email !== nurAn) return;
+        // CallMeBot will die Nummer am Stück: +4915112345678
+        const phone = String(e.phone).replace(/[^\d+]/g, "");
+        const url = "https://api.callmebot.com/whatsapp.php?phone=" + encodeURIComponent(phone) +
+          "&text=" + encodeURIComponent(text) + "&apikey=" + encodeURIComponent(e.apikey);
+        // no-cors: CallMeBot schickt keine CORS-Header, die Anfrage geht trotzdem raus
+        fetch(url, { mode: "no-cors" }).catch(() => {});
+      });
+    }
+
+    function renderWaSettings() {
+      const box = $("waBox");
+      if (!box) return;
+      const mine = waEmpfaenger[waKey(myEmail)] || {};
+      $("waPhone").value = mine.phone || "";
+      $("waKeyInput").value = mine.apikey || "";
+      $("waAktiv").checked = !!mine.aktiv;
+      const andere = Object.values(waEmpfaenger).filter((e) => e && e.email !== myEmail);
+      $("waAndere").textContent = andere.length
+        ? andere.map((e) => e.name + (e.aktiv && e.phone && e.apikey ? " bekommt Nachrichten" : " noch nicht eingerichtet")).join(" · ")
+        : "";
+    }
+
+    $("waSave").addEventListener("click", () => {
+      const phone = $("waPhone").value.trim();
+      const apikey = $("waKeyInput").value.trim();
+      const aktiv = $("waAktiv").checked;
+      if (aktiv && (!phone || !apikey)) { toast("Nummer und Schlüssel eintragen.", true); return; }
+      save(setDoc(doc(db, "einstellungen", "whatsapp"), { empfaenger: { [waKey(myEmail)]: { email: myEmail, name: myName, phone, apikey, aktiv } } }, { merge: true }), "WhatsApp gespeichert");
+    });
+    $("waTest").addEventListener("click", () => {
+      const mine = waEmpfaenger[waKey(myEmail)];
+      if (!mine || !mine.phone || !mine.apikey) { toast("Erst speichern.", true); return; }
+      whatsappSenden("[Caroud Panel] Test – wenn das ankommt, passt alles. Gruß, " + myName, myEmail);
+      toast("Testnachricht geschickt – schau auf dein Handy");
+    });
 
     $("lagerSearch").addEventListener("input", renderLager);
 
