@@ -169,7 +169,44 @@ function rgba(hex, a) {
 // ---------- Hero: Produkt zeigen ----------
 
 const heroArt = document.getElementById("heroArt");
-if (heroArt) heroArt.innerHTML = artFor(byId("spray-midnight"));
+if (heroArt) {
+  heroArt.innerHTML =
+    `<div class="bottle-wrap">${artFor(byId("spray-midnight"))}</div>` +
+    `<div class="mist-layer"></div>` +
+    `<button class="spray-hit" type="button" aria-label="Sprühstoß auslösen" title="Draufdrücken"></button>`;
+
+  const mistLayer = heroArt.querySelector(".mist-layer");
+  const sprayHit = heroArt.querySelector(".spray-hit");
+
+  // Sprühstoß: Nebeltropfen fliegen gestreut nach oben und verwehen
+  function spruehen() {
+    heroArt.classList.add("spraying");
+    heroArt.classList.remove("hint");
+    setTimeout(() => heroArt.classList.remove("spraying"), 480);
+
+    // Breite Streuung bei Verzögerung und Weite – sonst fliegt ein geschlossener
+    // Klumpen davon statt einer Wolke, die am Kopf hängt und sich auflöst
+    for (let i = 0; i < 26; i++) {
+      const dot = document.createElement("span");
+      dot.className = "mist-dot";
+      const winkel = (-90 + (Math.random() * 78 - 39)) * (Math.PI / 180);
+      const weite = 28 + Math.random() * 145;
+      dot.style.setProperty("--dx", Math.cos(winkel) * weite + "px");
+      dot.style.setProperty("--dy", Math.sin(winkel) * weite + "px");
+      dot.style.setProperty("--s", (1.8 + Math.random() * 2.8).toFixed(2));
+      dot.style.animationDelay = Math.random() * 260 + "ms";
+      dot.style.animationDuration = 700 + Math.random() * 620 + "ms";
+      mistLayer.appendChild(dot);
+      setTimeout(() => dot.remove(), 1700);
+    }
+  }
+
+  sprayHit.addEventListener("click", spruehen);
+
+  // Kleiner Hinweis, dass der Kopf anklickbar ist – verschwindet nach dem ersten Mal
+  heroArt.classList.add("hint");
+  setTimeout(() => heroArt.classList.remove("hint"), 12000);
+}
 
 // ---------- Die sieben Düfte ----------
 

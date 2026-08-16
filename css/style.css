@@ -536,21 +536,103 @@ button { font-family: inherit; }
   background: radial-gradient(circle, rgba(185, 160, 106, 0.45) 0%, rgba(185, 160, 106, 0.14) 46%, transparent 70%);
 }
 
+.bottle-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  animation: hero-float 5.2s ease-in-out infinite;
+}
+
 .hero-produkt svg {
   position: relative;
   width: min(310px, 78%);
   height: auto;
   filter: drop-shadow(0 26px 42px rgba(0, 0, 0, 0.6));
-  animation: hero-float 6s ease-in-out infinite;
 }
 
+/* Deutliches Schweben mit leichtem Kippen – fällt aus dem Augenwinkel auf */
 @keyframes hero-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  0%, 100% { transform: translateY(6px) rotate(-1.8deg); }
+  50%      { transform: translateY(-18px) rotate(1.8deg); }
+}
+
+/* Trefferfläche über dem Sprühkopf */
+.spray-hit {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  width: 26%;
+  height: 16%;
+  min-width: 54px;
+  min-height: 44px;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  z-index: 4;
+  border-radius: 40%;
+}
+
+/* Pulsierender Ring, solange noch niemand gedrückt hat */
+.hero-produkt.hint .spray-hit::after {
+  content: "";
+  position: absolute;
+  inset: 12% 22%;
+  border: 1px solid rgba(185, 160, 106, 0.85);
+  border-radius: 50%;
+  animation: spray-hint 2.1s ease-out infinite;
+}
+
+@keyframes spray-hint {
+  0%   { transform: scale(0.7); opacity: 0; }
+  35%  { opacity: 0.9; }
+  100% { transform: scale(2.1); opacity: 0; }
+}
+
+/* Rückstoß beim Sprühen */
+.hero-produkt.spraying svg { animation: bottle-kick 0.48s ease-out; }
+
+@keyframes bottle-kick {
+  0%   { transform: translateY(0) scale(1); }
+  18%  { transform: translateY(7px) scale(0.982); }
+  50%  { transform: translateY(-4px) scale(1.006); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+/* Nebel */
+.mist-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.mist-dot {
+  position: absolute;
+  left: 50%;
+  top: 4%;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(226, 214, 188, 0.5) 45%, rgba(255, 255, 255, 0) 72%);
+  opacity: 0;
+  animation: mist-fly 0.9s ease-out forwards;
+}
+
+@keyframes mist-fly {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.35); }
+  18%  { opacity: 0.95; }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(var(--s));
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-produkt svg { animation: none; }
+  .bottle-wrap { animation: none; }
+  .hero-produkt.hint .spray-hit::after { animation: none; opacity: 0.5; }
 }
 
 .sr-only {
