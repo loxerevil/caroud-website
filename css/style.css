@@ -182,6 +182,26 @@ button { font-family: inherit; }
 
 .site-header .icon-btn { color: var(--white); }
 
+/* Kategorien im Kopf – erst ab genug Platz, darunter bleibt der Burger */
+.head-nav { display: none; }
+
+.head-nav a {
+  font-size: 0.76rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--white);
+  padding: 0.4rem 0;
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.head-nav a:hover { color: var(--gold); border-bottom-color: var(--gold); }
+
+@media (min-width: 1100px) {
+  .site-header .menu-toggle { display: none; }
+  .head-nav { display: flex; gap: 1.4rem; }
+}
+
 .logo img { height: 26px; width: auto; }
 
 .header-actions { display: flex; gap: 0.35rem; }
@@ -985,6 +1005,47 @@ button { font-family: inherit; }
 }
 
 .brand-text { color: #bdbdbd; font-size: 1rem; }
+
+/* ============ Formen-Vergleich ============ */
+.vergleich-intro {
+  text-align: center;
+  max-width: 640px;
+  margin: -1.4rem auto 2.4rem;
+  color: var(--grey);
+  font-size: 0.96rem;
+}
+
+.vergleich-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.2rem;
+}
+
+.vergleich-karte {
+  border: 1px solid #e6e2da;
+  border-top: 3px solid var(--gold);
+  padding: 1.6rem 1.5rem;
+  background: var(--white);
+}
+
+.vergleich-karte h3 {
+  font-family: var(--serif);
+  font-size: 1.2rem;
+  letter-spacing: 0.06em;
+  margin-bottom: 1rem;
+}
+
+.vergleich-karte dt {
+  font-size: 0.66rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold-dark);
+  margin-top: 0.9rem;
+}
+
+.vergleich-karte dt:first-child { margin-top: 0; }
+
+.vergleich-karte dd { font-size: 0.9rem; line-height: 1.55; }
 
 /* ============ Kollektions-Kacheln ============ */
 .koll-grid {

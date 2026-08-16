@@ -583,6 +583,13 @@ menuDrawer.querySelectorAll("a").forEach((a) => {
   });
 });
 
+// Kopfleiste am Desktop: gleiche Logik wie im Seitenmenü
+document.querySelectorAll(".head-nav a").forEach((a) => {
+  a.addEventListener("click", () => {
+    if (a.dataset.filter) { setFamily("alle"); setFilter(a.dataset.filter); }
+  });
+});
+
 // ---------- Suche ----------
 
 const searchOverlay = document.getElementById("searchOverlay");
