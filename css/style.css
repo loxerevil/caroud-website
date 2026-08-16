@@ -1,3 +1,29 @@
+/* ============ Schrift: Playfair Display (SIL Open Font License), selbst gehostet ============
+   Nur Latin-Subset, drei Schnitte, zusammen 96 KB. Kein Aufruf zu Google beim Seitenbesuch.
+   600 deckt 600–800 ab, damit Überschriften mit weight 700 die echte Datei nehmen
+   und der Browser nichts künstlich nachfettet. */
+@font-face {
+  font-family: "Playfair Display";
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url("../fonts/playfair-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Playfair Display";
+  font-style: normal;
+  font-weight: 600 800;
+  font-display: swap;
+  src: url("../fonts/playfair-600.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Playfair Display";
+  font-style: italic;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url("../fonts/playfair-400-italic.woff2") format("woff2");
+}
+
 /* ============ Caroud – Basis ============ */
 :root {
   --gold: #b9a06a;

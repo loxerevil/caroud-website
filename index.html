@@ -27,7 +27,9 @@
   <meta name="twitter:image" content="https://caroud.de/img/og-image.png">
 
   <link rel="icon" type="image/png" href="img/favicon.png">
-  <link rel="stylesheet" href="css/style.css?v=28">
+  <!-- Überschriftenschrift vorladen, damit der Hero-Titel nicht erst in Georgia aufblitzt -->
+  <link rel="preload" href="fonts/playfair-400.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/style.css?v=29">
 
   <!-- Strukturierte Daten für Google. Produkt-Markup fehlt bewusst,
        solange keine echten Preise hinterlegt sind. -->
@@ -499,7 +501,7 @@
   <!-- Toast -->
   <div class="toast" id="toast" hidden></div>
 
-  <script src="js/products.js?v=28"></script>
-  <script src="js/main.js?v=28"></script>
+  <script src="js/products.js?v=29"></script>
+  <script src="js/main.js?v=29"></script>
 </body>
 </html>
