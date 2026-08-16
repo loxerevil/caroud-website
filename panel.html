@@ -260,6 +260,20 @@
     .note-card p { font-size: 0.9rem; white-space: pre-wrap; overflow-wrap: anywhere; cursor: pointer; }
     .note-card small { color: var(--grey); font-size: 0.7rem; display: block; margin-top: 0.4rem; }
     .note-actions { display: flex; gap: 0.5rem; margin-top: 0.55rem; }
+    .dash-grid .stat.wide { grid-column: 1 / -1; }
+    .btn-gold:disabled { opacity: 0.5; }
+    /* Kurze Rückmeldung unten (gespeichert / Fehler) */
+    .toast {
+      position: fixed; left: 50%; bottom: calc(1.2rem + env(safe-area-inset-bottom));
+      transform: translateX(-50%) translateY(18px);
+      background: var(--ink-3); border: 1px solid var(--ink-line); color: var(--paper);
+      padding: 0.6rem 1rem; border-radius: 10px; font-size: 0.85rem; text-align: center;
+      max-width: calc(100% - 2rem); z-index: 70; pointer-events: none; opacity: 0;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%); }
+    .toast.err { border-color: var(--red); color: #f0d6d4; }
   </style>
 </head>
 <body>
@@ -275,7 +289,7 @@
     <form class="login-card" id="loginForm">
       <h1>CAROUD</h1>
       <p>UNTERNEHMENS-PANEL</p>
-      <input type="email" id="loginEmail" placeholder="E-Mail" autocomplete="username" required><!-- PANEL_VERSION 11 -->
+      <input type="email" id="loginEmail" placeholder="E-Mail" autocomplete="username" required><!-- PANEL_VERSION 12 -->
       <input type="password" id="loginPass" placeholder="Passwort" autocomplete="current-password" required>
       <button type="submit">Anmelden</button>
       <div class="login-error" id="loginError"></div>
@@ -349,6 +363,7 @@
             </div>
           </form>
         </div>
+        <div class="muted" style="margin-bottom:0.5rem">Aufgabe antippen zum Bearbeiten</div>
         <div id="taskListOpen"></div>
         <details id="taskDoneWrap" hidden>
           <summary>Erledigte anzeigen (<span id="taskDoneCount">0</span>)</summary>
@@ -487,6 +502,8 @@
     </div>
   </div>
 
+  <div class="toast" id="toast"></div>
+
   <script src="js/products.js"></script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -524,6 +541,12 @@
       const [y, m, d] = s.split("-");
       return d + "." + m + "." + y;
     };
+    const parseDatum = (s) => { // "11.08.2026" / "11.8." -> "2026-08-11", sonst null
+      const m = /^(\d{1,2})\.(\d{1,2})\.?(\d{4})?$/.exec(String(s).trim());
+      if (!m) return null;
+      const jahr = m[3] || String(new Date().getFullYear());
+      return jahr + "-" + m[2].padStart(2, "0") + "-" + m[1].padStart(2, "0");
+    };
     const fmtTs = (ts) => ts && ts.toDate
       ? ts.toDate().toLocaleString("de-DE", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })
       : "jetzt";
@@ -531,6 +554,25 @@
       const d = new Date();
       return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
     };
+    // Kurze Rückmeldung unten am Bildschirm
+    let toastTimer = null;
+    function toast(msg, isErr) {
+      const t = $("toast");
+      t.textContent = msg;
+      t.classList.toggle("err", !!isErr);
+      t.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove("show"), isErr ? 4500 : 2000);
+    }
+    // Jeder Schreibvorgang läuft hierüber: Fehler werden sichtbar statt still verschluckt
+    function save(p, okMsg) {
+      return Promise.resolve(p)
+        .then(() => { if (okMsg) toast(okMsg); })
+        .catch((err) => toast("Nicht gespeichert: " + (err.code || err.message), true));
+    }
+    const snapErr = (label) => (err) =>
+      toast(label + " konnte nicht geladen werden (" + (err.code || err.message) + ")", true);
+
     const HAS_PRICES = PRODUCTS.some((p) => p.price > 0);
     const RANKS = { "samoo6723@gmail.com": "Chef", "e.caroud@gmail.de": "Chef" };
     const NAMES = { "samoo6723@gmail.com": "Samed", "e.caroud@gmail.de": "Walid" };
@@ -641,42 +683,42 @@
       onSnapshot(query(collection(db, "aufgaben"), orderBy("erstellt", "desc"), limit(200)), (snap) => {
         tasks = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
         renderTasks(); renderDash();
-      });
+      }, snapErr("Aufgaben"));
 
       onSnapshot(query(collection(db, "finanzen"), orderBy("datum", "desc"), limit(300)), (snap) => {
         ausgaben = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
         renderFinanzen(); renderDash();
-      });
+      }, snapErr("Finanzen"));
 
       onSnapshot(doc(db, "einstellungen", "allgemein"), (snap) => {
         budget = snap.exists() ? (snap.data().budget ?? null) : null;
         renderFinanzen(); renderDash();
-      });
+      }, snapErr("Einstellungen"));
 
       onSnapshot(query(collection(db, "produktion"), orderBy("erstellt", "desc"), limit(100)), (snap) => {
         chargen = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
         renderProduktion();
-      });
+      }, snapErr("Produktion"));
 
       onSnapshot(query(collection(db, "bestellungen"), orderBy("erstellt", "desc"), limit(300)), (snap) => {
         bestellungen = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
         renderBestellungen(); renderDash();
-      });
+      }, snapErr("Bestellungen"));
 
       onSnapshot(query(collection(db, "notizen"), orderBy("geaendert", "desc"), limit(100)), (snap) => {
         notizen = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
         renderNotizen();
-      });
+      }, snapErr("Notizen"));
 
       onSnapshot(query(collection(db, "aktivitaet"), orderBy("ts", "desc"), limit(10)), (snap) => {
         aktivitaet = snap.docs.map((d) => d.data());
         renderDash();
-      });
+      }, snapErr("Aktivität"));
 
       onSnapshot(query(collection(db, "zeiten"), orderBy("start", "desc"), limit(300)), (snap) => {
         zeiten = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
         renderZeit();
-      });
+      }, snapErr("Zeiten"));
     }
 
     // ================= LAGER =================
@@ -690,7 +732,7 @@
       if (next === prev) return;
       stock[id] = next;
       renderLager(); renderDash();
-      setDoc(doc(db, "lager", id), { stock: next, updated: serverTimestamp() }, { merge: true });
+      save(setDoc(doc(db, "lager", id), { stock: next, updated: serverTimestamp() }, { merge: true }));
       addDoc(collection(db, "lager", id, "historie"),
         { ts: serverTimestamp(), delta: next - prev, neu: next }).catch(() => {});
       setDoc(doc(db, "shopstatus", id),
@@ -815,9 +857,9 @@
       e.preventDefault();
       const titel = $("taskTitle").value.trim();
       if (!titel) return;
-      addDoc(collection(db, "aufgaben"), {
+      save(addDoc(collection(db, "aufgaben"), {
         titel, faellig: $("taskDue").value || null, erledigt: false, erstellt: serverTimestamp(), von: myName,
-      });
+      }), "Aufgabe angelegt");
       logActivity("Aufgabe angelegt: " + titel);
       $("taskTitle").value = ""; $("taskDue").value = "";
     });
@@ -835,13 +877,30 @@
         "</div>" +
         '<button class="icon-btn" title="Löschen">✕</button>';
       row.querySelector(".task-check").addEventListener("change", (e) => {
-        updateDoc(doc(db, "aufgaben", t.id), { erledigt: e.target.checked });
+        save(updateDoc(doc(db, "aufgaben", t.id), { erledigt: e.target.checked }));
         if (e.target.checked) logActivity("Aufgabe erledigt: " + t.titel);
       });
+      row.querySelector(".grow").style.cursor = "pointer";
+      row.querySelector(".grow").addEventListener("click", () => editTask(t));
       row.querySelector(".icon-btn").addEventListener("click", () => {
-        if (confirm("Aufgabe „" + t.titel + "“ löschen?")) deleteDoc(doc(db, "aufgaben", t.id));
+        if (confirm("Aufgabe „" + t.titel + "“ löschen?")) save(deleteDoc(doc(db, "aufgaben", t.id)));
       });
       return row;
+    }
+
+    // Aufgabe antippen: Text und Fälligkeit korrigieren
+    function editTask(t) {
+      const titel = prompt("Aufgabe:", t.titel);
+      if (titel === null) return;
+      if (!titel.trim()) { toast("Text darf nicht leer sein.", true); return; }
+      const dIn = prompt("Fällig am (TT.MM.JJJJ, leer = ohne Datum):", t.faellig ? fmtDatum(t.faellig) : "");
+      if (dIn === null) return;
+      let faellig = null;
+      if (dIn.trim() !== "") {
+        faellig = parseDatum(dIn);
+        if (!faellig) { toast("Datum bitte als TT.MM.JJJJ", true); return; }
+      }
+      save(updateDoc(doc(db, "aufgaben", t.id), { titel: titel.trim(), faellig }), "Aufgabe geändert");
     }
 
     function renderTasks() {
@@ -866,10 +925,10 @@
       const betrag = parseFloat($("finBetrag").value);
       if (isNaN(betrag) || betrag <= 0) return;
       const kat = $("finKat").value;
-      addDoc(collection(db, "finanzen"), {
+      save(addDoc(collection(db, "finanzen"), {
         betrag, kategorie: kat, notiz: $("finNotiz").value.trim(),
-        datum: $("finDatum").value || heute(), erstellt: serverTimestamp(),
-      });
+        datum: $("finDatum").value || heute(), erstellt: serverTimestamp(), von: myName,
+      }), "Ausgabe erfasst");
       logActivity("Ausgabe: " + eur(betrag) + " (" + kat + ")");
       $("finBetrag").value = ""; $("finNotiz").value = "";
     });
@@ -877,7 +936,7 @@
     $("finBudgetBtn").addEventListener("click", () => {
       const v = prompt("Budget in € (z. B. 3000):", budget ?? "");
       if (v === null || v.trim() === "" || isNaN(v)) return;
-      setDoc(doc(db, "einstellungen", "allgemein"), { budget: parseFloat(v) }, { merge: true });
+      save(setDoc(doc(db, "einstellungen", "allgemein"), { budget: parseFloat(v) }, { merge: true }), "Budget gespeichert");
     });
 
     function finSumme() { return ausgaben.reduce((s, a) => s + (a.betrag || 0), 0); }
@@ -910,10 +969,11 @@
         row.className = "lrow";
         row.innerHTML =
           '<div class="grow"><b>' + eur(a.betrag) + " – " + esc(a.kategorie) + "</b>" +
-          "<small>" + fmtDatum(a.datum) + (a.notiz ? " · " + esc(a.notiz) : "") + "</small></div>" +
+          "<small>" + fmtDatum(a.datum) + (a.notiz ? " · " + esc(a.notiz) : "") +
+          (a.von ? " · " + esc(a.von) : "") + "</small></div>" +
           '<button class="icon-btn" title="Löschen">✕</button>';
         row.querySelector(".icon-btn").addEventListener("click", () => {
-          if (confirm("Ausgabe über " + eur(a.betrag) + " löschen?")) deleteDoc(doc(db, "finanzen", a.id));
+          if (confirm("Ausgabe über " + eur(a.betrag) + " löschen?")) save(deleteDoc(doc(db, "finanzen", a.id)));
         });
         wrap.appendChild(row);
       });
@@ -931,11 +991,11 @@
       if (isNaN(menge) || menge <= 0) return;
       const pid = $("prodProdukt").value;
       const p = PRODUCTS.find((x) => x.id === pid);
-      addDoc(collection(db, "produktion"), {
+      save(addDoc(collection(db, "produktion"), {
         produktId: pid, produktName: p ? p.name : pid, menge,
         notiz: $("prodNotiz").value.trim(), datum: $("prodDatum").value || heute(),
-        gebucht: $("prodBuchen").checked, erstellt: serverTimestamp(),
-      });
+        gebucht: $("prodBuchen").checked, erstellt: serverTimestamp(), von: myName,
+      }), "Charge angelegt");
       if ($("prodBuchen").checked) applyStock(pid, (stock[pid] ?? 0) + menge, "still");
       logActivity("Produktion: " + menge + "× " + (p ? p.name : pid) +
         ($("prodBuchen").checked ? " (ins Lager gebucht)" : ""));
@@ -952,10 +1012,10 @@
         row.innerHTML =
           '<div class="grow"><b>' + c.menge + "× " + esc(c.produktName) + "</b>" +
           "<small>" + fmtDatum(c.datum) + (c.gebucht ? " · ins Lager gebucht" : "") +
-          (c.notiz ? " · " + esc(c.notiz) : "") + "</small></div>" +
+          (c.notiz ? " · " + esc(c.notiz) : "") + (c.von ? " · " + esc(c.von) : "") + "</small></div>" +
           '<button class="icon-btn" title="Löschen">✕</button>';
         row.querySelector(".icon-btn").addEventListener("click", () => {
-          if (confirm("Charge löschen? (Der Lagerbestand bleibt unverändert.)")) deleteDoc(doc(db, "produktion", c.id));
+          if (confirm("Charge löschen? (Der Lagerbestand bleibt unverändert.)")) save(deleteDoc(doc(db, "produktion", c.id)));
         });
         wrap.appendChild(row);
       });
@@ -970,10 +1030,10 @@
       const kunde = $("bestKunde").value.trim();
       const artikel = $("bestArtikel").value.trim();
       if (!kunde || !artikel || isNaN(betrag)) return;
-      addDoc(collection(db, "bestellungen"), {
+      save(addDoc(collection(db, "bestellungen"), {
         kunde, kanal: $("bestKanal").value, artikel, betrag,
-        status: "offen", datum: heute(), erstellt: serverTimestamp(),
-      });
+        status: "offen", datum: heute(), erstellt: serverTimestamp(), von: myName,
+      }), "Bestellung angelegt");
       logActivity("Bestellung: " + kunde + " – " + artikel + " (" + eur(betrag) + ")");
       $("bestKunde").value = ""; $("bestArtikel").value = ""; $("bestBetrag").value = "";
     });
@@ -996,11 +1056,11 @@
           '<button class="icon-btn" title="Löschen">✕</button>';
         row.querySelector(".chip").addEventListener("click", () => {
           const next = STATUS_FOLGE[b.status] || "offen";
-          updateDoc(doc(db, "bestellungen", b.id), { status: next });
+          save(updateDoc(doc(db, "bestellungen", b.id), { status: next }));
           if (next === "verschickt") logActivity("Bestellung verschickt: " + b.kunde + " – " + b.artikel);
         });
         row.querySelector(".icon-btn").addEventListener("click", () => {
-          if (confirm("Bestellung von „" + b.kunde + "“ löschen?")) deleteDoc(doc(db, "bestellungen", b.id));
+          if (confirm("Bestellung von „" + b.kunde + "“ löschen?")) save(deleteDoc(doc(db, "bestellungen", b.id)));
         });
         wrap.appendChild(row);
       });
@@ -1013,7 +1073,7 @@
       e.preventDefault();
       const text = $("noteText").value.trim();
       if (!text) return;
-      addDoc(collection(db, "notizen"), { text, erstellt: serverTimestamp(), geaendert: serverTimestamp(), von: myName });
+      save(addDoc(collection(db, "notizen"), { text, erstellt: serverTimestamp(), geaendert: serverTimestamp(), von: myName }), "Notiz gespeichert");
       $("noteText").value = "";
     });
 
@@ -1034,12 +1094,12 @@
             "</div>";
           card.querySelector("[data-save]").addEventListener("click", () => {
             const t = card.querySelector("textarea").value.trim();
-            if (t) updateDoc(doc(db, "notizen", n.id), { text: t, geaendert: serverTimestamp() });
+            if (t) save(updateDoc(doc(db, "notizen", n.id), { text: t, geaendert: serverTimestamp() }), "Notiz gespeichert");
             editNoteId = null; renderNotizen();
           });
           card.querySelector("[data-cancel]").addEventListener("click", () => { editNoteId = null; renderNotizen(); });
           card.querySelector("[data-del]").addEventListener("click", () => {
-            if (confirm("Notiz löschen?")) { deleteDoc(doc(db, "notizen", n.id)); editNoteId = null; }
+            if (confirm("Notiz löschen?")) { save(deleteDoc(doc(db, "notizen", n.id))); editNoteId = null; }
           });
         } else {
           card.innerHTML = "<p>" + esc(n.text) + "</p><small>" + fmtTs(n.geaendert) +
@@ -1067,20 +1127,28 @@
     }
     function entryMin(z) { return z.ende ? (z.minuten || 0) : elapsedMin(z); }
 
+    // Kurze Sperre gegen Doppeltippen: sonst entstehen zwei laufende Einträge.
+    // Bewusst zeitgesteuert und nicht am Schreib-Promise: offline löst das erst
+    // beim nächsten Server-Kontakt aus, der Button bliebe sonst gesperrt.
+    let stempelBusy = false;
     $("stempelBtn").addEventListener("click", () => {
+      if (stempelBusy) return;
+      stempelBusy = true;
+      $("stempelBtn").disabled = true;
+      setTimeout(() => { stempelBusy = false; $("stempelBtn").disabled = false; }, 1200);
       const mine = zeiten.find((z) => !z.ende && z.email === myEmail);
       if (mine) {
         const minuten = Math.max(1, Math.round(elapsedMin(mine)));
-        updateDoc(doc(db, "zeiten", mine.id), {
+        save(updateDoc(doc(db, "zeiten", mine.id), {
           ende: serverTimestamp(), minuten,
           pausenMin: Math.round(pauseTotal(mine)), pauseStart: null,
-        });
+        }));
         logActivity("Ausgestempelt – " + fmtDauer(minuten));
       } else {
-        addDoc(collection(db, "zeiten"), {
+        save(addDoc(collection(db, "zeiten"), {
           email: myEmail, name: myName, start: serverTimestamp(), ende: null,
           minuten: 0, pausenMin: 0, pauseStart: null,
-        });
+        }));
         logActivity("Eingestempelt");
       }
     });
@@ -1089,13 +1157,47 @@
       const mine = zeiten.find((z) => !z.ende && z.email === myEmail);
       if (!mine) return;
       if (mine.pauseStart) {
-        updateDoc(doc(db, "zeiten", mine.id), {
-          pausenMin: (mine.pausenMin || 0) + pauseElapsed(mine), pauseStart: null,
-        });
+        save(updateDoc(doc(db, "zeiten", mine.id), {
+          pausenMin: Math.round((mine.pausenMin || 0) + pauseElapsed(mine)), pauseStart: null,
+        }));
       } else {
-        updateDoc(doc(db, "zeiten", mine.id), { pauseStart: serverTimestamp() });
+        save(updateDoc(doc(db, "zeiten", mine.id), { pauseStart: serverTimestamp() }));
       }
     });
+
+    // Zeiteintrag antippen: Start/Ende nachträglich korrigieren
+    function editZeit(z) {
+      const s = z.start && z.start.toDate ? z.start.toDate() : null;
+      if (!s) { toast("Eintrag wird noch synchronisiert.", true); return; }
+      const hm = (d) => String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
+      const parseHM = (str, basis) => {
+        const m = /^(\d{1,2})[:.](\d{2})$/.exec(String(str).trim());
+        if (!m || +m[1] > 23 || +m[2] > 59) return null;
+        const d = new Date(basis);
+        d.setHours(+m[1], +m[2], 0, 0);
+        return d;
+      };
+      const sIn = prompt("Start (HH:MM) am " + s.toLocaleDateString("de-DE"), hm(s));
+      if (sIn === null) return;
+      const neuStart = parseHM(sIn, s);
+      if (!neuStart) { toast("Uhrzeit bitte als HH:MM", true); return; }
+      const e = z.ende && z.ende.toDate ? z.ende.toDate() : null;
+      const eIn = prompt("Ende (HH:MM, leer = läuft weiter):", e ? hm(e) : "");
+      if (eIn === null) return;
+      const data = { start: neuStart };
+      if (eIn.trim() === "") {
+        data.ende = null; data.minuten = 0;
+      } else {
+        let neuEnde = parseHM(eIn, s);
+        if (!neuEnde) { toast("Uhrzeit bitte als HH:MM", true); return; }
+        if (neuEnde <= neuStart) neuEnde = new Date(neuEnde.getTime() + 86400000); // über Mitternacht
+        data.ende = neuEnde;
+        data.minuten = Math.max(1, Math.round((neuEnde - neuStart) / 60000 - (z.pausenMin || 0)));
+      }
+      save(updateDoc(doc(db, "zeiten", z.id), data), "Zeit angepasst");
+      logActivity("Zeit korrigiert: " + z.name + " " + hm(neuStart) +
+        (data.ende ? "–" + hm(data.ende) : " (läuft)"));
+    }
 
     function renderZeit() {
       const mine = zeiten.find((z) => !z.ende && z.email === myEmail);
@@ -1123,15 +1225,17 @@
       }
 
       const andere = zeiten.filter((z) => !z.ende && z.email !== myEmail);
-      $("zeitAndere").innerHTML = andere.length
-        ? '<span style="color:var(--green)">●</span> ' + esc(andere[0].name) + " ist gerade auch eingestempelt"
+      const andereNamen = [...new Set(andere.map((z) => z.name))];
+      $("zeitAndere").innerHTML = andereNamen.length
+        ? '<span style="color:var(--green)">●</span> ' + esc(andereNamen.join(" & ")) +
+          (andereNamen.length > 1 ? " sind" : " ist") + " gerade auch eingestempelt"
         : "";
 
       // Hinweis, wenn eine Sitzung ungewöhnlich lange läuft (vergessen auszustempeln?)
       const warn = $("zeitWarn");
       if (mine && elapsedMin(mine) + pauseTotal(mine) > 12 * 60) {
         warn.hidden = false;
-        warn.textContent = "Läuft seit über 12 Std – vergessen auszustempeln? Eintrag ggf. löschen und neu starten.";
+        warn.textContent = "Läuft seit über 12 Std – vergessen auszustempeln? Eintrag unten antippen und Ende nachtragen.";
       } else warn.hidden = true;
 
       // Wochenstart: Montag 00:00
@@ -1160,6 +1264,11 @@
       const wrap = $("zeitList");
       wrap.innerHTML = "";
       if (!zeiten.length) { wrap.innerHTML = '<div class="empty">Noch keine Einträge – stempel dich ein!</div>'; return; }
+      const hint = document.createElement("div");
+      hint.className = "muted";
+      hint.style.marginBottom = "0.5rem";
+      hint.textContent = "Eintrag antippen, um Start/Ende zu korrigieren";
+      wrap.appendChild(hint);
       zeiten.forEach((z) => {
         const s = z.start && z.start.toDate ? z.start.toDate() : null;
         const e = z.ende && z.ende.toDate ? z.ende.toDate() : null;
@@ -1173,8 +1282,10 @@
           "<small>" + datum + " · " + von + " – " + bis + " · " + fmtDauer(entryMin(z)) +
           (pauseTotal(z) >= 1 ? " · Pause " + fmtDauer(pauseTotal(z)) : "") + "</small></div>" +
           '<button class="icon-btn" title="Löschen">✕</button>';
+        row.querySelector(".grow").style.cursor = "pointer";
+        row.querySelector(".grow").addEventListener("click", () => editZeit(z));
         row.querySelector(".icon-btn").addEventListener("click", () => {
-          if (confirm("Zeiteintrag von " + z.name + " (" + fmtDauer(entryMin(z)) + ") löschen?")) deleteDoc(doc(db, "zeiten", z.id));
+          if (confirm("Zeiteintrag von " + z.name + " (" + fmtDauer(entryMin(z)) + ") löschen?")) save(deleteDoc(doc(db, "zeiten", z.id)));
         });
         wrap.appendChild(row);
       });
@@ -1261,9 +1372,12 @@
         '<div class="stat' + (budget && sum > budget ? " out" : "") + '"><b style="font-size:1.05rem;line-height:1.7">' +
           sum.toLocaleString("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }) +
           "</b><span>Ausgaben" + (budget ? " / " + budget.toLocaleString("de-DE", { maximumFractionDigits: 0 }) + " €" : "") + "</span></div>" +
+        '<div class="stat' + (umsatz - sum >= 0 ? " green" : " out") + '"><b style="font-size:1.05rem;line-height:1.7">' +
+          (umsatz - sum).toLocaleString("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }) +
+          "</b><span>Saldo</span></div>" +
         '<div class="stat gold"><b style="font-size:1.05rem;line-height:1.7">' + fmtDauer(wocheMin) + "</b><span>Zeit diese Woche</span></div>" +
-        '<div class="stat' + (aktiv.length ? " green" : "") + '"><b style="font-size:1.05rem;line-height:1.7">' +
-          (aktiv.length ? esc(aktiv.join(" & ")) : "–") + "</b><span>" + (aktiv.length ? "Eingestempelt" : "Niemand eingestempelt") + "</span></div>";
+        '<div class="stat wide' + (aktiv.length ? " green" : "") + '"><b style="font-size:1.05rem;line-height:1.7">' +
+          (aktiv.length ? esc([...new Set(aktiv)].join(" & ")) : "–") + "</b><span>" + (aktiv.length ? "Eingestempelt" : "Niemand eingestempelt") + "</span></div>";
 
       const next = tasks.filter((t) => !t.erledigt)
         .sort((a, b) => (a.faellig || "9999").localeCompare(b.faellig || "9999")).slice(0, 3);
@@ -1326,9 +1440,11 @@
       ptrStartY = null; ptrDist = 0;
     });
 
-    // ---- Offline-Hinweis ----
-    addEventListener("online", () => { $("offlineNote").style.display = "none"; });
-    addEventListener("offline", () => { $("offlineNote").style.display = "block"; });
+    // ---- Offline-Hinweis (auch schon beim Start, nicht erst beim Wechsel) ----
+    const setOffline = (off) => { $("offlineNote").style.display = off ? "block" : "none"; };
+    setOffline(!navigator.onLine);
+    addEventListener("online", () => setOffline(false));
+    addEventListener("offline", () => setOffline(true));
   </script>
 </body>
 </html>
