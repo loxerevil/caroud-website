@@ -1791,8 +1791,6 @@ button { font-family: inherit; }
   /* Produktkarten quadratisch statt 4:5 – spart pro Reihe rund 40 px */
   .product-media { aspect-ratio: 1; }
 
-  /* Über Caroud: zweiter Absatz nur am Desktop */
-  .about-more { display: none; }
   .about h2 { font-size: 1.6rem; }
 
   /* Footer: Linkspalten nebeneinander, Marke oben über volle Breite */
