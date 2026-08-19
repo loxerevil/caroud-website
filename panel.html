@@ -429,7 +429,7 @@
       <section data-panel="artikel">
         <div class="card">
           <form id="artForm">
-            <div class="frow"><input id="artName" placeholder="Name, z. B. Flasche 100 ml" required></div>
+            <div class="frow"><input id="artName" placeholder="Name, z. B. Flasche 150 ml" required></div>
             <div class="frow">
               <input id="artKat" list="artKatListe" placeholder="Kategorie" required>
               <datalist id="artKatListe"></datalist>
@@ -1373,7 +1373,7 @@
       const wrap = $("artList");
       wrap.innerHTML = "";
       if (!artikel.length) {
-        wrap.innerHTML = '<div class="empty">Noch keine eigenen Artikel.<br>Leg oben zum Beispiel „Flasche 100 ml" in der Kategorie „Verpackung" an.</div>';
+        wrap.innerHTML = '<div class="empty">Noch keine eigenen Artikel.<br>Leg oben zum Beispiel „Flasche 150 ml" in der Kategorie „Verpackung" an.</div>';
         return;
       }
       const shopKats = CATEGORIES.map((c) => c.name);
