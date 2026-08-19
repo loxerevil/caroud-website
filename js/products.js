@@ -2,10 +2,11 @@
 // Caroud – Produktdaten
 //
 // Die sieben Düfte stehen zentral in SCENTS. Daraus werden die
-// Linien Duftspray, Duftanhänger und Lüftungsclip erzeugt –
+// Linien Duftspray, Duftanhänger Premium, Duftanhänger (Standard)
+// und Glasanhänger erzeugt –
 // ein neuer Duft muss also nur EINMAL eingetragen werden.
 //
-//   type:       "spray" | "baum" | "haenger" | "clip" | "tuch" | "abzieher" | "bundle"
+//   type:       "spray" | "haenger" (Premium) | "haengerstd" | "glas" | "tuch" | "abzieher" | "bundle"
 //   category:   Anzeige-Kategorie
 //   priceOld:   Streichpreis (null = kein Sale-Badge)
 //   bestseller: true = erscheint in der Start-Ansicht "Bestseller"
@@ -16,8 +17,9 @@
 // (img/produkte/<typ>-<duft>.webp). Ohne img zeichnet main.js die Ersatzgrafik.
 const CATEGORIES = [
   { name: "Duftsprays", type: "spray", color: "#111111", img: "img/produkte/spray-midnight.webp" },
-  { name: "Duftanhänger", type: "haenger", color: "#111111", img: "img/produkte/haenger-midnight.webp" },
-  { name: "Lüftungsclips", type: "clip", color: "#3a3a3a", img: "img/produkte/clip-carbon.webp" },
+  { name: "Duftanhänger Premium", type: "haenger", color: "#111111", img: "img/produkte/haenger-midnight.webp" },
+  { name: "Duftanhänger", type: "haengerstd", color: "#111111" },
+  { name: "Glasanhänger", type: "glas", color: "#1a1a1a", img: "img/produkte/glas-midnight.webp" },
   { name: "Pflege", type: "tuch", color: "#3d3d3d" },
   { name: "Bundles", type: "bundle", color: "#3b6ea5" },
 ];
@@ -27,7 +29,7 @@ const CATEGORIES = [
 //   name:    Duftname (so auch auf dem Etikett)
 //   color:   Farbe der Platzhalter-Grafik
 //   familie: Duftrichtung für den Duft-Finder (siehe FAMILIEN)
-//   short:   Kurzbeschreibung für Anhänger/Baum/Clip
+//   short:   Kurzbeschreibung für Anhänger/Baum/Glasanhänger
 //   spray:   ausführliche Beschreibung für das Duftspray
 const FAMILIEN = [
   { key: "frisch", name: "Frisch" },
@@ -42,49 +44,49 @@ const SCENTS = [
     notes: ["Oud", "Amber", "Schwarzer Pfeffer"],
     short: "Dunkel, elegant, souverän – würzig-holzig mit einem Hauch Amber.",
     spray: "Dunkel, elegant, souverän. Midnight legt sich wie ein Maßanzug über deinen Innenraum – würzig-holzig mit einem Hauch Amber.",
-    bestseller: { spray: true, haenger: true, clip: true, baum: true },
+    bestseller: { spray: true, haenger: true, glas: true, baum: true },
   },
   {
     key: "airflow", name: "Airflow", color: "#a9c4d4", familie: "frisch",
     notes: ["Zitrus", "Grüner Tee", "Ingwer", "Ambroxan"],
     short: "Frische Luft aus der Lüftung: Zitrus, grüner Tee und ein Hauch Ingwer.",
     spray: "Frische Luft, die durch die Lüftung strömt: spritzige Zitrus, grüner Tee und ein Hauch Ingwer auf einem klaren, sauberen Fundament. Für den Kopf-frei-Moment am Morgen.",
-    bestseller: { spray: true, haenger: false, clip: true, baum: false },
+    bestseller: { spray: true, haenger: false, glas: true, baum: false },
   },
   {
     key: "velour", name: "Velour", color: "#7a5a2e", familie: "suess",
     notes: ["Honig", "Tabak", "Vanille", "Lavendel"],
     short: "Weich wie Velours: warmer Honig, süßer Tabak und Vanille.",
     spray: "Weich wie Velours: warmer Honig, süßer Tabak und Vanille, aufgehellt von Bergamotte und Lavendel. Ein Duft, der den Innenraum wie eine Lounge wirken lässt.",
-    bestseller: { spray: true, haenger: false, clip: false, baum: false },
+    bestseller: { spray: true, haenger: false, glas: false, baum: false },
   },
   {
     key: "redline", name: "Redline", color: "#8e1b1b", familie: "suess",
     notes: ["Schwarze Kirsche", "Bittermandel", "Tonkabohne"],
     short: "Bis an den roten Bereich: dunkle Kirsche, bittersüße Mandel und Tonka.",
     spray: "Bis an den roten Bereich: dunkle Kirsche, bittersüße Mandel und Tonkabohne. Verführerisch, intensiv, unvergesslich.",
-    bestseller: { spray: true, haenger: true, clip: false, baum: true },
+    bestseller: { spray: true, haenger: true, glas: false, baum: true },
   },
   {
     key: "carbon", name: "Carbon", color: "#2a2a2a", familie: "orientalisch",
     notes: ["Oud", "Himbeere", "Weihrauch", "Benzoe"],
     short: "Dunkel und kompromisslos: rauchiges Oud, ein Funken Himbeere, Weihrauch.",
     spray: "Dunkel und kompromisslos: rauchiges Oud, ein Funken Himbeere und Weihrauch, getragen von Benzoe. Der Duft für Nachtfahrten.",
-    bestseller: { spray: false, haenger: false, clip: false, baum: false },
+    bestseller: { spray: false, haenger: false, glas: false, baum: false },
   },
   {
     key: "sunroof", name: "Sunroof", color: "#e0a83a", familie: "frisch",
     notes: ["Zitrus", "Sommerfrucht", "Weißer Moschus"],
     short: "Dach auf, Sonne rein: saftige Zitrusfrüchte und süße Sommerfrucht.",
     spray: "Dach auf, Sonne rein: saftige Zitrusfrüchte und süße Sommerfrucht auf weichem Moschus. Leicht, fröhlich, macht gute Laune bei jeder Fahrt.",
-    bestseller: { spray: false, haenger: true, clip: false, baum: false },
+    bestseller: { spray: false, haenger: true, glas: false, baum: false },
   },
   {
     key: "ignition", name: "Ignition", color: "#c98a2c", familie: "suess",
     notes: ["Ananas", "Honig", "Vanille", "Tonkabohne"],
     short: "Der Funke, der alles startet: reife Ananas, goldener Honig, cremige Vanille.",
     spray: "Der Funke, der alles startet: reife Ananas, goldener Honig und cremige Vanille. Süß, warm und sofort präsent.",
-    bestseller: { spray: false, haenger: false, clip: true, baum: false },
+    bestseller: { spray: false, haenger: false, glas: true, baum: false },
   },
 ];
 
@@ -92,10 +94,12 @@ const SCENTS = [
 const LINES = [
   { type: "spray",   category: "Duftsprays",    suffix: "Duftspray",
     text: (s) => s.spray },
-  { type: "haenger", category: "Duftanhänger",  suffix: "Duftanhänger",
+  { type: "haenger", category: "Duftanhänger Premium", suffix: "Duftanhänger Premium",
+    text: (s) => s.short + " Als Premium-Anhänger in der eigenen Caroud-Form: beidseitig bedruckt, mit schwarzer Kordel – unser Aushängeschild für den Rückspiegel." },
+  { type: "haengerstd", category: "Duftanhänger", suffix: "Duftanhänger", noImg: true,
     text: (s) => s.short + " Als schlichter Anhänger für den Rückspiegel – dezent im Look, präsent im Duft." },
-  { type: "clip",    category: "Lüftungsclips", suffix: "Lüftungsclip",
-    text: (s) => s.short + " Als Clip fürs Lüftungsgitter: duftet über den Luftstrom der Klimaanlage, Refill nachkaufbar." },
+  { type: "glas",    category: "Glasanhänger",  suffix: "Glasanhänger",
+    text: (s) => s.short + " Im 8-ml-Glasflakon für den Rückspiegel: das Duftöl verdunstet langsam über den Verschluss – ergiebiger und langlebiger als ein Anhänger aus Papier." },
 ];
 
 const SCENT_PRODUCTS = [];
@@ -106,7 +110,7 @@ LINES.forEach((line) => {
       name: s.name + " " + line.suffix,
       type: line.type, category: line.category,
       color: s.color, label: s.name,
-      img: "img/produkte/" + line.type + "-" + s.key + ".webp",
+      img: line.noImg ? null : "img/produkte/" + line.type + "-" + s.key + ".webp",
       price: 0, priceOld: null, bestseller: !!s.bestseller[line.type],
       desc: line.text(s),
       notes: s.notes,

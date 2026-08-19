@@ -1156,7 +1156,7 @@ button { font-family: inherit; }
 }
 
 /* Zweite Reihe: zwei flache Kacheln */
-.koll-grid-2 { grid-template-columns: 1fr 1fr; margin-top: 1.4rem; }
+.koll-grid-2 { grid-template-columns: repeat(3, 1fr); margin-top: 1.4rem; }
 .koll-tile-wide { aspect-ratio: 2 / 1; }
 .koll-tile-wide .koll-title { font-size: clamp(1.2rem, 2vw, 1.6rem); }
 
@@ -1168,7 +1168,7 @@ button { font-family: inherit; }
 @media (max-width: 860px) {
   .koll-grid { grid-template-columns: 1fr; gap: 1rem; }
   .koll-tile { aspect-ratio: 16 / 10; }
-  .koll-grid-2 { grid-template-columns: 1fr 1fr; margin-top: 1rem; }
+  .koll-grid-2 { grid-template-columns: repeat(3, 1fr); margin-top: 1rem; }
   .koll-tile-wide { aspect-ratio: 2 / 1; }
 }
 
@@ -1733,7 +1733,7 @@ button { font-family: inherit; }
   .koll-inner { padding: 0.5rem; gap: 0.15rem; justify-content: flex-end; }
   .koll-kicker, .koll-btn { display: none; }
   .koll-title { font-size: 0.78rem; letter-spacing: 0.04em; }
-  .koll-grid-2 { grid-template-columns: 1fr 1fr; margin-top: 0.55rem; }
+  .koll-grid-2 { grid-template-columns: repeat(3, 1fr); margin-top: 0.55rem; }
   .koll-tile-wide { aspect-ratio: 2.4 / 1; }
   .koll-tile-wide .koll-title { font-size: 0.78rem; }
 

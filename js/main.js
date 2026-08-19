@@ -117,27 +117,24 @@ function baumSVG(color, label) {
   </svg>`;
 }
 
-function clipSVG(color, label, img) {
-  // Der echte Clip-Sticker ist rund (Ø 45 mm), deshalb sitzt er als Medaillon im Gitter.
-  const medaillon = img
-    ? `<circle cx="70" cy="74" r="45" fill="${color}" stroke="rgba(0,0,0,0.18)"/>
-       <image href="${img}" x="25" y="29" width="90" height="90" preserveAspectRatio="xMidYMid meet"/>`
-    : `<rect x="30" y="24" width="80" height="104" rx="16" fill="${color}" stroke="rgba(0,0,0,0.18)"/>
-       <rect x="34" y="28" width="72" height="96" rx="13" fill="none" stroke="rgba(255,255,255,0.14)"/>
-       <rect x="42" y="58" width="56" height="40" rx="4" fill="#fff" stroke="#ddd"/>
-       <text x="70" y="74" text-anchor="middle" font-size="10" font-weight="600" font-family="Georgia, serif" letter-spacing="1" fill="#111">CAROUD</text>
-       <rect x="56" y="81" width="28" height="4" rx="2" fill="${color}" stroke="rgba(0,0,0,0.2)"/>
-       <text x="70" y="96" text-anchor="middle" font-size="7.5" font-family="Georgia, serif" fill="#555">${label}</text>
-       <text x="70" y="116" text-anchor="middle" font-size="5.5" font-family="Georgia, serif" fill="#999">- est. 2026 -</text>`;
+function glasSVG(color, label, img) {
+  // 8-ml-Glasflakon fuer den Rueckspiegel: Kordel, Holzverschluss, Flakon mit Etikett.
+  const etikett = img
+    ? `<image href="${img}" x="48" y="64" width="44" height="72" preserveAspectRatio="xMidYMid meet"/>`
+    : `<rect x="48" y="64" width="44" height="72" rx="2" fill="${color}" stroke="rgba(0,0,0,0.2)"/>
+       <text x="70" y="92" text-anchor="middle" font-size="9" font-weight="600" font-family="Georgia, serif" letter-spacing="1" fill="#fff">CAROUD</text>
+       <rect x="63" y="98" width="14" height="3" rx="1.5" fill="#b9a06a"/>
+       <text x="70" y="114" text-anchor="middle" font-size="7" font-family="Georgia, serif" fill="#fff">${label}</text>
+       <text x="70" y="128" text-anchor="middle" font-size="5.5" font-family="Georgia, serif" fill="rgba(255,255,255,0.7)">8 ML</text>`;
   return `
   <svg class="prod-art" viewBox="0 0 140 200" xmlns="http://www.w3.org/2000/svg">
-    <g opacity="0.55">
-      <rect x="24" y="150" width="92" height="9" rx="3" fill="#8f8f8f"/>
-      <rect x="24" y="164" width="92" height="9" rx="3" fill="#7c7c7c"/>
-      <rect x="24" y="178" width="92" height="9" rx="3" fill="#8f8f8f"/>
-    </g>
-    <path d="M60 118 V152 Q60 160 68 160 H72 Q80 160 80 152 V118" fill="none" stroke="#444" stroke-width="4" stroke-linecap="round"/>
-    ${medaillon}
+    <path d="M70 32 V24 C56 20 57 8 70 8 C83 8 84 20 70 24 Z" fill="none" stroke="#6b5a3e" stroke-width="2.5" stroke-linejoin="round"/>
+    <rect x="58" y="30" width="24" height="16" rx="3" fill="#5b4630" stroke="rgba(0,0,0,0.25)"/>
+    <rect x="61" y="33" width="18" height="4" rx="2" fill="rgba(255,255,255,0.16)"/>
+    <rect x="64" y="44" width="12" height="10" fill="#c3cdcd" stroke="rgba(0,0,0,0.22)"/>
+    <rect x="42" y="52" width="56" height="100" rx="7" fill="#c9d3d3" fill-opacity="0.85" stroke="rgba(0,0,0,0.32)" stroke-width="1.4"/>
+    <rect x="46" y="57" width="9" height="90" rx="4.5" fill="rgba(255,255,255,0.7)"/>
+    ${etikett}
   </svg>`;
 }
 
@@ -145,7 +142,8 @@ function artFor(p) {
   if (p.type === "spray") return sprayBottleSVG(p.color, p.label, p.img);
   if (p.type === "baum") return baumSVG(p.color, p.label);
   if (p.type === "haenger") return haengerSVG(p.color, p.label, p.img);
-  if (p.type === "clip") return clipSVG(p.color, p.label, p.img);
+  if (p.type === "haengerstd") return haengerSVG(p.color, p.label, null);
+  if (p.type === "glas") return glasSVG(p.color, p.label, p.img);
   if (p.type === "bundle") return bundleSVG(p.color, p.label);
   if (p.type === "abzieher") return abzieherSVG(p.color, p.label);
   return tuchSVG(p.color, p.label);
@@ -298,7 +296,7 @@ document.querySelectorAll("[data-koll]").forEach((kachel) => {
 
 // ---------- Filter & Produkt-Grid ----------
 
-const FILTERS = ["bestseller", "alle", "Duftsprays", "Duftanhänger", "Lüftungsclips", "Pflege", "Bundles"];
+const FILTERS = ["bestseller", "alle", "Duftsprays", "Duftanhänger Premium", "Duftanhänger", "Glasanhänger", "Pflege", "Bundles"];
 const FILTER_LABELS = { bestseller: "Bestseller", alle: "Alle Produkte" };
 let activeFilter = "bestseller";
 
@@ -505,13 +503,20 @@ const FAKTEN = {
   ],
   haenger: [
     ["Wohin", "An den Rückspiegel"],
+    ["Form", "Eigene Caroud-Form, beidseitig bedruckt"],
     ["Wie", "Aufhängen und liegen lassen"],
     ["Hält", "4 bis 8 Wochen, je nach Belüftung"],
   ],
-  clip: [
-    ["Wohin", "Ins Lüftungsgitter der Klimaanlage"],
-    ["Wie", "Einklipsen, Refill später nachkaufen"],
-    ["Wirkung", "Stärker, sobald die Lüftung läuft"],
+  haengerstd: [
+    ["Wohin", "An den Rückspiegel"],
+    ["Wie", "Aufhängen und liegen lassen"],
+    ["Hält", "4 bis 8 Wochen, je nach Belüftung"],
+  ],
+  glas: [
+    ["Wohin", "An den Rückspiegel"],
+    ["Wie", "Aufhängen, Verschluss leicht öffnen"],
+    ["Inhalt", "8 ml Duftöl im Glasflakon"],
+    ["Hält", "Mehrere Monate"],
   ],
 };
 
