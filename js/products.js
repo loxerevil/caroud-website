@@ -2,11 +2,10 @@
 // Caroud – Produktdaten
 //
 // Die sieben Düfte stehen zentral in SCENTS. Daraus werden die
-// Linien Duftspray, Duftanhänger Premium, Duftanhänger (Standard)
-// und Glasanhänger erzeugt –
+// Linien Duftspray, Duftanhänger Premium und Glasanhänger erzeugt –
 // ein neuer Duft muss also nur EINMAL eingetragen werden.
 //
-//   type:       "spray" | "haenger" (Premium) | "haengerstd" | "glas" | "tuch" | "abzieher" | "bundle"
+//   type:       "spray" | "haenger" (Premium) | "glas" | "tuch" | "abzieher" | "bundle"
 //   category:   Anzeige-Kategorie
 //   priceOld:   Streichpreis (null = kein Sale-Badge)
 //   bestseller: true = erscheint in der Start-Ansicht "Bestseller"
@@ -18,7 +17,6 @@
 const CATEGORIES = [
   { name: "Duftsprays", type: "spray", color: "#111111", img: "img/produkte/spray-midnight.webp" },
   { name: "Duftanhänger Premium", type: "haenger", color: "#111111", img: "img/produkte/haenger-midnight.webp" },
-  { name: "Duftanhänger", type: "haengerstd", color: "#111111" },
   { name: "Glasanhänger", type: "glas", color: "#1a1a1a", img: "img/produkte/glas-midnight.webp" },
   { name: "Pflege", type: "tuch", color: "#3d3d3d" },
   { name: "Bundles", type: "bundle", color: "#3b6ea5" },
@@ -96,8 +94,6 @@ const LINES = [
     text: (s) => s.spray },
   { type: "haenger", category: "Duftanhänger Premium", suffix: "Duftanhänger Premium",
     text: (s) => s.short + " Als Premium-Anhänger in der eigenen Caroud-Form: beidseitig bedruckt, mit schwarzer Kordel – unser Aushängeschild für den Rückspiegel." },
-  { type: "haengerstd", category: "Duftanhänger", suffix: "Duftanhänger", noImg: true,
-    text: (s) => s.short + " Als schlichter Anhänger für den Rückspiegel – dezent im Look, präsent im Duft." },
   { type: "glas",    category: "Glasanhänger",  suffix: "Glasanhänger",
     text: (s) => s.short + " Im 8-ml-Glasflakon für den Rückspiegel: das Duftöl verdunstet langsam über den Verschluss – ergiebiger und langlebiger als ein Anhänger aus Papier." },
 ];

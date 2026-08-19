@@ -142,7 +142,6 @@ function artFor(p) {
   if (p.type === "spray") return sprayBottleSVG(p.color, p.label, p.img);
   if (p.type === "baum") return baumSVG(p.color, p.label);
   if (p.type === "haenger") return haengerSVG(p.color, p.label, p.img);
-  if (p.type === "haengerstd") return haengerSVG(p.color, p.label, null);
   if (p.type === "glas") return glasSVG(p.color, p.label, p.img);
   if (p.type === "bundle") return bundleSVG(p.color, p.label);
   if (p.type === "abzieher") return abzieherSVG(p.color, p.label);
@@ -296,7 +295,7 @@ document.querySelectorAll("[data-koll]").forEach((kachel) => {
 
 // ---------- Filter & Produkt-Grid ----------
 
-const FILTERS = ["bestseller", "alle", "Duftsprays", "Duftanhänger Premium", "Duftanhänger", "Glasanhänger", "Pflege", "Bundles"];
+const FILTERS = ["bestseller", "alle", "Duftsprays", "Duftanhänger Premium", "Glasanhänger", "Pflege", "Bundles"];
 const FILTER_LABELS = { bestseller: "Bestseller", alle: "Alle Produkte" };
 let activeFilter = "bestseller";
 
@@ -499,16 +498,11 @@ const FAKTEN = {
     ["Wohin", "Auf Fußmatten oder Textilsitze"],
     ["Nicht auf", "Leder, Kunststoff, Displays, Haut"],
     ["Wie", "1–2 Sprühstöße, wann immer du magst"],
-    ["Inhalt", "100 ml"],
+    ["Inhalt", "150 ml"],
   ],
   haenger: [
     ["Wohin", "An den Rückspiegel"],
     ["Form", "Eigene Caroud-Form, beidseitig bedruckt"],
-    ["Wie", "Aufhängen und liegen lassen"],
-    ["Hält", "4 bis 8 Wochen, je nach Belüftung"],
-  ],
-  haengerstd: [
-    ["Wohin", "An den Rückspiegel"],
     ["Wie", "Aufhängen und liegen lassen"],
     ["Hält", "4 bis 8 Wochen, je nach Belüftung"],
   ],
