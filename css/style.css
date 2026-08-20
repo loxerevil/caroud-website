@@ -1906,3 +1906,47 @@ button { font-family: inherit; }
   padding: 0 0.3rem;
   vertical-align: 1px;
 }
+
+
+/* ============ Eigene Produktseite (#p/<id>) ============ */
+.shop-versteckt { display: none !important; }
+.produkt-page {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 2.2rem 1.5rem 4rem;
+  background: var(--white);
+}
+.pdp-breadcrumb { margin-bottom: 1.4rem; }
+.pdp-breadcrumb a { font-size: 0.8rem; letter-spacing: 0.06em; color: #777; text-decoration: none; }
+.pdp-breadcrumb a:hover { color: var(--gold-dark); }
+.pdp-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; }
+.pdp-art {
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 2.4rem; min-height: 320px;
+}
+.pdp-art .prod-art, .pdp-art > svg, .pdp-art img { width: min(300px, 70%); height: auto; }
+.pdp-info h1 { font-family: var(--font-serif, Georgia, serif); font-size: 1.7rem; margin: 0.2rem 0 0.7rem; }
+.pdp-tax { font-size: 0.72rem; color: #999; margin: 0.3rem 0 1rem; }
+.pdp-usps { list-style: none; margin: 0 0 1.3rem; padding: 0.9rem 0; border-top: 1px solid #ececec; border-bottom: 1px solid #ececec; }
+.pdp-usps li { font-size: 0.84rem; color: #444; padding: 0.24rem 0 0.24rem 1.5rem; position: relative; }
+.pdp-usps li::before { content: "✓"; position: absolute; left: 0; color: var(--gold-dark); font-weight: 700; }
+.pdp-desc-block { margin-top: 1.6rem; border-top: 1px solid #ececec; padding-top: 1.1rem; }
+.pdp-desc-head { font-size: 0.74rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; margin: 0 0 0.6rem; }
+.produkt-page .modal-actions {
+  position: static; margin: 0.2rem 0 0; padding: 0;
+  box-shadow: none; background: transparent;
+}
+/* Header ist fuer den dunklen Hero gebaut - auf der weissen Produktseite immer dunkel */
+body.pdp-aktiv .site-header {
+  background: var(--ink);
+  border-bottom-color: var(--ink-line);
+}
+.produkt-page .btn { width: 100%; text-align: center; }
+
+@media (min-width: 900px) {
+  .pdp-grid { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 3.5rem; align-items: start; }
+  .pdp-art { min-height: 480px; position: sticky; top: 120px; }
+  .pdp-info h1 { font-size: 2.1rem; }
+  .produkt-page .btn { width: auto; }
+}

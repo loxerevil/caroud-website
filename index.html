@@ -29,7 +29,7 @@
   <link rel="icon" type="image/png" href="img/favicon.png">
   <!-- Überschriftenschrift vorladen, damit der Hero-Titel nicht erst in Georgia aufblitzt -->
   <link rel="preload" href="fonts/playfair-400.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/style.css?v=42">
+  <link rel="stylesheet" href="css/style.css?v=43">
 
   <!-- Strukturierte Daten für Google. Produkt-Markup fehlt bewusst,
        solange keine echten Preise hinterlegt sind. -->
@@ -238,6 +238,9 @@
   </div>
 
   <!-- Die sieben Düfte -->
+  <!-- Eigene Produktseite: wird per Hash-Route #p/<id> gefuellt und eingeblendet -->
+  <section class="produkt-page" id="produktPage" hidden></section>
+
   <section class="scent-band reveal" id="duefte">
     <div class="scent-head">
       <p class="brand-kicker">Sieben Düfte</p>
@@ -255,7 +258,7 @@
     <h2 class="section-title">Kollektionen</h2>
     <div class="koll-grid">
       <button class="koll-tile" type="button" data-koll="Duftsprays">
-        <img src="img/kollektion-sprays.webp?v=42" alt="Caroud Duftsprays" width="900" height="900" loading="lazy">
+        <img src="img/kollektion-sprays.webp?v=43" alt="Caroud Duftsprays" width="900" height="900" loading="lazy">
         <span class="koll-inner">
           <span class="koll-kicker">Autodüfte</span>
           <span class="koll-title">Duftsprays</span>
@@ -263,7 +266,7 @@
         </span>
       </button>
       <button class="koll-tile" type="button" data-koll="Duftanhänger Premium">
-        <img src="img/kollektion-anhaenger.webp?v=42" alt="Caroud Duftanhänger Premium" width="900" height="900" loading="lazy">
+        <img src="img/kollektion-anhaenger.webp?v=43" alt="Caroud Duftanhänger Premium" width="900" height="900" loading="lazy">
         <span class="koll-inner">
           <span class="koll-kicker">Eigene Form, beidseitig bedruckt</span>
           <span class="koll-title">Duftanhänger Premium</span>
@@ -271,7 +274,7 @@
         </span>
       </button>
       <button class="koll-tile" type="button" data-koll="Glasanhänger">
-        <img src="img/kollektion-glas.webp?v=42" alt="Caroud Glasanhänger mit 8 ml Duftöl" width="900" height="900" loading="lazy">
+        <img src="img/kollektion-glas.webp?v=43" alt="Caroud Glasanhänger mit 8 ml Duftöl" width="900" height="900" loading="lazy">
         <span class="koll-inner">
           <span class="koll-kicker">8 ml Duftöl im Flakon</span>
           <span class="koll-title">Glasanhänger</span>
@@ -282,7 +285,7 @@
     <!-- Zweite Reihe, flacher: Sets & Boxen (Sparpreis) und Pflege -->
     <div class="koll-grid koll-grid-2">
       <button class="koll-tile koll-tile-wide" type="button" data-koll="Sets &amp; Boxen">
-        <img src="img/kollektion-bundles.webp?v=42" alt="Caroud Sets und Boxen" width="1000" height="500" loading="lazy">
+        <img src="img/kollektion-bundles.webp?v=43" alt="Caroud Sets und Boxen" width="1000" height="500" loading="lazy">
         <span class="koll-inner">
           <span class="koll-kicker">Sparsets, Probiersets &amp; Mystery Box</span>
           <span class="koll-title">Sets &amp; Boxen</span>
@@ -290,7 +293,7 @@
         </span>
       </button>
       <button class="koll-tile koll-tile-wide" type="button" data-koll="Pflege">
-        <img src="img/kollektion-pflege.webp?v=42" alt="Caroud Pflege" width="1000" height="500" loading="lazy">
+        <img src="img/kollektion-pflege.webp?v=43" alt="Caroud Pflege" width="1000" height="500" loading="lazy">
         <span class="koll-inner">
           <span class="koll-kicker">Tücher &amp; Zubehör</span>
           <span class="koll-title">Pflege</span>
@@ -554,7 +557,7 @@
   <!-- Toast -->
   <div class="toast" id="toast" hidden></div>
 
-  <script src="js/products.js?v=42"></script>
-  <script src="js/main.js?v=42"></script>
+  <script src="js/products.js?v=43"></script>
+  <script src="js/main.js?v=43"></script>
 </body>
 </html>

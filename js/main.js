@@ -275,7 +275,7 @@ if (scentGrid) {
       <span class="scent-swatch">${artFor(byId("spray-" + s.key))}</span>
       <span class="scent-name">${s.name}</span>
       <span class="scent-notes">${s.notes.slice(0, 3).join(" · ")}</span>`;
-    card.addEventListener("click", () => openProductModal("spray-" + s.key));
+    card.addEventListener("click", () => { location.hash = "p/spray-" + s.key; });
     scentGrid.appendChild(card);
   });
 }
@@ -427,7 +427,7 @@ function renderProducts() {
       e.stopPropagation();
       addToCart(p.id, 1);
     });
-    card.addEventListener("click", () => openProductModal(p.id));
+    card.addEventListener("click", () => { location.hash = "p/" + p.id; });
     productGrid.appendChild(card);
   });
 }
@@ -810,7 +810,7 @@ searchInput.addEventListener("input", () => {
       <span class="search-result-price">${euro(p.price)}</span>`;
     row.addEventListener("click", () => {
       closeSearch();
-      openProductModal(p.id);
+      location.hash = "p/" + p.id;
     });
     searchResults.appendChild(row);
   });
@@ -978,3 +978,111 @@ if (heroVideo) {
     }, { passive: true })
   );
 }
+
+
+// ---------- Eigene Produktseite (#p/<id>) ----------
+// Jedes Produkt bekommt eine eigene Seite mit teilbarer URL. Die Shop-
+// Sektionen werden ausgeblendet, die Seite aus PRODUCTS gerendert.
+
+const produktPage = document.getElementById("produktPage");
+let pdpQty = 1;
+
+function renderProduktseite(p) {
+  pdpQty = 1;
+  const saving = p.priceOld ? p.priceOld - p.price : 0;
+  const geschwister = p.scent ? PRODUCTS.filter((x) => x.scent === p.scent && x.id !== p.id) : [];
+  const fakten = p.set ? [] : FAKTEN[p.type] || [];
+  const tint = p.color ? `background:linear-gradient(170deg, ${rgba(p.color, 0.2)} 0%, #f5f5f4 70%)` : "";
+  produktPage.innerHTML = `
+    <div class="container pdp">
+      <nav class="pdp-breadcrumb"><a href="#produkte" data-pdp-back>← Zurück zum Shop</a></nav>
+      <div class="pdp-grid">
+        <div class="pdp-art" style="${tint}">${artFor(p)}</div>
+        <div class="pdp-info">
+          <p class="modal-category">${p.category}</p>
+          <h1>${p.name}</h1>
+          <div class="modal-prices">
+            ${p.priceOld ? `<span class="price-old">${euro(p.priceOld)}</span>` : ""}
+            <span class="price-now">${euro(p.price)}</span>
+            ${p.priceOld ? `<span class="sale-badge" style="position:static;margin-left:0.6rem;">Sparen ${euro(saving)}</span>` : ""}
+          </div>
+          <p class="pdp-tax">inkl. MwSt. – versandkostenfrei</p>
+          <ul class="pdp-usps">
+            <li>Versandkostenfrei ohne Mindestbestellwert</li>
+            <li>Versand in 24 h</li>
+            <li>14 Tage Widerrufsrecht</li>
+            <li>Auf Lager</li>
+          </ul>
+          <div class="modal-actions">
+            <div class="qty-row">
+              <button class="qty-btn" data-pminus>−</button>
+              <span class="qty-val" id="pdpQtyVal">1</span>
+              <button class="qty-btn" data-pplus>+</button>
+            </div>
+            <button class="btn btn-gold" id="pdpAdd">In den Warenkorb legen</button>
+          </div>
+          ${p.category === "Duftsprays" ? `<p class="gift-note">✦ Inklusive: Gratis-Duftmuster</p>` : ""}
+          <div class="pdp-desc-block">
+            <p class="pdp-desc-head">Beschreibung</p>
+            <p class="modal-desc">${p.desc}</p>
+            <p class="notes-label">${p.category === "Sets & Boxen" || p.set ? "Inhalt" : p.category === "Pflege" ? "Details" : "Duftnoten"}</p>
+            <div class="notes-row">${p.notes.map((n) => `<span class="note-chip">${n}</span>`).join("")}</div>
+            ${fakten.length ? `
+              <dl class="fakten">
+                ${fakten.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")}
+              </dl>` : ""}
+          </div>
+          ${geschwister.length ? `
+            <p class="notes-label">${p.label} gibt es auch als</p>
+            <div class="cross-row">
+              ${geschwister.map((g) => `
+                <button class="cross-card" type="button" data-pdp-cross="${g.id}">
+                  <span class="cross-art">${artFor(g)}</span>
+                  <span class="cross-name">${g.linieName}</span>
+                </button>`).join("")}
+            </div>` : ""}
+        </div>
+      </div>
+    </div>`;
+  produktPage.querySelectorAll("[data-pdp-cross]").forEach((b) => {
+    b.addEventListener("click", () => { location.hash = "p/" + b.dataset.pdpCross; });
+  });
+  produktPage.querySelector("[data-pminus]").addEventListener("click", () => {
+    pdpQty = Math.max(1, pdpQty - 1);
+    document.getElementById("pdpQtyVal").textContent = pdpQty;
+  });
+  produktPage.querySelector("[data-pplus]").addEventListener("click", () => {
+    pdpQty++;
+    document.getElementById("pdpQtyVal").textContent = pdpQty;
+  });
+  produktPage.querySelector("#pdpAdd").addEventListener("click", () => {
+    addToCart(p.id, pdpQty);
+    openCart();
+  });
+}
+
+const shopSektionen = Array.from(document.querySelectorAll("body > section")).filter((el) => el.id !== "produktPage");
+
+function routeProduktseite() {
+  const m = location.hash.match(/^#p\/(.+)$/);
+  const p = m ? byId(decodeURIComponent(m[1])) : null;
+  if (p) {
+    renderProduktseite(p);
+    shopSektionen.forEach((el) => { el.classList.add("shop-versteckt"); });
+    produktPage.hidden = false;
+    document.body.classList.add("pdp-aktiv");
+    document.title = p.name + " – Caroud";
+    window.scrollTo(0, 0);
+  } else {
+    if (produktPage.hidden) return;
+    produktPage.hidden = true;
+    document.body.classList.remove("pdp-aktiv");
+    produktPage.innerHTML = "";
+    shopSektionen.forEach((el) => { el.classList.remove("shop-versteckt"); });
+    document.title = "Caroud – Premium Autodüfte, Duftsprays, Glasanhänger & Duftanhänger";
+    if (m) location.hash = "";
+  }
+}
+
+window.addEventListener("hashchange", routeProduktseite);
+routeProduktseite();
