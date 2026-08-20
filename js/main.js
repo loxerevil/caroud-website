@@ -1060,6 +1060,7 @@ function renderProduktseite(p) {
             <li>14 Tage Widerrufsrecht</li>
             <li>Auf Lager</li>
           </ul>
+          ${p.category === "Duftsprays" ? `<p class="gift-note">✦ Inklusive: Gratis-Duftmuster</p>` : ""}
           <div class="modal-actions">
             <div class="qty-row">
               <button class="qty-btn" data-pminus>−</button>
@@ -1068,7 +1069,6 @@ function renderProduktseite(p) {
             </div>
             <button class="btn btn-gold" id="pdpAdd">In den Warenkorb legen</button>
           </div>
-          ${p.category === "Duftsprays" ? `<p class="gift-note">✦ Inklusive: Gratis-Duftmuster</p>` : ""}
           <div class="pdp-desc-block">
             <p class="pdp-desc-head">Beschreibung</p>
             <p class="modal-desc">${p.desc}</p>

@@ -1937,6 +1937,7 @@ button { font-family: inherit; }
   position: static; margin: 0.2rem 0 0; padding: 0;
   box-shadow: none; background: transparent;
 }
+.produkt-page .gift-note { margin: 0 0 1rem; }
 /* Header ist fuer den dunklen Hero gebaut - auf der weissen Produktseite immer dunkel */
 body.pdp-aktiv .site-header {
   background: var(--ink);
