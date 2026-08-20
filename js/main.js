@@ -308,7 +308,7 @@ function zuDenProdukten(filter) {
     setFamily("alle");
     setFilter(filter);
   }
-  const kopf = document.getElementById("siteHeader");
+  const kopf = document.querySelector(".top-sticky") || document.getElementById("siteHeader");
   const versatz = kopf ? kopf.getBoundingClientRect().height + 8 : 8;
   const ziel = document.getElementById("produkte").getBoundingClientRect().top
     + window.scrollY - versatz;
