@@ -550,6 +550,10 @@ function renderUpsell() {
   UPSELL.forEach((u) => {
     const base = byId(u.id);
     if (!base) return;
+    // Nur die anderen Produkte vorschlagen: was schon im Korb liegt, faellt raus
+    const schonImKorb = cart.some((i) => i.id === u.id
+      || (u.scentChoice && byId(i.id)?.linie === u.scentChoice));
+    if (schonImKorb) return;
     const regular = base.upsellOnly ? null : base.price;
     const card = document.createElement("div");
     card.className = "upsell-card";
@@ -573,6 +577,7 @@ function renderUpsell() {
     });
     row.appendChild(card);
   });
+  if (!row.children.length) box.hidden = true;
 }
 
 function renderCart() {

@@ -1842,6 +1842,11 @@ button { font-family: inherit; }
   margin: 0 0 0.55rem;
   font-weight: 600;
 }
+.upsell-sub {
+  font-size: 0.68rem;
+  color: #999;
+  margin: -0.35rem 0 0.55rem;
+}
 .upsell-row {
   display: flex;
   gap: 0.55rem;
