@@ -1865,27 +1865,40 @@ button { font-family: inherit; }
   gap: 0.3rem;
   background: #fff;
 }
-.upsell-art { width: 44px; height: 60px; }
+.upsell-art { width: 44px; height: 60px; flex: 0 0 60px; }
 .upsell-art .prod-art { width: 100%; height: 100%; }
+/* Feste Hoehen je Zeile: so stehen Name, Preis, Duftwahl und Button
+   ueber alle Karten hinweg auf einer Linie - auch wenn eine Karte
+   keine Duftauswahl hat. */
 .upsell-name {
   font-size: 0.72rem;
   text-align: center;
   line-height: 1.25;
-  min-height: 1.8em;
+  height: 2.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.upsell-prices { display: flex; gap: 0.3rem; align-items: baseline; }
+.upsell-prices {
+  display: flex; gap: 0.3rem; align-items: baseline; justify-content: center;
+  height: 1.2rem;
+}
+/* Platzhalter, wenn es fuer den Artikel keine Duftwahl gibt */
+.upsell-slot { width: 100%; height: 1.45rem; display: flex; align-items: stretch; }
 .upsell-prices .price-old { font-size: 0.68rem; }
 .upsell-prices .price-now { font-size: 0.82rem; font-weight: 700; }
 .upsell-scent {
   width: 100%;
+  height: 100%;
   font-size: 0.7rem;
-  padding: 0.15rem 0.2rem;
+  padding: 0.1rem 0.2rem;
   border: 1px solid #ddd;
   border-radius: 5px;
   background: #fafafa;
 }
 .upsell-add {
   width: 100%;
+  margin-top: auto;
   border: 1px solid #111;
   background: #111;
   color: #fff;

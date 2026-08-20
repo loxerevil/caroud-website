@@ -564,11 +564,13 @@ function renderUpsell() {
     const regular = base.upsellOnly ? null : base.price;
     const card = document.createElement("div");
     card.className = "upsell-card";
+    // Der Slot steht immer - mit Auswahl oder leer. Sonst rutscht der
+    // Button bei Karten ohne Duftwahl nach oben und die Reihe wirkt schief.
     const scents = u.scentChoice
-      ? `<select class="upsell-scent" aria-label="Duft wählen">
+      ? `<div class="upsell-slot"><select class="upsell-scent" aria-label="Duft wählen">
           ${SCENTS.map((s) => `<option value="${u.scentChoice}-${s.key}">${s.name}</option>`).join("")}
-         </select>`
-      : "";
+         </select></div>`
+      : `<div class="upsell-slot" aria-hidden="true"></div>`;
     card.innerHTML = `
       <div class="upsell-art">${artFor(base)}</div>
       <div class="upsell-name">${u.name}</div>
@@ -577,7 +579,7 @@ function renderUpsell() {
         <span class="price-now">${euro(u.price)}</span>
       </div>
       ${scents}
-      <button class="upsell-add" type="button">+ Dazu</button>`;
+      <button class="upsell-add" type="button">Hinzufügen</button>`;
     card.querySelector(".upsell-add").addEventListener("click", () => {
       const sel = card.querySelector(".upsell-scent");
       addToCart(sel ? sel.value : u.id, 1, true);
