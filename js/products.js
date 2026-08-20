@@ -15,12 +15,12 @@
 // Bilder: die gedruckten Etiketten, gerendert aus den Druck-PDFs
 // (img/produkte/<typ>-<duft>.webp). Ohne img zeichnet main.js die Ersatzgrafik.
 // Version an Bild-URLs, damit Browser nach Etikett-Updates nicht alte Bilder aus dem Cache zeigen
-const ASSET_V = "39";
+const ASSET_V = "40";
 
 const CATEGORIES = [
-  { name: "Duftsprays", type: "spray", color: "#111111", img: "img/produkte/spray-midnight.webp + "?v=" + ASSET_V },
-  { name: "Duftanhänger Premium", type: "haenger", color: "#111111", img: "img/produkte/haenger-midnight.webp + "?v=" + ASSET_V },
-  { name: "Glasanhänger", type: "glas", color: "#1a1a1a", img: "img/produkte/glas-midnight.webp + "?v=" + ASSET_V },
+  { name: "Duftsprays", type: "spray", color: "#111111", img: "img/produkte/spray-midnight.webp?v=" + ASSET_V },
+  { name: "Duftanhänger Premium", type: "haenger", color: "#111111", img: "img/produkte/haenger-midnight.webp?v=" + ASSET_V },
+  { name: "Glasanhänger", type: "glas", color: "#1a1a1a", img: "img/produkte/glas-midnight.webp?v=" + ASSET_V },
   { name: "Pflege", type: "tuch", color: "#3d3d3d" },
   { name: "Sets & Boxen", type: "bundle", color: "#3b6ea5" },
 ];
@@ -82,7 +82,7 @@ const SCENTS = [
     bestseller: { spray: false, haenger: true, glas: false, baum: false },
   },
   {
-    key: "ignition", name: "Ignition", color: "#c9a227", familie: "suess",
+    key: "spark", name: "Spark", color: "#c9a227", familie: "suess",
     notes: ["Ananas", "Honig", "Vanille", "Tonkabohne"],
     short: "Der Funke, der alles startet: reife Ananas, goldener Honig, cremige Vanille.",
     spray: "Der Funke, der alles startet: reife Ananas, goldener Honig und cremige Vanille. Süß, warm und sofort präsent.",
@@ -213,7 +213,7 @@ const OTHER_PRODUCTS = [
     type: "haenger", category: "Duftanhänger Premium", set: true,
     color: "#2a2a2a", label: "5er-Set",
     price: 13.90, priceOld: 17.50, bestseller: false,
-    desc: "Fünf Premium-Duftanhänger, frei kombinierbar aus allen sieben Düften – der beste Preis pro Anhänger. Deine Wunsch-Düfte gibst du im Checkout an.",
+    desc: "Fünf Premium-Duftanhänger, frei kombinierbar aus allen sieben Düften – unser Sparpreis für den Duftwechsel. Deine Wunsch-Düfte gibst du im Checkout an.",
     notes: ["5 Anhänger", "Düfte frei wählbar"],
   },
   {
@@ -232,7 +232,7 @@ const OTHER_PRODUCTS = [
     type: "probier", category: "Sets & Boxen", set: true,
     color: "#b9a06a", label: "3 Düfte",
     price: 16.90, priceOld: 21.90, bestseller: true,
-    desc: "Drei Düfte deiner Wahl als 15-ml-Spray zum Kennenlernen – bevor du dich für die große Flasche entscheidest. Deine Wunsch-Düfte gibst du im Checkout an.",
+    desc: "Drei Düfte deiner Wahl als 15-ml-Sprays zum Kennenlernen – bevor du dich für die große Flasche entscheidest. Deine Wunsch-Düfte gibst du im Checkout an.",
     notes: ["3 × 15 ml", "Düfte frei wählbar"],
   },
   {

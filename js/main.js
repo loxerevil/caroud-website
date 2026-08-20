@@ -139,7 +139,7 @@ function glasSVG(color, label, img) {
 }
 
 
-function probierSVG(color, label) {
+function probierSVG(color, label, anzahl) {
   // Drei 15-ml-Mini-Sprays nebeneinander – die Probier-Groesse
   const mini = (x, tint) => `
     <g transform="translate(${x} 0)">
@@ -154,7 +154,7 @@ function probierSVG(color, label) {
   return `
   <svg class="prod-art" viewBox="0 0 140 200" xmlns="http://www.w3.org/2000/svg">
     <g transform="translate(18 18)">
-      ${mini(0, "#3a3a3a")}${mini(39, "#555")}${mini(78, "#3a3a3a")}
+      ${anzahl === 1 ? `<g transform="translate(39 0)">${mini(0, "#3a3a3a")}</g>` : `${mini(0, "#3a3a3a")}${mini(39, "#555")}${mini(78, "#3a3a3a")}`}
     </g>
     <text x="70" y="188" text-anchor="middle" font-size="8" font-family="Georgia, serif" letter-spacing="1.5" fill="#8a8a8a">${label.toUpperCase()}</text>
   </svg>`;
@@ -182,7 +182,7 @@ function artFor(p) {
   if (p.type === "haenger") return haengerSVG(p.color, p.label, p.img);
   if (p.type === "glas") return glasSVG(p.color, p.label, p.img);
   if (p.type === "bundle") return bundleSVG(p.color, p.label);
-  if (p.type === "probier") return probierSVG(p.color, p.label);
+  if (p.type === "probier") return probierSVG(p.color, p.label, p.id === "probe-15" ? 1 : 3);
   if (p.type === "mystery") return mysterySVG(p.color, p.label);
   if (p.type === "abzieher") return abzieherSVG(p.color, p.label);
   return tuchSVG(p.color, p.label);
@@ -472,7 +472,7 @@ function upsellPriceFor(id) {
 
 // Mitnahme-Preise gelten nur, wenn ein regulaer bezahlter Artikel im Korb liegt
 function upsellValid() {
-  return cart.some((i) => !i.up);
+  return cart.some((i) => !i.up && !byId(i.id)?.upsellOnly);
 }
 
 // Preis einer Warenkorb-Position (Mitnahmeartikel guenstiger)
@@ -487,7 +487,7 @@ function linePrice(item) {
 // Raeumt ungueltige Mitnahmeartikel auf: ohne regulaeren Artikel gibt es
 // keine Mitnahme-Preise – reine Mitnahmeartikel fliegen raus, der Rest
 // wird zum Katalogpreis weitergefuehrt.
-function normalizeCart() {
+function normalizeCart(still) {
   if (upsellValid()) return;
   let changed = false;
   cart = cart.filter((i) => {
@@ -495,7 +495,7 @@ function normalizeCart() {
     return true;
   });
   cart.forEach((i) => { if (i.up) { i.up = false; changed = true; } });
-  if (changed && cart.length) {
+  if (changed && !still) {
     showToast("Mitnahme-Preise gelten nur zusammen mit einem regulären Artikel.");
   }
 }
@@ -622,6 +622,8 @@ document.getElementById("checkoutBtn").addEventListener("click", () => {
   showToast("Demo-Prototyp – der Checkout kommt mit Shopify. ✦");
 });
 
+normalizeCart(true);
+saveCart();
 renderCart();
 
 // ---------- Produkt-Modal ----------
@@ -749,7 +751,7 @@ cartOverlay.addEventListener("click", closeCart);
 
 menuDrawer.querySelectorAll("a").forEach((a) => {
   a.addEventListener("click", () => {
-    if (a.dataset.filter) setFilter(a.dataset.filter);
+    if (a.dataset.filter) { setFamily("alle"); setFilter(a.dataset.filter); }
     closeMenu();
   });
 });
@@ -790,7 +792,8 @@ searchInput.addEventListener("input", () => {
     (p) => !p.hidden && (p.name.toLowerCase().includes(q) || p.notes.some((n) => n.toLowerCase().includes(q)))
   );
   if (!hits.length) {
-    searchResults.innerHTML = `<p class="search-empty">Nichts gefunden für „${searchInput.value}“.</p>`;
+    const sicher = searchInput.value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    searchResults.innerHTML = `<p class="search-empty">Nichts gefunden für „${sicher}“.</p>`;
     return;
   }
   hits.forEach((p) => {
