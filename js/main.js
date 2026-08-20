@@ -987,6 +987,53 @@ if (heroVideo) {
 const produktPage = document.getElementById("produktPage");
 let pdpQty = 1;
 
+// Empfehlungen: bunte Mischung quer durch die Kategorien, Bestseller zuerst.
+// Der aktuelle Duft und Produkte ohne Preis bleiben draussen.
+function recoAuswahl(p) {
+  const pool = PRODUCTS.filter((x) => x.id !== p.id && x.scent !== p.scent && x.price > 0);
+  const sortiert = pool.slice().sort((a, b) => (b.bestseller ? 1 : 0) - (a.bestseller ? 1 : 0));
+  const gewaehlt = [];
+  const kategorien = new Set([p.category]);
+  const duefte = new Set(p.scent ? [p.scent] : []);
+  for (const x of sortiert) {
+    if (gewaehlt.length >= 4) break;
+    if (kategorien.has(x.category)) continue;
+    if (x.scent && duefte.has(x.scent)) continue;
+    kategorien.add(x.category);
+    if (x.scent) duefte.add(x.scent);
+    gewaehlt.push(x);
+  }
+  for (const x of sortiert) {
+    if (gewaehlt.length >= 4) break;
+    if (!gewaehlt.includes(x)) gewaehlt.push(x);
+  }
+  return gewaehlt;
+}
+
+function recoKarten(p) {
+  const recos = recoAuswahl(p);
+  if (!recos.length) return "";
+  return `
+    <div class="pdp-reco">
+      <h2 class="pdp-reco-head">Das könnte dir auch gefallen</h2>
+      <div class="pdp-reco-row">
+        ${recos.map((x) => {
+          const proz = x.priceOld ? Math.round((1 - x.price / x.priceOld) * 100) : 0;
+          return `
+          <button class="pdp-reco-card" type="button" data-reco="${x.id}">
+            ${proz ? `<span class="pdp-reco-badge">−${proz}%</span>` : ""}
+            <span class="pdp-reco-art">${artFor(x)}</span>
+            <span class="pdp-reco-name">${x.name}</span>
+            <span class="pdp-reco-price">
+              ${x.priceOld ? `<span class="price-old">${euro(x.priceOld)}</span>` : ""}
+              ${euro(x.price)}
+            </span>
+          </button>`;
+        }).join("")}
+      </div>
+    </div>`;
+}
+
 function renderProduktseite(p) {
   pdpQty = 1;
   const saving = p.priceOld ? p.priceOld - p.price : 0;
@@ -1043,7 +1090,11 @@ function renderProduktseite(p) {
             </div>` : ""}
         </div>
       </div>
+      ${recoKarten(p)}
     </div>`;
+  produktPage.querySelectorAll("[data-reco]").forEach((b) => {
+    b.addEventListener("click", () => { location.hash = "p/" + b.dataset.reco; });
+  });
   produktPage.querySelectorAll("[data-pdp-cross]").forEach((b) => {
     b.addEventListener("click", () => { location.hash = "p/" + b.dataset.pdpCross; });
   });
@@ -1068,7 +1119,7 @@ function routeProduktseite() {
   const p = m ? byId(decodeURIComponent(m[1])) : null;
   if (p) {
     renderProduktseite(p);
-    shopSektionen.forEach((el) => { el.classList.add("shop-versteckt"); });
+    shopSektionen.forEach((el) => { el.classList.toggle("shop-versteckt", el.id !== "ueber"); });
     produktPage.hidden = false;
     document.body.classList.add("pdp-aktiv");
     document.title = p.name + " – Caroud";

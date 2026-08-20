@@ -1950,3 +1950,38 @@ body.pdp-aktiv .site-header {
   .pdp-info h1 { font-size: 2.1rem; }
   .produkt-page .btn { width: auto; }
 }
+
+
+/* Empfehlungszeile auf der Produktseite */
+.pdp-reco { margin-top: 3.5rem; border-top: 1px solid #ececec; padding-top: 2.4rem; }
+.pdp-reco-head {
+  text-align: center; font-size: 1.15rem; margin: 0 0 1.6rem;
+  font-family: Georgia, serif;
+}
+.pdp-reco-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+.pdp-reco-card {
+  position: relative; background: none; border: 1px solid #eee; border-radius: 10px;
+  padding: 1.2rem 0.9rem 1rem; cursor: pointer; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+  font-family: inherit;
+}
+.pdp-reco-card:hover { box-shadow: 0 10px 26px rgba(0, 0, 0, 0.1); transform: translateY(-2px); }
+.pdp-reco-badge {
+  position: absolute; top: 0.7rem; right: 0.7rem;
+  background: var(--gold); color: var(--black);
+  font-size: 0.68rem; font-weight: 700;
+  width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+.pdp-reco-art { height: 130px; display: flex; align-items: center; justify-content: center; }
+.pdp-reco-art .prod-art, .pdp-reco-art svg, .pdp-reco-art img { height: 100%; width: auto; }
+.pdp-reco-name {
+  font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--black);
+}
+.pdp-reco-price { font-size: 0.82rem; color: #555; display: flex; gap: 0.4rem; justify-content: center; }
+@media (min-width: 900px) {
+  .pdp-reco-row { grid-template-columns: repeat(4, 1fr); gap: 1.4rem; }
+  .pdp-reco-head { font-size: 1.4rem; }
+}
