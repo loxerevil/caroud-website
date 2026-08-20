@@ -1919,7 +1919,7 @@ button { font-family: inherit; }
 .pdp-breadcrumb { margin-bottom: 1.4rem; }
 .pdp-breadcrumb a { font-size: 0.8rem; letter-spacing: 0.06em; color: #777; text-decoration: none; }
 .pdp-breadcrumb a:hover { color: var(--gold-dark); }
-.pdp-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; }
+.pdp-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2rem; }
 .pdp-art {
   border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
@@ -1936,7 +1936,12 @@ button { font-family: inherit; }
 .produkt-page .modal-actions {
   position: static; margin: 0.2rem 0 0; padding: 0;
   box-shadow: none; background: transparent;
+  flex-wrap: wrap;
 }
+/* Auf dem Handy untereinander: der Button braucht die volle Breite, sonst
+   sprengt sein nowrap-Text (min-content) die Zeile aus dem Viewport. */
+.produkt-page .modal-actions .qty-row { flex: 1 1 100%; justify-content: center; }
+.produkt-page .modal-actions .btn { flex: 1 1 100%; min-width: 0; }
 .produkt-page .gift-note { margin: 0 0 1rem; }
 /* Header ist fuer den dunklen Hero gebaut - auf der weissen Produktseite immer dunkel */
 body.pdp-aktiv .site-header {
@@ -1950,6 +1955,8 @@ body.pdp-aktiv .site-header {
   .pdp-art { min-height: 480px; position: sticky; top: 120px; }
   .pdp-info h1 { font-size: 2.1rem; }
   .produkt-page .btn { width: auto; }
+  .produkt-page .modal-actions .qty-row { flex: 0 0 auto; }
+  .produkt-page .modal-actions .btn { flex: 1 1 auto; }
 }
 
 
@@ -1997,3 +2004,37 @@ body.pdp-aktiv .site-header {
 }
 .pdp-hinweis a { color: var(--gold-dark); font-weight: 600; }
 #checkoutBtn[disabled] { opacity: 0.45; cursor: not-allowed; }
+
+
+/* ---------- Handy-Feinschliff: Scroll-Reihen und Kopfhoehe ---------- */
+/* Chip-Reihen scrollen seitwaerts. Ohne Verlauf am Rand sieht ein halb
+   abgeschnittener Chip wie ein Fehler aus - die Klassen setzt main.js. */
+.filter-chips, .finder-chips, .review-grid, .upsell-row {
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+.filter-chips.fade-r, .finder-chips.fade-r, .review-grid.fade-r, .upsell-row.fade-r {
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 36px), transparent 100%);
+  mask-image: linear-gradient(to right, #000 calc(100% - 36px), transparent 100%);
+}
+.filter-chips.fade-l, .finder-chips.fade-l, .review-grid.fade-l, .upsell-row.fade-l {
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 36px);
+  mask-image: linear-gradient(to right, transparent 0, #000 36px);
+}
+.filter-chips.fade-lr, .finder-chips.fade-lr, .review-grid.fade-lr, .upsell-row.fade-lr {
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 36px, #000 calc(100% - 36px), transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 36px, #000 calc(100% - 36px), transparent 100%);
+}
+
+/* Ankuendigungsleiste muss auf schmalen Handys in EINE Zeile passen -
+   sonst waechst die klebende Kopfzeile und Ankersprunge landen zu tief. */
+@media (max-width: 640px) {
+  /* Immer einzeilig: bricht die Leiste um, waechst die klebende Kopfzeile
+     und alle Ankersprunge landen zu tief. Schrift skaliert stattdessen mit. */
+  .announcement-bar {
+    white-space: nowrap;
+    font-size: clamp(0.5rem, 2.45vw, 0.78rem);
+    letter-spacing: 0.04em;
+    padding: 0.5rem 0.5rem;
+  }
+}

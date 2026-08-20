@@ -384,6 +384,13 @@ function updateProductTitle() {
 
 function setFilter(f) {
   activeFilter = f;
+  // aktiven Chip sichtbar scrollen und den Rand-Verlauf nachziehen
+  setTimeout(() => {
+    const aktiv = document.querySelector(".filter-chips .chip.is-on, .filter-chips .chip.active");
+    // mittig statt "nearest": sonst klebt der aktive Chip am Rand unter dem Verlauf
+    if (aktiv && aktiv.scrollIntoView) aktiv.scrollIntoView({ block: "nearest", inline: "center" });
+    if (typeof scrollReihenPruefen === "function") scrollReihenPruefen();
+  }, 0);
   filterChips.querySelectorAll(".chip").forEach((c) => {
     c.classList.toggle("active", c.dataset.filter === f);
   });
@@ -881,6 +888,7 @@ if (announceMsgs.length > 1) {
     announceMsgs[announceIdx].classList.remove("is-on");
     announceIdx = (announceIdx + 1) % announceMsgs.length;
     announceMsgs[announceIdx].classList.add("is-on");
+    if (typeof kopfhoeheSetzen === "function") kopfhoeheSetzen();
   }, 4000);
 }
 
@@ -1152,3 +1160,38 @@ function routeProduktseite() {
 
 window.addEventListener("hashchange", routeProduktseite);
 routeProduktseite();
+
+// ---------- Handy: Scroll-Reihen und Kopfhoehe ----------
+// Die klebende Kopfzeile (Ankuendigung + Header) ist je nach Geraet
+// unterschiedlich hoch - Ankersprunge muessen sich danach richten.
+function kopfhoeheSetzen() {
+  const sticky = document.querySelector(".top-sticky");
+  if (!sticky) return;
+  const h = Math.round(sticky.getBoundingClientRect().height);
+  document.documentElement.style.scrollPaddingTop = h + 12 + "px";
+}
+
+// Verlauf an den Raendern, solange in die Richtung noch etwas zu scrollen ist
+function randVerlauf(el) {
+  if (!el) return;
+  const rest = el.scrollWidth - el.clientWidth;
+  if (rest <= 2) { el.classList.remove("fade-l", "fade-r", "fade-lr"); return; }
+  const links = el.scrollLeft > 2;
+  const rechts = el.scrollLeft < rest - 2;
+  el.classList.remove("fade-l", "fade-r", "fade-lr");
+  if (links && rechts) el.classList.add("fade-lr");
+  else if (rechts) el.classList.add("fade-r");
+  else if (links) el.classList.add("fade-l");
+}
+
+function scrollReihenPruefen() {
+  document.querySelectorAll(".filter-chips, .finder-chips, .review-grid, .upsell-row").forEach(randVerlauf);
+}
+
+document.querySelectorAll(".filter-chips, .finder-chips, .review-grid, .upsell-row").forEach((el) => {
+  el.addEventListener("scroll", () => randVerlauf(el), { passive: true });
+});
+window.addEventListener("resize", () => { kopfhoeheSetzen(); scrollReihenPruefen(); });
+window.addEventListener("load", () => { kopfhoeheSetzen(); scrollReihenPruefen(); });
+kopfhoeheSetzen();
+scrollReihenPruefen();
