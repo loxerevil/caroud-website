@@ -1986,3 +1986,14 @@ body.pdp-aktiv .site-header {
   .pdp-reco-row { grid-template-columns: repeat(4, 1fr); gap: 1.4rem; }
   .pdp-reco-head { font-size: 1.4rem; }
 }
+
+
+/* Einzel-Anhaenger: Hinweis + gesperrter Checkout */
+.pdp-hinweis {
+  font-size: 0.78rem; color: #8a7a55;
+  background: rgba(185, 160, 106, 0.1);
+  border-left: 3px solid var(--gold);
+  padding: 0.55rem 0.8rem; margin: 0 0 1rem;
+}
+.pdp-hinweis a { color: var(--gold-dark); font-weight: 600; }
+#checkoutBtn[disabled] { opacity: 0.45; cursor: not-allowed; }

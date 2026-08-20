@@ -588,8 +588,22 @@ function renderCart() {
   const subtotal = cartSubtotal();
   cartSubtotalEl.textContent = euro(subtotal);
 
-  shippingTextEl.innerHTML = `<strong>✦ Versandkostenfrei</strong> – auf alle Bestellungen`;
-  shippingFillEl.style.width = "100%";
+  // Einzelne Duftanhaenger rentieren sich mit Gratisversand nicht allein –
+  // sie brauchen einen weiteren Artikel im Korb (Sets sind davon ausgenommen).
+  const anker = cart.some((i) => {
+    const p = byId(i.id);
+    return p && !(p.type === "haenger" && !p.set);
+  });
+  const nurAnhaenger = cart.length > 0 && !anker;
+  if (nurAnhaenger) {
+    shippingTextEl.innerHTML = `<strong>✦ Fast geschafft:</strong> Duftanhänger gibt es nur zusammen mit einem weiteren Artikel – leg noch etwas dazu.`;
+    shippingFillEl.style.width = "50%";
+  } else {
+    shippingTextEl.innerHTML = `<strong>✦ Versandkostenfrei</strong> – auf alle Bestellungen`;
+    shippingFillEl.style.width = "100%";
+  }
+  const checkoutBtn = document.getElementById("checkoutBtn");
+  if (checkoutBtn) checkoutBtn.disabled = nurAnhaenger;
 
   cartItemsEl.innerHTML = "";
   if (!cart.length) {
@@ -1061,6 +1075,7 @@ function renderProduktseite(p) {
             <li>Auf Lager</li>
           </ul>
           ${p.category === "Duftsprays" ? `<p class="gift-note">✦ Inklusive: Gratis-Duftmuster</p>` : ""}
+          ${p.type === "haenger" && !p.set ? `<p class="pdp-hinweis">Nur zusammen mit einem weiteren Artikel bestellbar – oder direkt als <a href="#p/set-haenger-3">3er-Set</a>.</p>` : ""}
           <div class="modal-actions">
             <div class="qty-row">
               <button class="qty-btn" data-pminus>−</button>
