@@ -14,12 +14,15 @@
 
 // Bilder: die gedruckten Etiketten, gerendert aus den Druck-PDFs
 // (img/produkte/<typ>-<duft>.webp). Ohne img zeichnet main.js die Ersatzgrafik.
+// Version an Bild-URLs, damit Browser nach Etikett-Updates nicht alte Bilder aus dem Cache zeigen
+const ASSET_V = "39";
+
 const CATEGORIES = [
-  { name: "Duftsprays", type: "spray", color: "#111111", img: "img/produkte/spray-midnight.webp" },
-  { name: "Duftanhänger Premium", type: "haenger", color: "#111111", img: "img/produkte/haenger-midnight.webp" },
-  { name: "Glasanhänger", type: "glas", color: "#1a1a1a", img: "img/produkte/glas-midnight.webp" },
+  { name: "Duftsprays", type: "spray", color: "#111111", img: "img/produkte/spray-midnight.webp + "?v=" + ASSET_V },
+  { name: "Duftanhänger Premium", type: "haenger", color: "#111111", img: "img/produkte/haenger-midnight.webp + "?v=" + ASSET_V },
+  { name: "Glasanhänger", type: "glas", color: "#1a1a1a", img: "img/produkte/glas-midnight.webp + "?v=" + ASSET_V },
   { name: "Pflege", type: "tuch", color: "#3d3d3d" },
-  { name: "Bundles", type: "bundle", color: "#3b6ea5" },
+  { name: "Sets & Boxen", type: "bundle", color: "#3b6ea5" },
 ];
 
 // ---- Die Caroud-Düfte ----
@@ -32,16 +35,15 @@ const CATEGORIES = [
 const FAMILIEN = [
   { key: "frisch", name: "Frisch" },
   { key: "suess", name: "Süß" },
-  { key: "holzig", name: "Holzig" },
   { key: "orientalisch", name: "Orientalisch" },
 ];
 
 const SCENTS = [
   {
-    key: "midnight", name: "Midnight", color: "#3fae6a", familie: "holzig",
-    notes: ["Oud", "Amber", "Schwarzer Pfeffer"],
-    short: "Dunkel, elegant, souverän – würzig-holzig mit einem Hauch Amber.",
-    spray: "Dunkel, elegant, souverän. Midnight legt sich wie ein Maßanzug über deinen Innenraum – würzig-holzig mit einem Hauch Amber.",
+    key: "midnight", name: "Midnight", color: "#3fae6a", familie: "frisch",
+    notes: ["Zitrus", "Schwarze Johannisbeere", "Minze", "Basilikum"],
+    short: "Kühl und klar wie Nachtluft: spritzige Zitrus, schwarze Johannisbeere und ein Hauch Minze.",
+    spray: "Kühl, klar, tiefenentspannt. Midnight bringt frische Nachtluft in den Innenraum: spritzige Zitrus, schwarze Johannisbeere und kühle Minze über grünem Basilikum. Der Duft zum Runterkommen auf der Fahrt nach Hause.",
     bestseller: { spray: true, haenger: true, glas: true, baum: true },
   },
   {
@@ -66,7 +68,7 @@ const SCENTS = [
     bestseller: { spray: true, haenger: true, glas: false, baum: true },
   },
   {
-    key: "carbon", name: "Carbon", color: "#3f2d1e", familie: "orientalisch",
+    key: "carbon", name: "Carbon", color: "#141414", familie: "orientalisch",
     notes: ["Oud", "Himbeere", "Weihrauch", "Benzoe"],
     short: "Dunkel und kompromisslos: rauchiges Oud, ein Funken Himbeere, Weihrauch.",
     spray: "Dunkel und kompromisslos: rauchiges Oud, ein Funken Himbeere und Weihrauch, getragen von Benzoe. Der Duft für Nachtfahrten.",
@@ -109,7 +111,7 @@ LINES.forEach((line) => {
       name: s.name + " " + line.suffix,
       type: line.type, category: line.category,
       color: s.color, label: s.name,
-      img: line.noImg ? null : "img/produkte/" + line.type + "-" + s.key + ".webp",
+      img: line.noImg ? null : "img/produkte/" + line.type + "-" + s.key + ".webp?v=" + ASSET_V,
       price: line.price, priceOld: line.priceOld, bestseller: !!s.bestseller[line.type],
       desc: line.text(s),
       notes: s.notes,
@@ -162,7 +164,7 @@ const OTHER_PRODUCTS = [
   {
     id: "bundle-starter",
     name: "Starter Bundle",
-    type: "bundle", category: "Bundles",
+    type: "bundle", category: "Sets & Boxen",
     color: "#111111", label: "Starter",
     price: 29.90, priceOld: 33.90, bestseller: true,
     desc: "Der perfekte Einstieg: 1 Duftspray deiner Wahl + 2 Duftanhänger. Spare gegenüber dem Einzelkauf.",
@@ -171,11 +173,96 @@ const OTHER_PRODUCTS = [
   {
     id: "bundle-signature",
     name: "Signature Bundle",
-    type: "bundle", category: "Bundles",
+    type: "bundle", category: "Sets & Boxen",
     color: "#a8323e", label: "Signature",
     price: 56.90, priceOld: 64.30, bestseller: false,
     desc: "Für Sammler: 2 Duftsprays + 3 Duftanhänger – frei kombinierbar aus allen Düften.",
     notes: ["2× Spray", "3× Anhänger"],
+  },
+  // Sets – gleiche Produkte, bessere Staffelpreise. Düfte frei wählbar (Angabe im Checkout).
+  {
+    id: "set-spray-2",
+    name: "Duftspray 2er-Set",
+    type: "spray", category: "Duftsprays", set: true,
+    color: "#111111", label: "2er-Set",
+    price: 47.90, priceOld: 53.80, bestseller: false,
+    desc: "Zwei Duftsprays à 150 ml, frei kombinierbar aus allen sieben Düften – einer fürs Auto, einer als Reserve oder zum Verschenken. Deine Wunsch-Düfte gibst du im Checkout an.",
+    notes: ["2 × 150 ml", "Düfte frei wählbar"],
+  },
+  {
+    id: "set-spray-3",
+    name: "Duftspray 3er-Set",
+    type: "spray", category: "Duftsprays", set: true,
+    color: "#2a2a2a", label: "3er-Set",
+    price: 66.90, priceOld: 80.70, bestseller: false,
+    desc: "Drei Duftsprays à 150 ml, frei kombinierbar aus allen sieben Düften – der günstigste Weg zur großen Flasche. Deine Wunsch-Düfte gibst du im Checkout an.",
+    notes: ["3 × 150 ml", "Düfte frei wählbar"],
+  },
+  {
+    id: "set-haenger-3",
+    name: "Duftanhänger 3er-Set",
+    type: "haenger", category: "Duftanhänger Premium", set: true,
+    color: "#111111", label: "3er-Set",
+    price: 8.90, priceOld: 10.50, bestseller: true,
+    desc: "Drei Premium-Duftanhänger in der eigenen Caroud-Form, frei kombinierbar aus allen sieben Düften. Deine Wunsch-Düfte gibst du im Checkout an.",
+    notes: ["3 Anhänger", "Düfte frei wählbar"],
+  },
+  {
+    id: "set-haenger-5",
+    name: "Duftanhänger 5er-Set",
+    type: "haenger", category: "Duftanhänger Premium", set: true,
+    color: "#2a2a2a", label: "5er-Set",
+    price: 13.90, priceOld: 17.50, bestseller: false,
+    desc: "Fünf Premium-Duftanhänger, frei kombinierbar aus allen sieben Düften – der beste Preis pro Anhänger. Deine Wunsch-Düfte gibst du im Checkout an.",
+    notes: ["5 Anhänger", "Düfte frei wählbar"],
+  },
+  {
+    id: "set-glas-2",
+    name: "Glasanhänger 2er-Set",
+    type: "glas", category: "Glasanhänger", set: true,
+    color: "#1a1a1a", label: "2er-Set",
+    price: 22.90, priceOld: 25.80, bestseller: false,
+    desc: "Zwei Glasanhänger mit je 8 ml Duftöl, frei kombinierbar aus allen sieben Düften – einer für dich, einer zum Verschenken. Deine Wunsch-Düfte gibst du im Checkout an.",
+    notes: ["2 × 8 ml", "Düfte frei wählbar"],
+  },
+  // Probiersets – 15-ml-Sprühfläschchen zum Kennenlernen
+  {
+    id: "probierset-3",
+    name: "Probierset – 3 Düfte",
+    type: "probier", category: "Sets & Boxen", set: true,
+    color: "#b9a06a", label: "3 Düfte",
+    price: 16.90, priceOld: 21.90, bestseller: true,
+    desc: "Drei Düfte deiner Wahl als 15-ml-Spray zum Kennenlernen – bevor du dich für die große Flasche entscheidest. Deine Wunsch-Düfte gibst du im Checkout an.",
+    notes: ["3 × 15 ml", "Düfte frei wählbar"],
+  },
+  {
+    id: "probierset-7",
+    name: "Probierset – Alle 7 Düfte",
+    type: "probier", category: "Sets & Boxen", set: true,
+    color: "#b9a06a", label: "Alle 7",
+    price: 29.90, priceOld: 39.90, bestseller: true,
+    desc: "Die komplette Caroud-Kollektion als 15-ml-Sprays: alle sieben Düfte in einer Box. Finde deinen Favoriten – oder verschenke die ganze Reihe.",
+    notes: ["7 × 15 ml", "Alle 7 Düfte", "Geschenk-Box"],
+  },
+  // Mystery Box
+  {
+    id: "mystery-box",
+    name: "Mystery Box",
+    type: "mystery", category: "Sets & Boxen", set: true,
+    color: "#111111", label: "Mystery",
+    price: 34.90, priceOld: null, bestseller: true,
+    desc: "Wir packen, du wirst überrascht: mindestens 1 Duftspray, 3 Duftanhänger und 1 Glasanhänger – Warenwert über 50 €. Welche Düfte drin sind, verraten wir nicht.",
+    notes: ["Warenwert über 50 €", "Mind. 1 Spray + 3 Anhänger + 1 Glasanhänger", "Überraschungs-Düfte"],
+  },
+  // Nur im Warenkorb als Mitnahmeartikel (nicht im Katalog)
+  {
+    id: "probe-15",
+    name: "Duftprobe 15 ml",
+    type: "probier", category: "Sets & Boxen", hidden: true, upsellOnly: true,
+    color: "#b9a06a", label: "Probe",
+    price: 3.90, priceOld: null, bestseller: false,
+    desc: "Ein Duft deiner Wahl als 15-ml-Spray – nur als Mitnahmeartikel im Warenkorb. Deinen Wunsch-Duft gibst du im Checkout an.",
+    notes: ["15 ml", "Duft frei wählbar"],
   },
 ];
 

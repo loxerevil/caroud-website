@@ -54,15 +54,15 @@ function bundleSVG(color, label) {
       <rect x="52" y="4" width="16" height="14" rx="2" fill="#222"/>
       <rect x="44" y="18" width="32" height="16" rx="3" fill="#1b1b1b"/>
       <path d="M38 40 Q38 34 46 34 H74 Q82 34 82 40 L86 60 V186 Q86 194 78 194 H42 Q34 194 34 186 V60 Z" fill="${color}" stroke="rgba(0,0,0,0.15)"/>
-      <image href="img/produkte/spray-${sprayKey}.webp" x="42" y="88" width="36" height="46" preserveAspectRatio="xMidYMid slice"/>
+      <image href="img/produkte/spray-${sprayKey}.webp?v=${ASSET_V}" x="42" y="88" width="36" height="46" preserveAspectRatio="xMidYMid slice"/>
     </g>
     <g transform="translate(88 58)">
       <path d="M31 2 Q42 12 31 22 Q20 12 31 2" fill="none" stroke="#333" stroke-width="1.6"/>
-      <image href="img/produkte/haenger-carbon.webp" x="4" y="20" width="54" height="99" preserveAspectRatio="xMidYMid meet"/>
+      <image href="img/produkte/haenger-carbon.webp?v=${ASSET_V}" x="4" y="20" width="54" height="99" preserveAspectRatio="xMidYMid meet"/>
     </g>
     <g transform="translate(122 84)">
       <path d="M26 2 Q35 10 26 18 Q17 10 26 2" fill="none" stroke="#333" stroke-width="1.4"/>
-      <image href="img/produkte/haenger-sunroof.webp" x="3" y="16" width="46" height="84" preserveAspectRatio="xMidYMid meet"/>
+      <image href="img/produkte/haenger-sunroof.webp?v=${ASSET_V}" x="3" y="16" width="46" height="84" preserveAspectRatio="xMidYMid meet"/>
     </g>
   </svg>`;
 }
@@ -138,12 +138,52 @@ function glasSVG(color, label, img) {
   </svg>`;
 }
 
+
+function probierSVG(color, label) {
+  // Drei 15-ml-Mini-Sprays nebeneinander – die Probier-Groesse
+  const mini = (x, tint) => `
+    <g transform="translate(${x} 0)">
+      <rect x="8" y="52" width="10" height="8" rx="2" fill="#1a1a1a"/>
+      <rect x="10" y="44" width="6" height="8" rx="1" fill="#2a2a2a"/>
+      <rect x="0" y="60" width="26" height="86" rx="5" fill="${tint}" stroke="rgba(0,0,0,0.25)"/>
+      <rect x="3" y="78" width="20" height="46" rx="2" fill="#111"/>
+      <text x="13" y="97" text-anchor="middle" font-size="5.5" font-weight="600" font-family="Georgia, serif" letter-spacing="0.6" fill="#fff">CAROUD</text>
+      <rect x="9" y="101" width="8" height="2" rx="1" fill="#b9a06a"/>
+      <text x="13" y="112" text-anchor="middle" font-size="4.6" font-family="Georgia, serif" fill="#b9a06a">15 ML</text>
+    </g>`;
+  return `
+  <svg class="prod-art" viewBox="0 0 140 200" xmlns="http://www.w3.org/2000/svg">
+    <g transform="translate(18 18)">
+      ${mini(0, "#3a3a3a")}${mini(39, "#555")}${mini(78, "#3a3a3a")}
+    </g>
+    <text x="70" y="188" text-anchor="middle" font-size="8" font-family="Georgia, serif" letter-spacing="1.5" fill="#8a8a8a">${label.toUpperCase()}</text>
+  </svg>`;
+}
+
+function mysterySVG(color, label) {
+  // Schwarze Box mit Goldband und Fragezeichen
+  return `
+  <svg class="prod-art" viewBox="0 0 140 200" xmlns="http://www.w3.org/2000/svg">
+    <rect x="22" y="70" width="96" height="76" rx="5" fill="#141414" stroke="rgba(0,0,0,0.4)"/>
+    <rect x="14" y="52" width="112" height="24" rx="4" fill="#1e1e1e" stroke="rgba(0,0,0,0.4)"/>
+    <rect x="64" y="52" width="12" height="94" fill="#b9a06a"/>
+    <rect x="14" y="60" width="112" height="6" fill="rgba(185,160,106,0.55)"/>
+    <path d="M70 34 C60 34 56 40 56 46 H64 C64 42 66 40 70 40 C74 40 76 42 76 46 C76 52 66 52 66 60 H74 C74 56 84 55 84 46 C84 39 79 34 70 34 Z" fill="#b9a06a"/>
+    <circle cx="70" cy="66" r="2.6" fill="#b9a06a"/>
+    <text x="70" y="118" text-anchor="middle" font-size="10" font-weight="600" font-family="Georgia, serif" letter-spacing="2" fill="#f3ede0">CAROUD</text>
+    <text x="70" y="132" text-anchor="middle" font-size="7" font-family="Georgia, serif" letter-spacing="1.5" fill="#b9a06a">MYSTERY BOX</text>
+    <text x="70" y="188" text-anchor="middle" font-size="8" font-family="Georgia, serif" letter-spacing="1.5" fill="#8a8a8a">WARENWERT 50 €+</text>
+  </svg>`;
+}
+
 function artFor(p) {
   if (p.type === "spray") return sprayBottleSVG(p.color, p.label, p.img);
   if (p.type === "baum") return baumSVG(p.color, p.label);
   if (p.type === "haenger") return haengerSVG(p.color, p.label, p.img);
   if (p.type === "glas") return glasSVG(p.color, p.label, p.img);
   if (p.type === "bundle") return bundleSVG(p.color, p.label);
+  if (p.type === "probier") return probierSVG(p.color, p.label);
+  if (p.type === "mystery") return mysterySVG(p.color, p.label);
   if (p.type === "abzieher") return abzieherSVG(p.color, p.label);
   return tuchSVG(p.color, p.label);
 }
@@ -295,7 +335,7 @@ document.querySelectorAll("[data-koll]").forEach((kachel) => {
 
 // ---------- Filter & Produkt-Grid ----------
 
-const FILTERS = ["bestseller", "alle", "Duftsprays", "Duftanhänger Premium", "Glasanhänger", "Pflege", "Bundles"];
+const FILTERS = ["bestseller", "alle", "Duftsprays", "Duftanhänger Premium", "Glasanhänger", "Pflege", "Sets & Boxen"];
 const FILTER_LABELS = { bestseller: "Bestseller", alle: "Alle Produkte" };
 let activeFilter = "bestseller";
 
@@ -352,7 +392,7 @@ function setFilter(f) {
 }
 
 function filteredProducts() {
-  let list = PRODUCTS;
+  let list = PRODUCTS.filter((p) => !p.hidden);
   if (activeFilter === "bestseller") list = list.filter((p) => p.bestseller);
   else if (activeFilter !== "alle") list = list.filter((p) => p.category === activeFilter);
   if (activeFamily !== "alle") list = list.filter((p) => p.familie === activeFamily);
@@ -400,6 +440,8 @@ setFilter("bestseller");
 let cart = [];
 try {
   cart = JSON.parse(localStorage.getItem("caroud-cart") || "[]");
+  if (!Array.isArray(cart)) cart = [];
+  cart = cart.filter((i) => i && byId(i.id) && i.qty > 0);
 } catch (_) { cart = []; }
 
 const cartCountEl = document.querySelector(".cart-count");
@@ -407,6 +449,56 @@ const cartItemsEl = document.getElementById("cartItems");
 const cartSubtotalEl = document.getElementById("cartSubtotal");
 const shippingTextEl = document.getElementById("shippingText");
 const shippingFillEl = document.getElementById("shippingFill");
+
+// ---------- Mitnahme-Angebote im Warenkorb ----------
+// Der Versand ist bei jeder Bestellung schon bezahlt – deshalb koennen
+// Zusatzartikel im Warenkorb guenstiger angeboten werden als im Katalog.
+// Gilt nur, solange mindestens ein regulaerer Artikel im Korb liegt.
+const UPSELL = [
+  { id: "haenger-midnight", price: 2.49, name: "Duftanhänger", scentChoice: "haenger" },
+  { id: "probe-15",         price: 3.90, name: "Duftprobe 15 ml" },
+  { id: "pflege-innenraum", price: 4.90, name: "Innenraum-Tuch" },
+  { id: "glas-midnight",    price: 9.90, name: "Glasanhänger", scentChoice: "glas" },
+  { id: "pflege-mikrofaser", price: 8.90, name: "Mikrofaser 3er-Set" },
+  { id: "pflege-abzieher",  price: 8.90, name: "Wasserabzieher" },
+  { id: "pflege-trockentuch", price: 11.90, name: "Trockentuch" },
+];
+
+function upsellPriceFor(id) {
+  const linie = byId(id)?.linie;
+  const u = UPSELL.find((x) => x.id === id || (x.scentChoice && x.scentChoice === linie));
+  return u ? u.price : null;
+}
+
+// Mitnahme-Preise gelten nur, wenn ein regulaer bezahlter Artikel im Korb liegt
+function upsellValid() {
+  return cart.some((i) => !i.up);
+}
+
+// Preis einer Warenkorb-Position (Mitnahmeartikel guenstiger)
+function linePrice(item) {
+  if (item.up && upsellValid()) {
+    const u = upsellPriceFor(item.id);
+    if (u !== null) return u;
+  }
+  return byId(item.id)?.price || 0;
+}
+
+// Raeumt ungueltige Mitnahmeartikel auf: ohne regulaeren Artikel gibt es
+// keine Mitnahme-Preise – reine Mitnahmeartikel fliegen raus, der Rest
+// wird zum Katalogpreis weitergefuehrt.
+function normalizeCart() {
+  if (upsellValid()) return;
+  let changed = false;
+  cart = cart.filter((i) => {
+    if (i.up && byId(i.id)?.upsellOnly) { changed = true; return false; }
+    return true;
+  });
+  cart.forEach((i) => { if (i.up) { i.up = false; changed = true; } });
+  if (changed && cart.length) {
+    showToast("Mitnahme-Preise gelten nur zusammen mit einem regulären Artikel.");
+  }
+}
 
 function saveCart() {
   localStorage.setItem("caroud-cart", JSON.stringify(cart));
@@ -417,31 +509,70 @@ function cartTotalQty() {
 }
 
 function cartSubtotal() {
-  return cart.reduce((s, i) => s + (byId(i.id)?.price || 0) * i.qty, 0);
+  return cart.reduce((s, i) => s + linePrice(i) * i.qty, 0);
 }
 
-function addToCart(id, qty) {
-  const entry = cart.find((i) => i.id === id);
+function addToCart(id, qty, up) {
+  up = !!up;
+  const entry = cart.find((i) => i.id === id && !!i.up === up);
   if (entry) entry.qty += qty;
-  else cart.push({ id, qty });
+  else cart.push({ id, qty, up });
+  normalizeCart();
   saveCart();
   renderCart();
   showToast(`<span class="gold">✦</span> ${byId(id).name} hinzugefügt`);
 }
 
-function changeQty(id, delta) {
-  const entry = cart.find((i) => i.id === id);
+function changeQty(idx, delta) {
+  const entry = cart[idx];
   if (!entry) return;
   entry.qty += delta;
-  if (entry.qty <= 0) cart = cart.filter((i) => i.id !== id);
+  if (entry.qty <= 0) cart.splice(idx, 1);
+  normalizeCart();
   saveCart();
   renderCart();
 }
 
-function removeFromCart(id) {
-  cart = cart.filter((i) => i.id !== id);
+function removeFromCart(idx) {
+  cart.splice(idx, 1);
+  normalizeCart();
   saveCart();
   renderCart();
+}
+
+function renderUpsell() {
+  const box = document.getElementById("upsellBox");
+  if (!box) return;
+  if (!cart.length || !upsellValid()) { box.hidden = true; return; }
+  box.hidden = false;
+  const row = document.getElementById("upsellRow");
+  row.innerHTML = "";
+  UPSELL.forEach((u) => {
+    const base = byId(u.id);
+    if (!base) return;
+    const regular = base.upsellOnly ? null : base.price;
+    const card = document.createElement("div");
+    card.className = "upsell-card";
+    const scents = u.scentChoice
+      ? `<select class="upsell-scent" aria-label="Duft wählen">
+          ${SCENTS.map((s) => `<option value="${u.scentChoice}-${s.key}">${s.name}</option>`).join("")}
+         </select>`
+      : "";
+    card.innerHTML = `
+      <div class="upsell-art">${artFor(base)}</div>
+      <div class="upsell-name">${u.name}</div>
+      <div class="upsell-prices">
+        ${regular && regular > u.price ? `<span class="price-old">${euro(regular)}</span>` : ""}
+        <span class="price-now">${euro(u.price)}</span>
+      </div>
+      ${scents}
+      <button class="upsell-add" type="button">+ Dazu</button>`;
+    card.querySelector(".upsell-add").addEventListener("click", () => {
+      const sel = card.querySelector(".upsell-scent");
+      addToCart(sel ? sel.value : u.id, 1, true);
+    });
+    row.appendChild(card);
+  });
 }
 
 function renderCart() {
@@ -458,18 +589,20 @@ function renderCart() {
   cartItemsEl.innerHTML = "";
   if (!cart.length) {
     cartItemsEl.innerHTML = `<p class="cart-empty">Dein Warenkorb ist noch leer.<br>Zeit, das zu ändern. ✦</p>`;
+    renderUpsell();
     return;
   }
-  cart.forEach((item) => {
+  cart.forEach((item, idx) => {
     const p = byId(item.id);
     if (!p) return;
+    const preis = linePrice(item);
     const row = document.createElement("div");
     row.className = "cart-item";
     row.innerHTML = `
       <div class="cart-item-art">${artFor(p)}</div>
       <div class="cart-item-info">
-        <div class="cart-item-name">${p.name}</div>
-        <div class="cart-item-price">${euro(p.price)}</div>
+        <div class="cart-item-name">${p.name}${item.up ? ` <span class="upsell-tag">Mitnahme</span>` : ""}</div>
+        <div class="cart-item-price">${preis < p.price ? `<span class="price-old">${euro(p.price)}</span> ` : ""}${euro(preis)}</div>
         <div class="qty-row">
           <button class="qty-btn" data-minus>−</button>
           <span class="qty-val">${item.qty}</span>
@@ -477,11 +610,12 @@ function renderCart() {
           <button class="cart-item-remove">Entfernen</button>
         </div>
       </div>`;
-    row.querySelector("[data-minus]").addEventListener("click", () => changeQty(item.id, -1));
-    row.querySelector("[data-plus]").addEventListener("click", () => changeQty(item.id, 1));
-    row.querySelector(".cart-item-remove").addEventListener("click", () => removeFromCart(item.id));
+    row.querySelector("[data-minus]").addEventListener("click", () => changeQty(idx, -1));
+    row.querySelector("[data-plus]").addEventListener("click", () => changeQty(idx, 1));
+    row.querySelector(".cart-item-remove").addEventListener("click", () => removeFromCart(idx));
     cartItemsEl.appendChild(row);
   });
+  renderUpsell();
 }
 
 document.getElementById("checkoutBtn").addEventListener("click", () => {
@@ -526,7 +660,7 @@ function openProductModal(id) {
   // Denselben Duft in den anderen beiden Linien anbieten
   const geschwister = p.scent ? PRODUCTS.filter((x) => x.scent === p.scent && x.id !== p.id) : [];
   // Fakten zur Form – dieselben Angaben wie im Vergleich, direkt am Produkt
-  const fakten = FAKTEN[p.type] || [];
+  const fakten = p.set ? [] : FAKTEN[p.type] || [];
   const tint = p.color ? `background:linear-gradient(170deg, ${rgba(p.color, 0.22)} 0%, #f5f5f4 70%)` : "";
   modalBody.innerHTML = `
     <div class="modal-art" style="${tint}">${artFor(p)}</div>
@@ -540,7 +674,7 @@ function openProductModal(id) {
       </div>
       <p class="modal-desc">${p.desc}</p>
       ${p.category === "Duftsprays" ? `<p class="gift-note">✦ Inklusive: Gratis-Duftmuster</p>` : ""}
-      <p class="notes-label">${p.category === "Bundles" ? "Inhalt" : p.category === "Pflege" ? "Details" : "Duftnoten"}</p>
+      <p class="notes-label">${p.category === "Sets & Boxen" || p.set ? "Inhalt" : p.category === "Pflege" ? "Details" : "Duftnoten"}</p>
       <div class="notes-row">${p.notes.map((n) => `<span class="note-chip">${n}</span>`).join("")}</div>
       ${fakten.length ? `
         <dl class="fakten">
@@ -653,7 +787,7 @@ searchInput.addEventListener("input", () => {
   searchResults.innerHTML = "";
   if (q.length < 2) return;
   const hits = PRODUCTS.filter(
-    (p) => p.name.toLowerCase().includes(q) || p.notes.some((n) => n.toLowerCase().includes(q))
+    (p) => !p.hidden && (p.name.toLowerCase().includes(q) || p.notes.some((n) => n.toLowerCase().includes(q)))
   );
   if (!hits.length) {
     searchResults.innerHTML = `<p class="search-empty">Nichts gefunden für „${searchInput.value}“.</p>`;
