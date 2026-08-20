@@ -47,7 +47,7 @@ function haengerSVG(color, label, img) {
 function bundleSVG(color, label) {
   // Spray + zwei Anhänger, zusammengesetzt aus den echten Etiketten –
   // Starter (schwarz) und Signature (rot) unterscheiden sich in der Flaschenfarbe
-  const sprayKey = color === "#8e1b1b" ? "redline" : "midnight";
+  const sprayKey = color === "#a8323e" ? "redline" : "midnight";
   return `
   <svg class="prod-art" viewBox="0 0 180 200" xmlns="http://www.w3.org/2000/svg">
     <g transform="translate(14 22) scale(0.76)">
