@@ -47,7 +47,7 @@ function haengerSVG(color, label, img) {
 function bundleSVG(color, label) {
   // Spray + zwei Anhänger, zusammengesetzt aus den echten Etiketten –
   // Starter (schwarz) und Signature (rot) unterscheiden sich in der Flaschenfarbe
-  const sprayKey = color === "#a8323e" ? "redline" : "midnight";
+  const sprayKey = color === "#a8323e" ? "fast-cherry" : "pacific-cruise";
   return `
   <svg class="prod-art" viewBox="0 0 180 200" xmlns="http://www.w3.org/2000/svg">
     <g transform="translate(14 22) scale(0.76)">
@@ -58,11 +58,11 @@ function bundleSVG(color, label) {
     </g>
     <g transform="translate(88 58)">
       <path d="M31 2 Q42 12 31 22 Q20 12 31 2" fill="none" stroke="#333" stroke-width="1.6"/>
-      <image href="img/produkte/haenger-carbon.webp?v=${ASSET_V}" x="4" y="20" width="54" height="99" preserveAspectRatio="xMidYMid meet"/>
+      <image href="img/produkte/haenger-naxnos-asphalt.webp?v=${ASSET_V}" x="4" y="20" width="54" height="99" preserveAspectRatio="xMidYMid meet"/>
     </g>
     <g transform="translate(122 84)">
       <path d="M26 2 Q35 10 26 18 Q17 10 26 2" fill="none" stroke="#333" stroke-width="1.4"/>
-      <image href="img/produkte/haenger-sunroof.webp?v=${ASSET_V}" x="3" y="16" width="46" height="84" preserveAspectRatio="xMidYMid meet"/>
+      <image href="img/produkte/haenger-ombre-apex.webp?v=${ASSET_V}" x="3" y="16" width="46" height="84" preserveAspectRatio="xMidYMid meet"/>
     </g>
   </svg>`;
 }
@@ -182,7 +182,7 @@ function artFor(p) {
   if (p.type === "haenger") return haengerSVG(p.color, p.label, p.img);
   if (p.type === "glas") return glasSVG(p.color, p.label, p.img);
   if (p.type === "bundle") return bundleSVG(p.color, p.label);
-  if (p.type === "probier") return probierSVG(p.color, p.label, p.id === "probe-15" ? 1 : 3);
+  if (p.type === "probier") return probierSVG(p.color, p.label, p.einzel ? 1 : 3);
   if (p.type === "mystery") return mysterySVG(p.color, p.label);
   if (p.type === "abzieher") return abzieherSVG(p.color, p.label);
   return tuchSVG(p.color, p.label);
@@ -207,7 +207,7 @@ function rgba(hex, a) {
 const heroArt = document.getElementById("heroArt");
 if (heroArt) {
   heroArt.innerHTML =
-    `<div class="bottle-wrap">${artFor(byId("spray-midnight"))}</div>` +
+    `<div class="bottle-wrap">${artFor(byId("spray-pacific-cruise"))}</div>` +
     `<div class="mist-layer"></div>` +
     `<button class="spray-hit" type="button" aria-label="Sprühstoß auslösen" title="Draufdrücken"></button>`;
 
@@ -265,8 +265,8 @@ if (scentGrid) {
     const card = document.createElement("button");
     card.className = "scent-card";
     card.type = "button";
-    // Grundton in Weiß darunter, sonst verschwinden dunkle Düfte wie Midnight
-    // und Carbon auf dem schwarzen Band
+    // Grundton in Weiß darunter, sonst verschwinden dunkle Düfte wie Ombre Apex
+    // auf dem schwarzen Band
     card.style.background =
       `linear-gradient(165deg, ${rgba(s.color, 0.5)} 0%, rgba(255,255,255,0.03) 78%),` +
       `linear-gradient(rgba(255,255,255,0.075), rgba(255,255,255,0.075))`;
@@ -462,10 +462,10 @@ const shippingFillEl = document.getElementById("shippingFill");
 // Zusatzartikel im Warenkorb guenstiger angeboten werden als im Katalog.
 // Gilt nur, solange mindestens ein regulaerer Artikel im Korb liegt.
 const UPSELL = [
-  { id: "haenger-midnight", price: 2.49, name: "Duftanhänger", scentChoice: "haenger" },
-  { id: "probe-15",         price: 3.90, name: "Duftprobe 15 ml" },
+  { id: "haenger-pacific-cruise", price: 2.49, name: "Duftanhänger", scentChoice: "haenger" },
+  { id: "probe-pacific-cruise",   price: 3.90, name: "Duftprobe 15 ml", scentChoice: "probe" },
   { id: "pflege-innenraum", price: 4.90, name: "Innenraum-Tuch" },
-  { id: "glas-midnight",    price: 9.90, name: "Glasanhänger", scentChoice: "glas" },
+  { id: "glas-pacific-cruise",    price: 9.90, name: "Glasanhänger", scentChoice: "glas" },
   { id: "pflege-mikrofaser", price: 8.90, name: "Mikrofaser 3er-Set" },
   { id: "pflege-abzieher",  price: 8.90, name: "Wasserabzieher" },
   { id: "pflege-trockentuch", price: 11.90, name: "Trockentuch" },
@@ -589,6 +589,24 @@ function renderUpsell() {
   if (!row.children.length) box.hidden = true;
 }
 
+// Ab so vielen einzelnen Duftanhaengern traegt die Bestellung den Versand.
+const ANHAENGER_MIN = 3;
+
+// Ist die Bestellung versandkostenfrei? Sobald irgendein Artikel im Korb liegt,
+// der kein einzelner Duftanhaenger ist (Sets zaehlen als normaler Artikel), ja.
+// Sonst erst ab ANHAENGER_MIN Anhaengern.
+function versandStatus() {
+  if (!cart.length) return { frei: true, fehlend: 0 };
+  let anhaenger = 0;
+  for (const i of cart) {
+    const p = byId(i.id);
+    if (!p) continue;
+    if (p.type === "haenger" && !p.set) anhaenger += i.qty;
+    else return { frei: true, fehlend: 0 };
+  }
+  return { frei: anhaenger >= ANHAENGER_MIN, fehlend: Math.max(0, ANHAENGER_MIN - anhaenger) };
+}
+
 function renderCart() {
   const qty = cartTotalQty();
   cartCountEl.textContent = qty;
@@ -597,22 +615,21 @@ function renderCart() {
   const subtotal = cartSubtotal();
   cartSubtotalEl.textContent = euro(subtotal);
 
-  // Einzelne Duftanhaenger rentieren sich mit Gratisversand nicht allein –
-  // sie brauchen einen weiteren Artikel im Korb (Sets sind davon ausgenommen).
-  const anker = cart.some((i) => {
-    const p = byId(i.id);
-    return p && !(p.type === "haenger" && !p.set);
-  });
-  const nurAnhaenger = cart.length > 0 && !anker;
-  if (nurAnhaenger) {
-    shippingTextEl.innerHTML = `<strong>✦ Fast geschafft:</strong> Duftanhänger gibt es nur zusammen mit einem weiteren Artikel – leg noch etwas dazu.`;
-    shippingFillEl.style.width = "50%";
-  } else {
+  // Einzelne Duftanhaenger tragen den Gratisversand erst ab drei Stueck.
+  // Liegt irgendein anderer Artikel im Korb, faellt die Regel komplett weg.
+  const status = versandStatus();
+  if (status.frei) {
     shippingTextEl.innerHTML = `<strong>✦ Versandkostenfrei</strong> – auf alle Bestellungen`;
     shippingFillEl.style.width = "100%";
+  } else {
+    const n = status.fehlend;
+    shippingTextEl.innerHTML =
+      `<strong>✦ Fast geschafft:</strong> Noch ${n} Duftanhänger für Gratisversand ` +
+      `– oder leg ein anderes Produkt dazu.`;
+    shippingFillEl.style.width = Math.round((ANHAENGER_MIN - n) / ANHAENGER_MIN * 100) + "%";
   }
   const checkoutBtn = document.getElementById("checkoutBtn");
-  if (checkoutBtn) checkoutBtn.disabled = nurAnhaenger;
+  if (checkoutBtn) checkoutBtn.disabled = !status.frei;
 
   cartItemsEl.innerHTML = "";
   if (!cart.length) {
@@ -1085,7 +1102,7 @@ function renderProduktseite(p) {
             <li>Auf Lager</li>
           </ul>
           ${p.category === "Duftsprays" ? `<p class="gift-note">✦ Inklusive: Gratis-Duftmuster</p>` : ""}
-          ${p.type === "haenger" && !p.set ? `<p class="pdp-hinweis">Nur zusammen mit einem weiteren Artikel bestellbar – oder direkt als <a href="#p/set-haenger-3">3er-Set</a>.</p>` : ""}
+          ${p.type === "haenger" && !p.set ? `<p class="pdp-hinweis">Versandkostenfrei ab 3 Duftanhängern – oder zusammen mit einem anderen Produkt. Günstiger: das <a href="#p/set-haenger-3">3er-Set</a>.</p>` : ""}
           <div class="modal-actions">
             <div class="qty-row">
               <button class="qty-btn" data-pminus>−</button>

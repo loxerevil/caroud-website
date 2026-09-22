@@ -15,12 +15,12 @@
 // Bilder: die gedruckten Etiketten, gerendert aus den Druck-PDFs
 // (img/produkte/<typ>-<duft>.webp). Ohne img zeichnet main.js die Ersatzgrafik.
 // Version an Bild-URLs, damit Browser nach Etikett-Updates nicht alte Bilder aus dem Cache zeigen
-const ASSET_V = "40";
+const ASSET_V = "41";
 
 const CATEGORIES = [
-  { name: "Duftsprays", type: "spray", color: "#111111", img: "img/produkte/spray-midnight.webp?v=" + ASSET_V },
-  { name: "Duftanhänger Premium", type: "haenger", color: "#111111", img: "img/produkte/haenger-midnight.webp?v=" + ASSET_V },
-  { name: "Glasanhänger", type: "glas", color: "#1a1a1a", img: "img/produkte/glas-midnight.webp?v=" + ASSET_V },
+  { name: "Duftsprays", type: "spray", color: "#111111", img: "img/produkte/spray-pacific-cruise.webp?v=" + ASSET_V },
+  { name: "Duftanhänger Premium", type: "haenger", color: "#111111", img: "img/produkte/haenger-pacific-cruise.webp?v=" + ASSET_V },
+  { name: "Glasanhänger", type: "glas", color: "#1a1a1a", img: "img/produkte/glas-pacific-cruise.webp?v=" + ASSET_V },
   { name: "Pflege", type: "tuch", color: "#3d3d3d" },
   { name: "Sets & Boxen", type: "bundle", color: "#3b6ea5" },
 ];
@@ -40,52 +40,52 @@ const FAMILIEN = [
 
 const SCENTS = [
   {
-    key: "midnight", name: "Midnight", color: "#3fae6a", familie: "frisch",
+    key: "pacific-cruise", name: "Pacific Cruise", color: "#5fb8e6", familie: "frisch",
     notes: ["Zitrus", "Schwarze Johannisbeere", "Minze", "Basilikum"],
-    short: "Kühl und klar wie Nachtluft: spritzige Zitrus, schwarze Johannisbeere und ein Hauch Minze.",
-    spray: "Kühl, klar, tiefenentspannt. Midnight bringt frische Nachtluft in den Innenraum: spritzige Zitrus, schwarze Johannisbeere und kühle Minze über grünem Basilikum. Der Duft zum Runterkommen auf der Fahrt nach Hause.",
+    short: "Frisch wie Morgenluft am Meer: Zitrus, schwarze Johannisbeere und kühle Minze.",
+    spray: "Frisch wie die erste Fahrt an der Küste: spritzige Zitrusfrüchte, schwarze Johannisbeere und kühle Minze über Basilikum, Aprikose und einem weichen Hauch Feige. Klar, belebend und leicht – der Duft für lange Strecken mit offenem Fenster.",
     bestseller: { spray: true, haenger: true, glas: true, baum: true },
   },
   {
-    key: "airflow", name: "Airflow", color: "#2e9ad9", familie: "frisch",
-    notes: ["Zitrus", "Grüner Tee", "Ingwer", "Ambroxan"],
-    short: "Frische Luft aus der Lüftung: Zitrus, grüner Tee und ein Hauch Ingwer.",
-    spray: "Frische Luft, die durch die Lüftung strömt: spritzige Zitrus, grüner Tee und ein Hauch Ingwer auf einem klaren, sauberen Fundament. Für den Kopf-frei-Moment am Morgen.",
+    key: "erba-carbon", name: "Erba Carbon", color: "#12a19a", familie: "frisch",
+    notes: ["Sizilianische Orange", "Bergamotte", "Mediterrane Früchte", "Weißer Moschus"],
+    short: "Saftig und strahlend: sizilianische Orange, Bergamotte und reife Früchte auf weißem Moschus.",
+    spray: "Saftig, strahlend, unverwechselbar: sizilianische Orange, Zitrone und kalabrische Bergamotte treffen auf reife mediterrane Früchte. Darunter weißer Moschus, Vanille und Amber, die den Innenraum lange und weich umhüllen.",
     bestseller: { spray: true, haenger: false, glas: true, baum: false },
   },
   {
-    key: "velour", name: "Velour", color: "#23418f", familie: "suess",
-    notes: ["Honig", "Tabak", "Vanille", "Lavendel"],
-    short: "Weich wie Velours: warmer Honig, süßer Tabak und Vanille.",
-    spray: "Weich wie Velours: warmer Honig, süßer Tabak und Vanille, aufgehellt von Bergamotte und Lavendel. Ein Duft, der den Innenraum wie eine Lounge wirken lässt.",
+    key: "fast-cherry", name: "Fast Cherry", color: "#a8122e", familie: "suess",
+    notes: ["Schwarze Kirsche", "Kirschlikör", "Bittermandel", "Tonkabohne"],
+    short: "Verführerisch süß: schwarze Kirsche, Kirschlikör und ein Hauch Bittermandel.",
+    spray: "Tiefrot und verführerisch: schwarze Kirsche und Kirschlikör, geschärft von Bittermandel. Im Herzen Pflaume und Rose, getragen von Tonkabohne, Vanille und warmem Sandelholz. Intensiv, süß, unvergesslich.",
     bestseller: { spray: true, haenger: false, glas: false, baum: false },
   },
   {
-    key: "redline", name: "Redline", color: "#a8323e", familie: "suess",
-    notes: ["Schwarze Kirsche", "Bittermandel", "Tonkabohne"],
-    short: "Bis an den roten Bereich: dunkle Kirsche, bittersüße Mandel und Tonka.",
-    spray: "Bis an den roten Bereich: dunkle Kirsche, bittersüße Mandel und Tonkabohne. Verführerisch, intensiv, unvergesslich.",
+    key: "driveination", name: "Driveination", color: "#aeb6bf", familie: "frisch",
+    notes: ["Zitrus", "Ingwer", "Schwarzer Tee", "Ambroxan"],
+    short: "Klar und elegant: Zitrus, Ingwer und schwarzer Tee auf Ambroxan.",
+    spray: "Klar, elegant, modern: Zitronatzitrone, Bergamotte und Orange starten mit Energie, Ingwer, Zimt und Neroli geben Tiefe. Schwarzer Tee, Ambroxan und Guajakholz bleiben als sauberer, edler Nachklang im Innenraum.",
     bestseller: { spray: true, haenger: true, glas: false, baum: true },
   },
   {
-    key: "carbon", name: "Carbon", color: "#141414", familie: "orientalisch",
-    notes: ["Oud", "Himbeere", "Weihrauch", "Benzoe"],
-    short: "Dunkel und kompromisslos: rauchiges Oud, ein Funken Himbeere, Weihrauch.",
-    spray: "Dunkel und kompromisslos: rauchiges Oud, ein Funken Himbeere und Weihrauch, getragen von Benzoe. Der Duft für Nachtfahrten.",
+    key: "naxnos-asphalt", name: "Naxnos Asphalt", color: "#b8731c", familie: "suess",
+    notes: ["Honig", "Tabak", "Vanille", "Lavendel"],
+    short: "Warm und weich: goldener Honig, Tabakblatt und Vanille, aufgehellt von Lavendel.",
+    spray: "Warm wie Asphalt nach einem Sommertag: goldener Honig, Tabakblatt und Vanille, aufgehellt von Lavendel, Bergamotte und Zitrone. Zimt und Tonkabohne machen ihn rund – ein Duft, der den Innenraum wie eine Lounge wirken lässt.",
     bestseller: { spray: false, haenger: false, glas: false, baum: false },
   },
   {
-    key: "sunroof", name: "Sunroof", color: "#e8821e", familie: "frisch",
-    notes: ["Zitrus", "Sommerfrucht", "Weißer Moschus"],
-    short: "Dach auf, Sonne rein: saftige Zitrusfrüchte und süße Sommerfrucht.",
-    spray: "Dach auf, Sonne rein: saftige Zitrusfrüchte und süße Sommerfrucht auf weichem Moschus. Leicht, fröhlich, macht gute Laune bei jeder Fahrt.",
+    key: "ombre-apex", name: "Ombre Apex", color: "#3d2418", familie: "orientalisch",
+    notes: ["Oud", "Himbeere", "Weihrauch", "Benzoe"],
+    short: "Dunkel und kompromisslos: rauchiges Oud, ein Funken Himbeere, Weihrauch.",
+    spray: "Dunkel und kompromisslos: rauchiges Oud und Weihrauch, durchzogen von Himbeere, Safran und Rose. Benzoe, Birke und Amberholz tragen ihn lange – der Duft für Nachtfahrten.",
     bestseller: { spray: false, haenger: true, glas: false, baum: false },
   },
   {
-    key: "spark", name: "Spark", color: "#c9a227", familie: "suess",
-    notes: ["Ananas", "Honig", "Vanille", "Tonkabohne"],
-    short: "Der Funke, der alles startet: reife Ananas, goldener Honig, cremige Vanille.",
-    spray: "Der Funke, der alles startet: reife Ananas, goldener Honig und cremige Vanille. Süß, warm und sofort präsent.",
+    key: "erba-tuned", name: "Erba Tuned", color: "#f0c419", familie: "frisch",
+    notes: ["Zitrone", "Ingwer", "Birne", "Melone"],
+    short: "Hell und saftig: Amalfi-Zitrone, ein Kick Ingwer, reife Birne und Melone.",
+    spray: "Hell, saftig, goldig: Amalfi-Zitrone, Orange und Bergamotte mit einem Kick Ingwer, dazu grüner Apfel, Birne und Melone, gewürzt mit Kardamom und Zimt. Amber, Vanille und Moschus runden ihn warm ab.",
     bestseller: { spray: false, haenger: false, glas: true, baum: false },
   },
 ];
@@ -254,16 +254,22 @@ const OTHER_PRODUCTS = [
     desc: "Wir packen, du wirst überrascht: mindestens 1 Duftspray, 3 Duftanhänger und 1 Glasanhänger – Warenwert über 50 €. Welche Düfte drin sind, verraten wir nicht.",
     notes: ["Warenwert über 50 €", "Mind. 1 Spray + 3 Anhänger + 1 Glasanhänger", "Überraschungs-Düfte"],
   },
-  // Nur im Warenkorb als Mitnahmeartikel (nicht im Katalog)
-  {
-    id: "probe-15",
-    name: "Duftprobe 15 ml",
-    type: "probier", category: "Sets & Boxen", hidden: true, upsellOnly: true,
-    color: "#b9a06a", label: "Probe",
-    price: 3.90, priceOld: null, bestseller: false,
-    desc: "Ein Duft deiner Wahl als 15-ml-Spray – nur als Mitnahmeartikel im Warenkorb. Deinen Wunsch-Duft gibst du im Checkout an.",
-    notes: ["15 ml", "Duft frei wählbar"],
-  },
 ];
 
-const PRODUCTS = SCENT_PRODUCTS.concat(OTHER_PRODUCTS);
+// ---- Einzelne 15-ml-Duftproben, je Duft eine ----
+// Nur als Mitnahmeartikel im Warenkorb, deshalb hidden + upsellOnly.
+// Eigene Produkte statt einer Sammel-ID, damit die Duftauswahl im
+// Warenkorb echte Artikel trifft (wie bei Anhaenger und Glasanhaenger).
+const PROBE_PRODUCTS = SCENTS.map((s) => ({
+  id: "probe-" + s.key,
+  name: s.name + " Duftprobe 15 ml",
+  type: "probier", category: "Sets & Boxen",
+  hidden: true, upsellOnly: true, einzel: true,
+  color: s.color, label: s.name,
+  price: 3.90, priceOld: null, bestseller: false,
+  desc: s.short + " Als 15-ml-Spray zum Ausprobieren – nur als Mitnahmeartikel im Warenkorb.",
+  notes: ["15 ml", s.name],
+  scent: s.key, familie: s.familie, linie: "probe", linieName: "Duftprobe",
+}));
+
+const PRODUCTS = SCENT_PRODUCTS.concat(OTHER_PRODUCTS, PROBE_PRODUCTS);
