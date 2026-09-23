@@ -16,7 +16,7 @@
 // Bilder: die gedruckten Etiketten, gerendert aus den Druck-PDFs
 // (img/produkte/<typ>-<duft>.webp). Ohne img zeichnet main.js die Ersatzgrafik.
 // Version an Bild-URLs, damit Browser nach Etikett-Updates nicht alte Bilder aus dem Cache zeigen
-const ASSET_V = "50";
+const ASSET_V = "51";
 
 const CATEGORIES = [
   { name: "Duftsprays", type: "spray", color: "#111111", img: "img/produkte/spray-pacific-cruise.webp?v=" + ASSET_V },
