@@ -405,6 +405,7 @@
 
       <!-- Lager -->
       <section data-panel="lager">
+        <div id="umzugBox"></div>
         <div class="stats" id="lagerStats"></div>
         <input class="finput" id="lagerSearch" type="search" placeholder="Produkt suchen…" style="margin-top:0.8rem">
         <div class="muted" style="margin:0.6rem 0 0">Eigene Artikel und Kategorien pflegst du im Tab „Artikel". Zahl antippen = Bestand direkt eingeben.</div>
@@ -757,6 +758,7 @@
     // ---- Zustand ----
     const stock = {};     // id -> Bestand
     const lagerCfg = {};  // id -> { min, soll, einheit } aus dem lager-Dokument
+    const lagerRoh = {};  // id -> komplettes lager-Dokument (für die Namens-Umstellung)
     let artikel = [];
     let tasks = [], ausgaben = [], chargen = [], bestellungen = [], notizen = [], aktivitaet = [], zeiten = [];
     let budget = null;
@@ -863,8 +865,10 @@
         // gelöschte Artikel nicht stehen lassen
         Object.keys(stock).forEach((k) => delete stock[k]);
         Object.keys(lagerCfg).forEach((k) => delete lagerCfg[k]);
+        Object.keys(lagerRoh).forEach((k) => delete lagerRoh[k]);
         snap.forEach((d) => {
           const v = d.data();
+          lagerRoh[d.id] = v;
           stock[d.id] = v.stock ?? 0;
           lagerCfg[d.id] = {
             min: Number.isFinite(v.min) ? v.min : LOW_STOCK,
@@ -1051,7 +1055,84 @@
 
     $("lagerSearch").addEventListener("input", renderLager);
 
+    // ---- Einmalige Umstellung auf die neuen Duftnamen (23.09.2026) ----
+    // Bestände liegen in Firestore unter der Produkt-ID, z. B. "spray-midnight".
+    // Seit der Umbenennung heißt das Produkt "spray-pacific-cruise" – die alten
+    // Bestände werden hier auf die neue ID übertragen. Nichts wird gelöscht:
+    // das alte Dokument bekommt nur den Vermerk "migriertNach" und Bestand 0.
+    const DUFT_UMZUG = {
+      midnight: "pacific-cruise", airflow: "erba-carbon", velour: "fast-cherry",
+      redline: "driveination", carbon: "naxnos-asphalt", sunroof: "ombre-apex",
+      spark: "erba-tuned", ignition: "erba-tuned", // Erba Tuned hieß vorher Spark, davor Ignition
+    };
+    function neueIdFuer(altId) {
+      const m = altId.match(/^(.+)-([a-z]+)$/);
+      if (!m || !DUFT_UMZUG[m[2]]) return null;
+      const neu = m[1] + "-" + DUFT_UMZUG[m[2]];
+      // nur echte Umbenennungen: alte ID gibt es im Shop nicht mehr, neue schon
+      if (PRODUCTS.some((p) => p.id === altId) || !PRODUCTS.some((p) => p.id === neu)) return null;
+      return neu;
+    }
+    function offeneUmzuege() {
+      return Object.keys(lagerRoh)
+        .filter((id) => !lagerRoh[id].migriertNach)
+        .map((id) => ({ alt: id, neu: neueIdFuer(id), v: lagerRoh[id] }))
+        .filter((u) => u.neu && ((u.v.stock ?? 0) > 0 || Number.isFinite(u.v.min) || Number.isFinite(u.v.soll)));
+    }
+    function renderUmzug() {
+      const box = $("umzugBox");
+      const liste = offeneUmzuege();
+      if (!liste.length) { box.innerHTML = ""; return; }
+      const nameVon = (id) => (PRODUCTS.find((p) => p.id === id) || {}).name || id;
+      box.innerHTML =
+        '<div class="card" style="border-color:var(--gold)">' +
+        '<b>Bestände von den alten Duftnamen übernehmen</b>' +
+        '<div class="muted" style="margin:0.4rem 0 0.6rem">Diese Bestände liegen noch unter den alten Namen. ' +
+        'Ein Klick überträgt sie auf die neuen Produkte (Bestand, Mindest- und Sollbestand). Die alten Einträge bleiben als Verlauf erhalten.</div>' +
+        liste.map((u) => '<div style="display:flex;justify-content:space-between;gap:0.6rem;font-size:0.85rem;padding:0.2rem 0">' +
+          '<span>' + esc(u.alt) + ' → <b>' + esc(nameVon(u.neu)) + '</b></span><span>' + (u.v.stock ?? 0) + ' Stk.</span></div>').join("") +
+        '<button class="btn-gold" type="button" id="umzugStart" style="width:100%;margin-top:0.7rem">Jetzt übernehmen</button></div>';
+      $("umzugStart").addEventListener("click", umzugAusfuehren);
+    }
+    async function umzugAusfuehren() {
+      const liste = offeneUmzuege();
+      $("umzugStart").disabled = true;
+      let n = 0;
+      for (const u of liste) {
+        const altBestand = u.v.stock ?? 0;
+        const neuVorher = stock[u.neu] ?? 0;
+        const neuCfg = lagerRoh[u.neu] || {};
+        const daten = { stock: increment(altBestand), updated: serverTimestamp() };
+        if (Number.isFinite(u.v.min) && !Number.isFinite(neuCfg.min)) daten.min = u.v.min;
+        if (Number.isFinite(u.v.soll) && !Number.isFinite(neuCfg.soll)) daten.soll = u.v.soll;
+        if (u.v.einheit && !neuCfg.einheit) daten.einheit = u.v.einheit;
+        try {
+          await setDoc(doc(db, "lager", u.neu), daten, { merge: true });
+          await setDoc(doc(db, "lager", u.alt),
+            { stock: 0, migriertNach: u.neu, migriertAm: serverTimestamp() }, { merge: true });
+          if (altBestand) {
+            addDoc(collection(db, "lager", u.neu, "historie"),
+              { ts: serverTimestamp(), delta: altBestand, neu: neuVorher + altBestand, von: myName,
+                notiz: "übernommen von " + u.alt }).catch(() => {});
+            const p = findArtikel(u.neu);
+            const next = neuVorher + altBestand;
+            setDoc(doc(db, "shopstatus", u.neu),
+              { out: next === 0, low: next > 0 && p && p.min > 0 && next <= p.min, updated: serverTimestamp() },
+              { merge: true }).catch(() => {});
+          }
+          n++;
+        } catch (err) {
+          toast("Nicht übernommen (" + u.alt + "): " + (err.code || err.message), true);
+        }
+      }
+      if (n) {
+        logActivity("Lager: " + n + " Bestände auf die neuen Duftnamen übertragen");
+        toast(n + " Bestände übernommen");
+      }
+    }
+
     function renderLager() {
+      renderUmzug();
       const term = $("lagerSearch").value.trim().toLowerCase();
       const alle = alleArtikel();
       let total = 0, low = 0, out = 0;
