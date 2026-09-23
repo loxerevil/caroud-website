@@ -874,9 +874,8 @@ button { font-family: inherit; }
 
 .product-prices { margin-top: 0.3rem; font-size: 0.92rem; }
 
-/* Vergleichspreis nur bei Sets: "statt … einzeln" – kein Streichpreis-Sale */
-.price-old { color: var(--grey); text-decoration: line-through; margin-right: 0.5rem; }
-.price-ref { color: var(--grey); font-size: 0.8rem; margin-left: 0.45rem; }
+/* Streichpreis: grau, durchgestrichen, direkt vor dem aktuellen Preis */
+.price-old { color: #9a9a96; text-decoration: line-through; margin-right: 0.45rem; font-weight: 400; }
 
 .price-now { color: var(--black); font-weight: 600; }
 
@@ -1618,7 +1617,6 @@ button { font-family: inherit; }
   .product-card { width: calc((100% - 0.7rem) / 2); }
   .product-name { font-size: 0.82rem; }
   .product-prices { font-size: 0.85rem; margin-top: 0.15rem; }
-  .price-ref { display: block; margin-left: 0; font-size: 0.74rem; }
   .quick-add { font-size: 0.66rem; padding: 0.6rem 0.4rem; letter-spacing: 0.08em; }
   /* Hero-Buttons untereinander statt nebeneinander (verhindert Abschneiden) */
   .hero-cta { flex-direction: column; align-items: center; width: 100%; }

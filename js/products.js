@@ -7,8 +7,8 @@
 //
 //   type:       "spray" | "haenger" (Premium) | "glas" | "tuch" | "abzieher" | "bundle"
 //   category:   Anzeige-Kategorie
-//   priceOld:   Vergleichspreis – nur bei Sets/Bundles: Summe der Einzelpreise ("statt … einzeln").
-//               Einzelprodukte haben keinen Streichpreis (kein Dauer-Sale, PAngV).
+//   priceOld:   Streichpreis, steht durchgestrichen neben dem aktuellen Preis (null = keiner).
+//               Bei Sets ist es die Summe der Einzelpreise.
 //   bestseller: true = erscheint in der Start-Ansicht "Bestseller"
 //   notes:      Duftnoten, werden in der Detailansicht als Chips angezeigt
 // ============================================================
@@ -101,13 +101,13 @@ const SCENTS = [
 // ---- Linien aus den Düften erzeugen ----
 const LINES = [
   { type: "spray",   category: "Duftsprays",    suffix: "Duftspray",
-    price: 26.90, priceOld: null,
+    price: 26.90, priceOld: 34.90,
     text: (s) => s.spray },
   { type: "haenger", category: "Duftanhänger Premium", suffix: "Duftanhänger",
-    price: 3.50, priceOld: null,
+    price: 3.50, priceOld: 5.99,
     text: (s) => s.short + " Als Premium-Anhänger in der eigenen Caroud-Form: beidseitig bedruckt, mit schwarzer Kordel – unser Aushängeschild für den Rückspiegel." },
   { type: "glas",    category: "Glasanhänger",  suffix: "Glasanhänger",
-    price: 12.90, priceOld: null,
+    price: 12.90, priceOld: 16.90,
     text: (s) => s.short + " Im 8-ml-Glasflakon für den Rückspiegel: das Duftöl verdunstet langsam über den Verschluss – ergiebiger und langlebiger als ein Anhänger aus Papier." },
 ];
 
@@ -269,7 +269,7 @@ const OTHER_PRODUCTS = [
     name: "Probierset – 3 Düfte",
     type: "probier", category: "Sets & Boxen", set: true,
     color: "#b9a06a", label: "3 Düfte",
-    price: 16.90, priceOld: null, bestseller: true,
+    price: 16.90, priceOld: 21.90, bestseller: true,
     desc: "Drei Düfte deiner Wahl als 15-ml-Sprays zum Kennenlernen – bevor du dich für die große Flasche entscheidest. Deine Wunsch-Düfte gibst du im Checkout an.",
     notes: ["3 × 15 ml", "Düfte frei wählbar"],
   },
@@ -278,7 +278,7 @@ const OTHER_PRODUCTS = [
     name: "Probierset – Alle 7 Düfte",
     type: "probier", category: "Sets & Boxen", set: true,
     color: "#b9a06a", label: "Alle 7",
-    price: 29.90, priceOld: null, bestseller: true,
+    price: 29.90, priceOld: 39.90, bestseller: true,
     desc: "Die komplette Caroud-Kollektion als 15-ml-Sprays: alle sieben Düfte in einer Box. Finde deinen Favoriten – oder verschenke die ganze Reihe.",
     notes: ["7 × 15 ml", "Alle 7 Düfte", "Geschenk-Box"],
   },

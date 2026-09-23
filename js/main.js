@@ -237,11 +237,11 @@ function byId(id) {
   return PRODUCTS.find((p) => p.id === id);
 }
 
-// Preis mit ehrlichem Vergleich: Sets zeigen "statt … einzeln", sonst nur der Preis.
+// Preis: durchgestrichener Streichpreis direkt vor dem aktuellen Preis
 function preisHtml(p) {
-  const ref = p.priceOld && p.priceOld > p.price
-    ? `<span class="price-ref">statt ${euro(p.priceOld)} einzeln</span>` : "";
-  return `<span class="price-now">${euro(p.price)}</span>${ref}`;
+  const alt = p.priceOld && p.priceOld > p.price
+    ? `<span class="price-old">${euro(p.priceOld)}</span>` : "";
+  return `${alt}<span class="price-now">${euro(p.price)}</span>`;
 }
 
 // Hex-Farbe mit Transparenz, für Verläufe in der jeweiligen Duftfarbe
@@ -1073,7 +1073,7 @@ function recoKarten(p) {
           <button class="pdp-reco-card" type="button" data-reco="${x.id}">
             <span class="pdp-reco-art">${mediaFor(x)}</span>
             <span class="pdp-reco-name">${x.name}</span>
-            <span class="pdp-reco-price">${euro(x.price)}</span>
+            <span class="pdp-reco-price">${preisHtml(x)}</span>
           </button>`;
         }).join("")}
       </div>
