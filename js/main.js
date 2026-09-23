@@ -1125,6 +1125,7 @@ function renderProduktseite(p) {
           <div class="pdp-thumbs">
             <button type="button" class="pdp-thumb active" data-thumb="foto" aria-label="Produktfoto"><img src="${p.photo}" alt=""></button>
             ${p.photo2 ? `<button type="button" class="pdp-thumb" data-thumb="foto2" aria-label="Produktfoto 2"><img src="${p.photo2}" alt=""></button>` : ""}
+            ${p.photo3 ? `<button type="button" class="pdp-thumb" data-thumb="foto3" aria-label="Produktfoto 3"><img src="${p.photo3}" alt=""></button>` : ""}
             <button type="button" class="pdp-thumb" data-thumb="art" aria-label="Etikett" style="${tint}">${artFor(p)}</button>
             ${p.video ? `<button type="button" class="pdp-thumb pdp-thumb-video" data-thumb="video" aria-label="Produktvideo"><img src="${videoPoster(p)}" alt=""><span class="play-badge" aria-hidden="true"></span></button>` : ""}
           </div>
@@ -1196,7 +1197,7 @@ function renderProduktseite(p) {
         : art === "video"
           // Stumm, Dauerschleife, ohne Bedienleiste – wie ein GIF, nur viel kleiner
           ? `<video class="pdp-photo" src="${p.video}" poster="${videoPoster(p)}" autoplay muted loop playsinline preload="auto" aria-label="${p.name} – Produktvideo"></video>`
-          : `<img class="pdp-photo" src="${art === "foto2" ? p.photo2 : p.photo}" alt="${p.name}">`;
+          : `<img class="pdp-photo" src="${art === "foto2" ? p.photo2 : art === "foto3" ? p.photo3 : p.photo}" alt="${p.name}">`;
       const v = stage.querySelector("video");
       if (v) { v.muted = true; v.play().catch(() => {}); }
     });

@@ -132,6 +132,8 @@ LINES.forEach((line) => {
       // echte Produktfotos (Duftspray + Duftanhaenger); ohne Foto zeigt der Shop die Etikett-Grafik
       photo: FOTO_LINIEN.includes(line.type) ? "img/fotos/" + line.type + "-" + s.key + ".webp?v=" + ASSET_V : null,
       photo2: FOTO2_LINIEN.includes(line.type) ? "img/fotos/" + line.type + "-" + s.key + "-2.webp?v=" + ASSET_V : null,
+      // drittes Foto: Studiobild vor Duftfarben-Hintergrund (auch in den Duft-Karten)
+      photo3: FOTO2_LINIEN.includes(line.type) ? "img/fotos/" + line.type + "-" + s.key + "-3.webp?v=" + ASSET_V : null,
       video: VIDEO_LINIEN.includes(line.type) ? "img/videos/" + line.type + "-" + s.key + ".mp4?v=" + ASSET_V : null,
       pyramide: s.pyramide,
       price: line.price, priceOld: line.priceOld, bestseller: !!s.bestseller[line.type],
