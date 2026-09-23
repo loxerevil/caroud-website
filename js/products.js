@@ -193,6 +193,8 @@ const OTHER_PRODUCTS = [
     price: 29.90, priceOld: 33.90, bestseller: true,
     desc: "Der perfekte Einstieg: 1 Duftspray deiner Wahl + 2 Duftanhänger. Spare gegenüber dem Einzelkauf.",
     notes: ["1× Spray", "2× Anhänger"],
+    photo: "img/fotos/bundle-starter.webp?v=" + ASSET_V,
+    photo2: "img/fotos/bundle-starter-2.webp?v=" + ASSET_V,
   },
   {
     id: "bundle-signature",
