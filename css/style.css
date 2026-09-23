@@ -1561,6 +1561,8 @@ button { font-family: inherit; }
 .cross-card:hover { border-color: var(--gold); transform: translateY(-2px); }
 .cross-art { display: block; width: 100%; }
 .cross-art svg { display: block; width: 100%; height: 62px; }
+.cross-art img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 3px; }
+.cross-card:has(.cross-art img) { padding: 0.35rem 0.35rem 0.55rem; background: #fff; }
 .cross-name {
   font-size: 0.68rem;
   letter-spacing: 0.12em;
@@ -2022,14 +2024,19 @@ body.pdp-aktiv .site-header {
 }
 .pdp-reco-card:hover { box-shadow: 0 10px 26px rgba(0, 0, 0, 0.1); transform: translateY(-2px); }
 .pdp-reco-badge {
-  position: absolute; top: 0.7rem; right: 0.7rem;
+  position: absolute; top: 0.9rem; right: 0.9rem; z-index: 2;
   background: var(--gold); color: var(--black);
   font-size: 0.68rem; font-weight: 700;
   width: 40px; height: 40px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
 }
-.pdp-reco-art { height: 130px; display: flex; align-items: center; justify-content: center; }
-.pdp-reco-art .prod-art, .pdp-reco-art svg, .pdp-reco-art img { height: 100%; width: auto; }
+/* Bildfeld immer quadratisch: Foto fuellt es, Grafik steht mittig – so stehen
+   Namen und Preise aller Empfehlungen auf einer Hoehe */
+.pdp-reco-card { padding-top: 0.6rem; }
+.pdp-reco-art { position: relative; width: 100%; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; }
+.pdp-reco-art .prod-art, .pdp-reco-art svg { height: 70%; width: auto; }
+.pdp-reco-art .prod-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 6px; }
+.pdp-reco-art .prod-photo-2 { display: none; }
 .pdp-reco-name {
   font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--black);

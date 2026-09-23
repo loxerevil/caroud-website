@@ -114,6 +114,11 @@ const LINES = [
 const FOTO_LINIEN = ["spray", "haenger", "glas"];
 // Linien mit Produktvideo (stumm, Dauerschleife) als letztes Bild in der Galerie
 const VIDEO_LINIEN = ["haenger"];
+// Bilder fuer die Kacheln "<Duft> gibt es auch als" (heller Studio-Stil, img/auchals/).
+// Spray, Glasanhaenger und Duftprobe sehen bei jedem Duft gleich aus -> ein Bild je Linie.
+// Fuer die Duftanhaenger je Duft ein eigenes Bild (img/auchals/haenger-<duft>.webp), sobald vorhanden.
+const AUCH_ALS_BILDER = { spray: "img/auchals/spray.webp", glas: "img/auchals/glas.webp", probe: "img/auchals/probe.webp" };
+const AUCH_ALS_HAENGER = [];
 // Düfte mit eigenem Foto für die Karten "Sieben Düfte" (img/duefte/<duft>.webp).
 // Sobald alle Fotos da sind, einfach die weiteren Düfte hier eintragen.
 const DUFT_FOTOS = ["pacific-cruise", "erba-carbon", "fast-cherry", "driveination", "naxnos-asphalt", "ombre-apex", "erba-tuned"];

@@ -202,6 +202,19 @@ function videoPoster(p) {
   return p.video.replace(/\.mp4(\?|$)/, ".webp$1");
 }
 
+// Bild fuer die Kachel "gibt es auch als": heller Studio-Stil je Linie; fuer Duftanhaenger
+// das Produktfoto des jeweiligen Dufts, bis es die Anhaenger auch im hellen Stil gibt.
+function crossMedia(g) {
+  let src = null;
+  if (g.linie === "haenger") {
+    if (AUCH_ALS_HAENGER.includes(g.scent)) src = "img/auchals/haenger-" + g.scent + ".webp?v=" + ASSET_V;
+    else if (g.photo) src = g.photo;
+  } else if (AUCH_ALS_BILDER[g.linie]) {
+    src = AUCH_ALS_BILDER[g.linie] + "?v=" + ASSET_V;
+  }
+  return src ? `<img src="${src}" alt="${g.name}" loading="lazy">` : artFor(g);
+}
+
 function mediaFor(p) {
   if (!p.photo) return artFor(p);
   // Zweites Foto liegt darüber und blendet beim Drüberfahren mit der Maus ein
@@ -764,7 +777,7 @@ function openProductModal(id) {
         <div class="cross-row">
           ${geschwister.map((g) => `
             <button class="cross-card" type="button" data-cross="${g.id}">
-              <span class="cross-art">${artFor(g)}</span>
+              <span class="cross-art">${crossMedia(g)}</span>
               <span class="cross-name">${g.linieName}</span>
             </button>`).join("")}
         </div>` : ""}
@@ -1095,7 +1108,7 @@ function recoKarten(p) {
           return `
           <button class="pdp-reco-card" type="button" data-reco="${x.id}">
             ${proz ? `<span class="pdp-reco-badge">−${proz}%</span>` : ""}
-            <span class="pdp-reco-art">${artFor(x)}</span>
+            <span class="pdp-reco-art">${mediaFor(x)}</span>
             <span class="pdp-reco-name">${x.name}</span>
             <span class="pdp-reco-price">
               ${x.priceOld ? `<span class="price-old">${euro(x.priceOld)}</span>` : ""}
@@ -1176,7 +1189,7 @@ function renderProduktseite(p) {
             <div class="cross-row">
               ${geschwister.map((g) => `
                 <button class="cross-card" type="button" data-pdp-cross="${g.id}">
-                  <span class="cross-art">${artFor(g)}</span>
+                  <span class="cross-art">${crossMedia(g)}</span>
                   <span class="cross-name">${g.linieName}</span>
                 </button>`).join("")}
             </div>` : ""}
