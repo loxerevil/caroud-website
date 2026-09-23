@@ -1259,6 +1259,12 @@ button { font-family: inherit; }
   font-size: 1rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+  /* feste Höhe für zwei Zeilen: so stehen die Duftnoten in allen Karten auf einer Linie,
+     auch wenn der Name nur eine Zeile braucht */
+  line-height: 1.25;
+  min-height: 2.5em;
+  display: flex; align-items: center; justify-content: center;
+  text-align: center;
 }
 
 .scent-notes {
@@ -1754,7 +1760,7 @@ button { font-family: inherit; }
   .scent-card.has-foto { padding-top: 0; }
   .scent-foto { width: calc(100% + 1rem); margin: 0 -0.5rem 0.15rem; }
   .scent-swatch svg { height: 104px; }
-  .scent-name { font-size: 0.9rem; }
+  .scent-name { font-size: 0.9rem; min-height: 2.5em; }
   .scent-notes { font-size: 0.64rem; }
 
   /* Kollektionen: drei kleine Kacheln nebeneinander statt drei große untereinander */
