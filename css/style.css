@@ -605,12 +605,15 @@ button { font-family: inherit; }
   animation: hero-float 5.2s ease-in-out infinite;
 }
 
-.hero-produkt svg {
+.hero-produkt svg,
+.hero-produkt .hero-bottle {
   position: relative;
   width: min(310px, 78%);
   height: auto;
   filter: drop-shadow(0 26px 42px rgba(0, 0, 0, 0.6));
 }
+/* Echte Flasche (Freisteller aus dem Studiofoto) – schmaler als die alte Grafik */
+.hero-produkt .hero-bottle { width: auto; height: min(560px, 66vh); max-width: 78%; object-fit: contain; }
 
 /* Deutliches Schweben mit leichtem Kippen – fällt aus dem Augenwinkel auf */
 @keyframes hero-float {
@@ -653,7 +656,8 @@ button { font-family: inherit; }
 }
 
 /* Rückstoß beim Sprühen */
-.hero-produkt.spraying svg { animation: bottle-kick 0.48s ease-out; }
+.hero-produkt.spraying svg,
+.hero-produkt.spraying .hero-bottle { animation: bottle-kick 0.48s ease-out; }
 
 @keyframes bottle-kick {
   0%   { transform: translateY(0) scale(1); }
@@ -725,6 +729,7 @@ button { font-family: inherit; }
   .hero-cta { justify-content: center; }
   .hero-note { margin-top: 0.9rem; font-size: 0.68rem; }
   .hero-produkt svg { width: min(150px, 42%); }
+  .hero-produkt .hero-bottle { height: min(300px, 38vh); }
   .hero::after {
     background: linear-gradient(180deg, rgba(28, 27, 25, 0.72) 0%, rgba(28, 27, 25, 0.5) 45%, rgba(28, 27, 25, 0.82) 100%);
   }
@@ -1013,7 +1018,7 @@ button { font-family: inherit; }
 
 .about-text .btn { margin-top: 0.6rem; }
 
-.about-media img { width: 100%; display: block; }
+.about-media img { width: 100%; height: auto; display: block; }
 
 @media (max-width: 800px) {
   .about-grid { grid-template-columns: 1fr; gap: 2rem; }

@@ -230,7 +230,7 @@ function rgba(hex, a) {
 const heroArt = document.getElementById("heroArt");
 if (heroArt) {
   heroArt.innerHTML =
-    `<div class="bottle-wrap">${artFor(byId("spray-pacific-cruise"))}</div>` +
+    `<div class="bottle-wrap"><img class="hero-bottle" src="img/hero-flasche.webp?v=1" alt="Caroud Duftspray Pacific Cruise" width="440" height="1656" fetchpriority="high"></div>` +
     `<div class="mist-layer"></div>` +
     `<button class="spray-hit" type="button" aria-label="Sprühstoß auslösen" title="Draufdrücken"></button>`;
 
