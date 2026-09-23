@@ -29,7 +29,7 @@
   <link rel="icon" type="image/png" href="img/favicon.png">
   <!-- Überschriftenschrift vorladen, damit der Hero-Titel nicht erst in Georgia aufblitzt -->
   <link rel="preload" href="fonts/playfair-400.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/style.css?v=52">
+  <link rel="stylesheet" href="css/style.css?v=53">
 
   <!-- Strukturierte Daten für Google. Produkt-Markup fehlt bewusst,
        solange keine echten Preise hinterlegt sind. -->
@@ -73,15 +73,18 @@
     <div class="preloader-glow"></div>
     <div class="preloader-inner" id="preloaderInner">
       <div class="preloader-bottle">
-        <!-- Dieselbe Flaschenform wie im Shop (sprayBottleSVG in main.js),
-             in Gold statt in einer Duftfarbe -->
+        <!-- Dieselbe Flaschenform wie im Shop (sprayBottleSVG in main.js):
+             schwarz wie die echte Flasche, Gold nur als Akzent auf dem Etikett -->
         <svg viewBox="0 0 120 200" xmlns="http://www.w3.org/2000/svg">
           <g id="sprayHead">
-            <rect x="52" y="4" width="16" height="14" rx="2" fill="#2a2823"/>
-            <rect x="44" y="18" width="32" height="16" rx="3" fill="#221f1b"/>
+            <rect x="53" y="3" width="14" height="6" rx="1.5" fill="#0d0d0e" stroke="rgba(255,255,255,0.22)" stroke-width="0.8"/>
+            <rect x="66" y="5" width="6" height="3" rx="1" fill="#0d0d0e" stroke="rgba(255,255,255,0.22)" stroke-width="0.6"/>
+            <rect x="50" y="9" width="20" height="10" rx="2" fill="#141415" stroke="rgba(255,255,255,0.22)" stroke-width="0.8"/>
+            <rect x="44" y="19" width="32" height="15" rx="3" fill="#121213" stroke="rgba(255,255,255,0.22)" stroke-width="0.8"/>
           </g>
           <path d="M38 40 Q38 34 46 34 H74 Q82 34 82 40 L86 60 V186 Q86 194 78 194 H42 Q34 194 34 186 V60 Z"
-                fill="#b9a06a" stroke="rgba(0,0,0,0.18)"/>
+                fill="#161618" stroke="rgba(255,255,255,0.22)" stroke-width="0.9"/>
+          <path d="M40 62 Q40 44 47 38 L50 38 Q44 46 44 62 V184 Q44 189 41 189 Q40 188 40 184 Z" fill="#ffffff" opacity="0.10"/>
           <rect x="42" y="88" width="36" height="46" rx="3" fill="#f6f3ec"/>
           <text x="60" y="106" text-anchor="middle" font-size="8" font-weight="600"
                 font-family="Georgia, serif" letter-spacing="1.4" fill="#1c1b19">CAROUD</text>
@@ -536,7 +539,7 @@
   <!-- Toast -->
   <div class="toast" id="toast" hidden></div>
 
-  <script src="js/products.js?v=52"></script>
-  <script src="js/main.js?v=52"></script>
+  <script src="js/products.js?v=53"></script>
+  <script src="js/main.js?v=53"></script>
 </body>
 </html>

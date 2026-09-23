@@ -6,6 +6,18 @@
 
 // Liegt ein echtes Etikett vor (img), wird es auf die Platzhalter-Form gelegt.
 // Ohne img bleibt die gezeichnete Ersatzgrafik stehen.
+// Die echte Flasche ist schwarz (siehe Produktfotos) – die Duftfarbe steckt im Etikett
+// bzw. im Hintergrund. Leichter Glanzstreifen und heller Rand, damit sie auch auf
+// dunklem Grund (Hero) sichtbar bleibt.
+const SPRAY_KORPUS = `
+    <rect x="53" y="3" width="14" height="6" rx="1.5" fill="#0d0d0e" stroke="rgba(255,255,255,0.22)" stroke-width="0.8"/>
+    <rect x="66" y="5" width="6" height="3" rx="1" fill="#0d0d0e" stroke="rgba(255,255,255,0.22)" stroke-width="0.6"/>
+    <rect x="50" y="9" width="20" height="10" rx="2" fill="#141415" stroke="rgba(255,255,255,0.22)" stroke-width="0.8"/>
+    <rect x="44" y="19" width="32" height="15" rx="3" fill="#121213" stroke="rgba(255,255,255,0.22)" stroke-width="0.8"/>
+    <path d="M38 40 Q38 34 46 34 H74 Q82 34 82 40 L86 60 V186 Q86 194 78 194 H42 Q34 194 34 186 V60 Z" fill="#161618" stroke="rgba(255,255,255,0.22)" stroke-width="0.9"/>
+    <path d="M40 62 Q40 44 47 38 L50 38 Q44 46 44 62 V184 Q44 189 41 189 Q40 188 40 184 Z" fill="#ffffff" opacity="0.10"/>
+    <rect x="79" y="62" width="3" height="120" rx="1.5" fill="#ffffff" opacity="0.05"/>`;
+
 function sprayBottleSVG(color, label, img) {
   const etikett = img
     ? `<image href="${img}" x="42" y="88" width="36" height="46" preserveAspectRatio="xMidYMid slice"/>`
@@ -16,9 +28,7 @@ function sprayBottleSVG(color, label, img) {
        <text x="60" y="131" text-anchor="middle" font-size="5" font-family="Georgia, serif" fill="#999">- est. 2026 -</text>`;
   return `
   <svg class="prod-art" viewBox="0 0 120 200" xmlns="http://www.w3.org/2000/svg">
-    <rect x="52" y="4" width="16" height="14" rx="2" fill="#222"/>
-    <rect x="44" y="18" width="32" height="16" rx="3" fill="#1b1b1b"/>
-    <path d="M38 40 Q38 34 46 34 H74 Q82 34 82 40 L86 60 V186 Q86 194 78 194 H42 Q34 194 34 186 V60 Z" fill="${color}" stroke="rgba(0,0,0,0.15)"/>
+    ${SPRAY_KORPUS}
     ${etikett}
   </svg>`;
 }
@@ -46,14 +56,12 @@ function haengerSVG(color, label, img) {
 
 function bundleSVG(color, label) {
   // Spray + zwei Anhänger, zusammengesetzt aus den echten Etiketten –
-  // Starter (schwarz) und Signature (rot) unterscheiden sich in der Flaschenfarbe
+  // Starter und Signature unterscheiden sich am Etikett (Pacific Cruise / Fast Cherry)
   const sprayKey = color === "#a8323e" ? "fast-cherry" : "pacific-cruise";
   return `
   <svg class="prod-art" viewBox="0 0 180 200" xmlns="http://www.w3.org/2000/svg">
     <g transform="translate(14 22) scale(0.76)">
-      <rect x="52" y="4" width="16" height="14" rx="2" fill="#222"/>
-      <rect x="44" y="18" width="32" height="16" rx="3" fill="#1b1b1b"/>
-      <path d="M38 40 Q38 34 46 34 H74 Q82 34 82 40 L86 60 V186 Q86 194 78 194 H42 Q34 194 34 186 V60 Z" fill="${color}" stroke="rgba(0,0,0,0.15)"/>
+      ${SPRAY_KORPUS}
       <image href="img/produkte/spray-${sprayKey}.webp?v=${ASSET_V}" x="42" y="88" width="36" height="46" preserveAspectRatio="xMidYMid slice"/>
     </g>
     <g transform="translate(88 58)">
@@ -427,7 +435,7 @@ function renderProducts() {
     const card = document.createElement("div");
     card.className = "product-card";
     card.innerHTML = `
-      <div class="product-media" style="background:linear-gradient(170deg, ${rgba(p.color, 0.13)} 0%, #ffffff 62%)">
+      <div class="product-media" style="background:linear-gradient(170deg, ${rgba(p.color, 0.13)} 0%, #fbfaf7 62%)">
         ${p.priceOld ? `<span class="sale-badge">Sparen ${euro(saving)}</span>` : ""}
         ${mediaFor(p)}
         <button class="quick-add">+ In den Warenkorb</button>
@@ -715,7 +723,7 @@ function openProductModal(id) {
   const geschwister = p.scent ? PRODUCTS.filter((x) => x.scent === p.scent && x.id !== p.id) : [];
   // Fakten zur Form – dieselben Angaben wie im Vergleich, direkt am Produkt
   const fakten = p.set ? [] : FAKTEN[p.type] || [];
-  const tint = p.color ? `background:linear-gradient(170deg, ${rgba(p.color, 0.22)} 0%, #f5f5f4 70%)` : "";
+  const tint = p.color ? `background:linear-gradient(170deg, ${rgba(p.color, 0.22)} 0%, #f3efe7 70%)` : "";
   modalBody.innerHTML = `
     <div class="modal-art" style="${tint}">${artFor(p)}</div>
     <div class="modal-info">
@@ -1087,7 +1095,7 @@ function renderProduktseite(p) {
   const saving = p.priceOld ? p.priceOld - p.price : 0;
   const geschwister = p.scent ? PRODUCTS.filter((x) => x.scent === p.scent && x.id !== p.id) : [];
   const fakten = p.set ? [] : FAKTEN[p.type] || [];
-  const tint = p.color ? `background:linear-gradient(170deg, ${rgba(p.color, 0.2)} 0%, #f5f5f4 70%)` : "";
+  const tint = p.color ? `background:linear-gradient(170deg, ${rgba(p.color, 0.2)} 0%, #f3efe7 70%)` : "";
   produktPage.innerHTML = `
     <div class="container pdp">
       <nav class="pdp-breadcrumb"><a href="#produkte" data-pdp-back>← Zurück zum Shop</a></nav>
