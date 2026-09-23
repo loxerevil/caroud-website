@@ -203,9 +203,12 @@ function videoPoster(p) {
 }
 
 function mediaFor(p) {
-  return p.photo
-    ? `<img class="prod-photo" src="${p.photo}" alt="${p.name}" loading="lazy">`
-    : artFor(p);
+  if (!p.photo) return artFor(p);
+  // Zweites Foto liegt darüber und blendet beim Drüberfahren mit der Maus ein
+  const zweites = p.photo2
+    ? `<img class="prod-photo prod-photo-2" src="${p.photo2}" alt="" aria-hidden="true" loading="lazy">`
+    : "";
+  return `<img class="prod-photo" src="${p.photo}" alt="${p.name}" loading="lazy">${zweites}`;
 }
 
 function euro(v) {

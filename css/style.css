@@ -2059,6 +2059,11 @@ body.pdp-aktiv .site-header {
   object-fit: cover; transition: transform 0.35s ease;
 }
 .product-card:hover .prod-photo { transform: scale(1.04); }
+/* Zweites Produktfoto (Stimmungsbild) – nur auf Geräten mit Maus, weich eingeblendet */
+.product-media .prod-photo-2 { opacity: 0; transition: opacity 0.45s ease, transform 0.35s ease; }
+@media (hover: hover) {
+  .product-card:hover .prod-photo-2 { opacity: 1; }
+}
 .product-media .sale-badge, .product-media .quick-add { z-index: 2; }
 .pdp-art.has-photo { padding: 0; min-height: 0; display: block; background: none; }
 .pdp-stage {
