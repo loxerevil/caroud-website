@@ -15,7 +15,7 @@
 // Bilder: die gedruckten Etiketten, gerendert aus den Druck-PDFs
 // (img/produkte/<typ>-<duft>.webp). Ohne img zeichnet main.js die Ersatzgrafik.
 // Version an Bild-URLs, damit Browser nach Etikett-Updates nicht alte Bilder aus dem Cache zeigen
-const ASSET_V = "47";
+const ASSET_V = "48";
 
 const CATEGORIES = [
   { name: "Duftsprays", type: "spray", color: "#111111", img: "img/produkte/spray-pacific-cruise.webp?v=" + ASSET_V },
@@ -111,7 +111,7 @@ const LINES = [
 ];
 
 // Linien, fuer die es echte Produktfotos gibt (img/fotos/<linie>-<duft>.webp)
-const FOTO_LINIEN = ["spray", "haenger"];
+const FOTO_LINIEN = ["spray", "haenger", "glas"];
 // Linien mit Produktvideo (stumm, Dauerschleife) als letztes Bild in der Galerie
 const VIDEO_LINIEN = ["haenger"];
 // Düfte mit eigenem Foto für die Karten "Sieben Düfte" (img/duefte/<duft>.webp).
