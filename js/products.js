@@ -204,6 +204,7 @@ const OTHER_PRODUCTS = [
     price: 56.90, priceOld: 64.30, bestseller: false,
     desc: "Für Sammler: 2 Duftsprays + 3 Duftanhänger – frei kombinierbar aus allen Düften.",
     notes: ["2× Spray", "3× Anhänger"],
+    photo: "img/fotos/bundle-signature.webp?v=" + ASSET_V,
   },
   // Sets – gleiche Produkte, bessere Staffelpreise. Düfte frei wählbar (Angabe im Checkout).
   {
