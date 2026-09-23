@@ -114,6 +114,9 @@ const LINES = [
 const FOTO_LINIEN = ["spray", "haenger"];
 // Linien mit Produktvideo (stumm, Dauerschleife) als letztes Bild in der Galerie
 const VIDEO_LINIEN = ["haenger"];
+// Düfte mit eigenem Foto für die Karten "Sieben Düfte" (img/duefte/<duft>.webp).
+// Sobald alle Fotos da sind, einfach die weiteren Düfte hier eintragen.
+const DUFT_FOTOS = ["pacific-cruise"];
 // Linien mit zweitem Produktfoto (Stimmungsbild) – Dateiname <linie>-<duft>-2.webp
 const FOTO2_LINIEN = ["spray"];
 

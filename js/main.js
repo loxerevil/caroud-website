@@ -293,9 +293,13 @@ if (scentGrid) {
     card.style.background =
       `linear-gradient(165deg, ${rgba(s.color, 0.5)} 0%, rgba(255,255,255,0.03) 78%),` +
       `linear-gradient(rgba(255,255,255,0.075), rgba(255,255,255,0.075))`;
-    // Die Sprühflasche mit Etikett – nicht das nackte Etikett, das wäre ein Rechteck
+    // Echtes Foto, wenn vorhanden – sonst die gezeichnete Sprühflasche mit Etikett
+    const foto = DUFT_FOTOS.includes(s.key);
+    if (foto) card.classList.add("has-foto");
     card.innerHTML = `
-      <span class="scent-swatch">${artFor(byId("spray-" + s.key))}</span>
+      ${foto
+        ? `<span class="scent-foto"><img src="img/duefte/${s.key}.webp?v=${ASSET_V}" alt="${s.name} Duftspray" loading="lazy"></span>`
+        : `<span class="scent-swatch">${artFor(byId("spray-" + s.key))}</span>`}
       <span class="scent-name">${s.name}</span>
       <span class="scent-notes">${s.notes.slice(0, 3).join(" · ")}</span>`;
     card.addEventListener("click", () => { location.hash = "p/spray-" + s.key; });

@@ -1230,6 +1230,25 @@ button { font-family: inherit; }
   filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.55));
 }
 
+/* Karte mit echtem Foto: Foto randlos oben, Name und Duftnoten darunter */
+.scent-card.has-foto { padding-top: 0; overflow: hidden; }
+.scent-foto {
+  position: relative; display: block;
+  width: calc(100% + 1.2rem); margin: 0 -0.6rem 0.2rem;
+  aspect-ratio: 4 / 5; overflow: hidden;
+}
+.scent-foto img {
+  width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%;
+  transition: transform 0.4s ease;
+}
+/* weicher Übergang vom Foto in die Kartenfarbe */
+.scent-foto::after {
+  content: ""; position: absolute; inset: auto 0 0 0; height: 30%;
+  background: linear-gradient(to bottom, transparent, rgba(20, 20, 20, 0.45));
+  pointer-events: none;
+}
+.scent-card.has-foto:hover .scent-foto img { transform: scale(1.05); }
+
 .scent-name {
   font-family: var(--serif);
   font-size: 1rem;
@@ -1727,6 +1746,8 @@ button { font-family: inherit; }
   }
   .scent-grid::-webkit-scrollbar { display: none; }
   .scent-card { flex: 0 0 44%; scroll-snap-align: start; padding: 1rem 0.5rem 0.85rem; }
+  .scent-card.has-foto { padding-top: 0; }
+  .scent-foto { width: calc(100% + 1rem); margin: 0 -0.5rem 0.15rem; }
   .scent-swatch svg { height: 104px; }
   .scent-name { font-size: 0.9rem; }
   .scent-notes { font-size: 0.64rem; }
