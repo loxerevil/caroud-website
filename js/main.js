@@ -407,8 +407,13 @@ function setFilter(f) {
   // aktiven Chip sichtbar scrollen und den Rand-Verlauf nachziehen
   setTimeout(() => {
     const aktiv = document.querySelector(".filter-chips .chip.is-on, .filter-chips .chip.active");
-    // mittig statt "nearest": sonst klebt der aktive Chip am Rand unter dem Verlauf
-    if (aktiv && aktiv.scrollIntoView) aktiv.scrollIntoView({ block: "nearest", inline: "center" });
+    // Nur die Chip-Reihe waagerecht verschieben (aktiver Chip mittig). Kein
+    // scrollIntoView: das hat beim ersten Laden die ganze Seite nach unten
+    // zum Bestseller-Bereich springen lassen.
+    const reihe = aktiv && aktiv.parentElement;
+    if (reihe && reihe.scrollWidth > reihe.clientWidth) {
+      reihe.scrollLeft = aktiv.offsetLeft - reihe.offsetLeft - (reihe.clientWidth - aktiv.offsetWidth) / 2;
+    }
     if (typeof scrollReihenPruefen === "function") scrollReihenPruefen();
   }, 0);
   filterChips.querySelectorAll(".chip").forEach((c) => {
@@ -1112,6 +1117,7 @@ function renderProduktseite(p) {
           </div>
           <div class="pdp-thumbs">
             <button type="button" class="pdp-thumb active" data-thumb="foto" aria-label="Produktfoto"><img src="${p.photo}" alt=""></button>
+            ${p.photo2 ? `<button type="button" class="pdp-thumb" data-thumb="foto2" aria-label="Produktfoto 2"><img src="${p.photo2}" alt=""></button>` : ""}
             <button type="button" class="pdp-thumb" data-thumb="art" aria-label="Etikett" style="${tint}">${artFor(p)}</button>
             ${p.video ? `<button type="button" class="pdp-thumb pdp-thumb-video" data-thumb="video" aria-label="Produktvideo"><img src="${videoPoster(p)}" alt=""><span class="play-badge" aria-hidden="true"></span></button>` : ""}
           </div>
@@ -1170,7 +1176,7 @@ function renderProduktseite(p) {
       </div>
       ${recoKarten(p)}
     </div>`;
-  // Galerie: Foto <-> Etikett umschalten
+  // Galerie: Foto, Foto 2, Etikett, Video umschalten
   const stage = produktPage.querySelector("[data-stage]");
   produktPage.querySelectorAll("[data-thumb]").forEach((b) => {
     b.addEventListener("click", () => {
@@ -1183,7 +1189,7 @@ function renderProduktseite(p) {
         : art === "video"
           // Stumm, Dauerschleife, ohne Bedienleiste – wie ein GIF, nur viel kleiner
           ? `<video class="pdp-photo" src="${p.video}" poster="${videoPoster(p)}" autoplay muted loop playsinline preload="auto" aria-label="${p.name} – Produktvideo"></video>`
-          : `<img class="pdp-photo" src="${p.photo}" alt="${p.name}">`;
+          : `<img class="pdp-photo" src="${art === "foto2" ? p.photo2 : p.photo}" alt="${p.name}">`;
       const v = stage.querySelector("video");
       if (v) { v.muted = true; v.play().catch(() => {}); }
     });

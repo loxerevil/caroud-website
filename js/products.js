@@ -15,7 +15,7 @@
 // Bilder: die gedruckten Etiketten, gerendert aus den Druck-PDFs
 // (img/produkte/<typ>-<duft>.webp). Ohne img zeichnet main.js die Ersatzgrafik.
 // Version an Bild-URLs, damit Browser nach Etikett-Updates nicht alte Bilder aus dem Cache zeigen
-const ASSET_V = "45";
+const ASSET_V = "46";
 
 const CATEGORIES = [
   { name: "Duftsprays", type: "spray", color: "#111111", img: "img/produkte/spray-pacific-cruise.webp?v=" + ASSET_V },
@@ -114,6 +114,8 @@ const LINES = [
 const FOTO_LINIEN = ["spray", "haenger"];
 // Linien mit Produktvideo (stumm, Dauerschleife) als letztes Bild in der Galerie
 const VIDEO_LINIEN = ["haenger"];
+// Linien mit zweitem Produktfoto (Stimmungsbild) – Dateiname <linie>-<duft>-2.webp
+const FOTO2_LINIEN = ["spray"];
 
 const SCENT_PRODUCTS = [];
 LINES.forEach((line) => {
@@ -126,6 +128,7 @@ LINES.forEach((line) => {
       img: line.noImg ? null : "img/produkte/" + line.type + "-" + s.key + ".webp?v=" + ASSET_V,
       // echte Produktfotos (Duftspray + Duftanhaenger); ohne Foto zeigt der Shop die Etikett-Grafik
       photo: FOTO_LINIEN.includes(line.type) ? "img/fotos/" + line.type + "-" + s.key + ".webp?v=" + ASSET_V : null,
+      photo2: FOTO2_LINIEN.includes(line.type) ? "img/fotos/" + line.type + "-" + s.key + "-2.webp?v=" + ASSET_V : null,
       video: VIDEO_LINIEN.includes(line.type) ? "img/videos/" + line.type + "-" + s.key + ".mp4?v=" + ASSET_V : null,
       pyramide: s.pyramide,
       price: line.price, priceOld: line.priceOld, bestseller: !!s.bestseller[line.type],
