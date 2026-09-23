@@ -15,7 +15,7 @@
 // Bilder: die gedruckten Etiketten, gerendert aus den Druck-PDFs
 // (img/produkte/<typ>-<duft>.webp). Ohne img zeichnet main.js die Ersatzgrafik.
 // Version an Bild-URLs, damit Browser nach Etikett-Updates nicht alte Bilder aus dem Cache zeigen
-const ASSET_V = "41";
+const ASSET_V = "43";
 
 const CATEGORIES = [
   { name: "Duftsprays", type: "spray", color: "#111111", img: "img/produkte/spray-pacific-cruise.webp?v=" + ASSET_V },
@@ -47,7 +47,7 @@ const SCENTS = [
     bestseller: { spray: true, haenger: true, glas: true, baum: true },
   },
   {
-    key: "erba-carbon", name: "Erba Carbon", color: "#12a19a", familie: "frisch",
+    key: "erba-carbon", name: "Erba Carbon", color: "#2b2b2e", familie: "frisch",
     notes: ["Sizilianische Orange", "Bergamotte", "Mediterrane Früchte", "Weißer Moschus"],
     short: "Saftig und strahlend: sizilianische Orange, Bergamotte und reife Früchte auf weißem Moschus.",
     spray: "Saftig, strahlend, unverwechselbar: sizilianische Orange, Zitrone und kalabrische Bergamotte treffen auf reife mediterrane Früchte. Darunter weißer Moschus, Vanille und Amber, die den Innenraum lange und weich umhüllen.",
