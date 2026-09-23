@@ -215,6 +215,7 @@ const OTHER_PRODUCTS = [
     price: 47.90, priceOld: 53.80, bestseller: false,
     desc: "Zwei Duftsprays à 150 ml, frei kombinierbar aus allen sieben Düften – einer fürs Auto, einer als Reserve oder zum Verschenken. Deine Wunsch-Düfte gibst du im Checkout an.",
     notes: ["2 × 150 ml", "Düfte frei wählbar"],
+    photo: "img/fotos/set-spray-2.webp?v=" + ASSET_V,
   },
   {
     id: "set-spray-3",
@@ -224,6 +225,7 @@ const OTHER_PRODUCTS = [
     price: 66.90, priceOld: 80.70, bestseller: false,
     desc: "Drei Duftsprays à 150 ml, frei kombinierbar aus allen sieben Düften – der günstigste Weg zur großen Flasche. Deine Wunsch-Düfte gibst du im Checkout an.",
     notes: ["3 × 150 ml", "Düfte frei wählbar"],
+    photo: "img/fotos/set-spray-3.webp?v=" + ASSET_V,
   },
   {
     id: "set-haenger-3",
@@ -233,6 +235,7 @@ const OTHER_PRODUCTS = [
     price: 8.90, priceOld: 10.50, bestseller: true,
     desc: "Drei Premium-Duftanhänger in der eigenen Caroud-Form, frei kombinierbar aus allen sieben Düften. Deine Wunsch-Düfte gibst du im Checkout an.",
     notes: ["3 Anhänger", "Düfte frei wählbar"],
+    photo: "img/fotos/set-haenger-3.webp?v=" + ASSET_V,
   },
   {
     id: "set-haenger-5",
@@ -242,6 +245,7 @@ const OTHER_PRODUCTS = [
     price: 13.90, priceOld: 17.50, bestseller: false,
     desc: "Fünf Premium-Duftanhänger, frei kombinierbar aus allen sieben Düften – unser Sparpreis für den Duftwechsel. Deine Wunsch-Düfte gibst du im Checkout an.",
     notes: ["5 Anhänger", "Düfte frei wählbar"],
+    photo: "img/fotos/set-haenger-5.webp?v=" + ASSET_V,
   },
   {
     id: "set-glas-2",
@@ -251,6 +255,7 @@ const OTHER_PRODUCTS = [
     price: 22.90, priceOld: 25.80, bestseller: false,
     desc: "Zwei Glasanhänger mit je 8 ml Duftöl, frei kombinierbar aus allen sieben Düften – einer für dich, einer zum Verschenken. Deine Wunsch-Düfte gibst du im Checkout an.",
     notes: ["2 × 8 ml", "Düfte frei wählbar"],
+    photo: "img/fotos/set-glas-2.webp?v=" + ASSET_V,
   },
   // Probiersets – 15-ml-Sprühfläschchen zum Kennenlernen
   {
