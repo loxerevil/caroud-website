@@ -29,7 +29,8 @@
   <link rel="icon" type="image/png" href="img/favicon.png">
   <!-- Überschriftenschrift vorladen, damit der Hero-Titel nicht erst in Georgia aufblitzt -->
   <link rel="preload" href="fonts/playfair-400.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/style.css?v=60">
+  <link rel="preload" href="fonts/inter-400.woff" as="font" type="font/woff" crossorigin>
+  <link rel="stylesheet" href="css/style.css?v=61">
 
   <!-- Strukturierte Daten für Google. Produkt-Markup fehlt bewusst,
        solange keine echten Preise hinterlegt sind. -->
@@ -104,11 +105,9 @@
 
   <!-- Leiste + Header scrollen als Block mit (Sticky-Wrapper) -->
   <div class="top-sticky">
-  <!-- Ankündigungsleiste: wechselt zwischen den Botschaften (siehe main.js) -->
+  <!-- Ankündigungsleiste: eine ruhige Botschaft -->
   <div class="announcement-bar">
-    <span class="announce-msg is-on">VERSANDKOSTENFREI – OHNE MINDESTBESTELLWERT</span>
-    <span class="announce-msg">CODE: CAROUD10 – 10% RABATT AUF DEINE ERSTE BESTELLUNG</span>
-    <span class="announce-msg">GRATIS DUFTMUSTER ZU JEDEM DUFTSPRAY</span>
+    <span class="announce-msg is-on">Versandkostenfrei&nbsp;· Abgefüllt in Deutschland&nbsp;· 14 Tage Rückgabe</span>
   </div>
 
   <!-- Header -->
@@ -148,7 +147,6 @@
       <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
     </button>
     <ul class="menu-list">
-      <li><a href="#top">Home</a></li>
       <li><a href="#duefte">Die sieben Düfte</a></li>
       <li><a href="#produkte" data-filter="alle">Alle Produkte</a></li>
       <li><a href="#produkte" data-filter="bestseller">Bestseller</a></li>
@@ -180,8 +178,8 @@
     <div class="cart-items" id="cartItems"></div>
 
     <div class="cart-upsell" id="upsellBox" hidden>
-      <p class="upsell-head">✦ Wird gern dazu bestellt</p>
-      <p class="upsell-sub">Günstiger als im Katalog – der Versand ist schon bezahlt.</p>
+      <p class="upsell-head">Passt dazu</p>
+      <p class="upsell-sub">Günstiger als einzeln – der Versand ist schon bezahlt.</p>
       <div class="upsell-row" id="upsellRow"></div>
     </div>
 
@@ -225,20 +223,11 @@
           <a href="#produkte" class="btn btn-gold">Düfte entdecken</a>
           <a href="#duefte" class="btn btn-outline">Die sieben Düfte</a>
         </div>
-        <p class="hero-note">Versandkostenfrei ohne Mindestbestellwert&nbsp;· Versand in&nbsp;24&nbsp;h&nbsp;· Made in Germany</p>
+        <p class="hero-note">Versandkostenfrei&nbsp;· Versand in&nbsp;24&nbsp;h&nbsp;· Abgefüllt in Deutschland</p>
       </div>
       <div class="hero-produkt" id="heroArt" aria-hidden="true"></div>
     </div>
-    <div class="hero-scroll">▾</div>
   </section>
-
-  <!-- Laufband -->
-  <div class="marquee" aria-hidden="true">
-    <div class="marquee-track">
-      <span>CAROUD&nbsp;✦&nbsp;PREMIUM AUTODÜFTE&nbsp;✦&nbsp;LANGANHALTEND&nbsp;✦&nbsp;EST. 2026&nbsp;✦&nbsp;</span>
-      <span>CAROUD&nbsp;✦&nbsp;PREMIUM AUTODÜFTE&nbsp;✦&nbsp;LANGANHALTEND&nbsp;✦&nbsp;EST. 2026&nbsp;✦&nbsp;</span>
-    </div>
-  </div>
 
   <!-- Die sieben Düfte -->
   <!-- Eigene Produktseite: wird per Hash-Route #p/<id> gefuellt und eingeblendet -->
@@ -246,11 +235,11 @@
 
   <section class="scent-band reveal" id="duefte">
     <div class="scent-head">
-      <p class="brand-kicker">Sieben Düfte</p>
-      <h2>Such dir deinen aus.</h2>
+      <p class="section-kicker">Sieben Düfte</p>
+      <h2 class="section-title">Such dir deinen aus.</h2>
       <p class="scent-intro">
-        Jeden Duft gibt es in allen drei Formen – als Spray, als Glasanhänger und als Duftanhänger Premium.
-        Tipp einen an, um ihn kennenzulernen.
+        Jeden Duft gibt es in drei Formen – als Spray, als Glasanhänger und als Duftanhänger.
+        Wähle einen aus, um ihn kennenzulernen.
       </p>
     </div>
     <div class="scent-grid" id="scentGrid"></div>
@@ -258,12 +247,13 @@
 
   <!-- Kollektionen -->
   <section class="section reveal" id="kategorien">
+    <p class="section-kicker">Drei Formen, ein Anspruch</p>
     <h2 class="section-title">Kollektionen</h2>
     <div class="koll-grid">
       <button class="koll-tile" type="button" data-koll="Duftsprays">
         <img src="img/kollektion-sprays.webp?v=48" alt="Caroud Duftsprays" width="900" height="900" loading="lazy">
         <span class="koll-inner">
-          <span class="koll-kicker">Autodüfte</span>
+          <span class="koll-kicker">150 ml, für Fußmatten und Textil</span>
           <span class="koll-title">Duftsprays</span>
           <span class="koll-btn">Jetzt entdecken</span>
         </span>
@@ -290,7 +280,7 @@
       <button class="koll-tile koll-tile-wide" type="button" data-koll="Sets &amp; Boxen">
         <img src="img/kollektion-bundles.webp?v=49" alt="Caroud Sets und Boxen" width="1000" height="500" loading="lazy">
         <span class="koll-inner">
-          <span class="koll-kicker">Sparsets, Probiersets &amp; Mystery Box</span>
+          <span class="koll-kicker">Sparsets &amp; Geschenkboxen</span>
           <span class="koll-title">Sets &amp; Boxen</span>
           <span class="koll-btn">Jetzt entdecken</span>
         </span>
@@ -308,6 +298,7 @@
 
   <!-- Produkte -->
   <section class="section section-alt reveal" id="produkte">
+    <p class="section-kicker">Shop</p>
     <h2 class="section-title" id="productTitle">Bestseller</h2>
     <div class="filter-chips" id="filterChips"></div>
     <div class="finder-row">
@@ -319,6 +310,7 @@
 
   <!-- Welche Form passt? Angaben stammen aus den Etikettentexten und dem FAQ -->
   <section class="section vergleich reveal" id="formen">
+    <p class="section-kicker">Welche Form passt zu dir?</p>
     <h2 class="section-title">Spray, Glasanhänger oder Duftanhänger?</h2>
     <p class="vergleich-intro">
       Jeden der sieben Düfte gibt es in allen drei Formen. Der Unterschied liegt darin,
@@ -332,6 +324,7 @@
     </div>
     <div class="vergleich-grid">
       <div class="vergleich-karte is-on">
+        <img class="vergleich-foto" src="img/vergleich/spray.webp?v=1" alt="Caroud Duftspray" width="900" height="600" loading="lazy">
         <h3>Duftspray</h3>
         <dl>
           <dt>Wohin</dt><dd>Auf Fußmatten oder Textilsitze – nicht auf Leder, Kunststoff, Displays oder Haut.</dd>
@@ -341,6 +334,7 @@
         </dl>
       </div>
       <div class="vergleich-karte">
+        <img class="vergleich-foto" src="img/vergleich/glas.webp?v=1" alt="Caroud Glasanhänger" width="900" height="600" loading="lazy">
         <h3>Glasanhänger</h3>
         <dl>
           <dt>Wohin</dt><dd>An den Rückspiegel.</dd>
@@ -350,6 +344,7 @@
         </dl>
       </div>
       <div class="vergleich-karte">
+        <img class="vergleich-foto" src="img/vergleich/haenger.webp?v=1" alt="Caroud Duftanhänger Premium" width="900" height="600" loading="lazy">
         <h3>Duftanhänger Premium</h3>
         <dl>
           <dt>Wohin</dt><dd>An den Rückspiegel.</dd>
@@ -377,7 +372,7 @@
         <!-- Lieferwagen -->
         <svg viewBox="0 0 24 24"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.6"/><circle cx="17" cy="17.5" r="1.6"/></svg>
       </div>
-      <h3>Versand in 24h</h3>
+      <h3>Versand in 24 h</h3>
       <p>Werktags bestellt, werktags raus. Aus Deutschland, in die ganze EU.</p>
     </div>
     <div class="usp">
@@ -390,11 +385,11 @@
     </div>
     <div class="usp">
       <div class="usp-icon" aria-hidden="true">
-        <!-- Uhr -->
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>
+        <!-- Flakon / Tropfen -->
+        <svg viewBox="0 0 24 24"><path d="M10 3h4v3l2.2 2.4c.5.6.8 1.3.8 2.1V19a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-8.5c0-.8.3-1.5.8-2.1L10 6V3z"/><path d="M8.5 14.5h7"/></svg>
       </div>
-      <h3>Langanhaltend</h3>
-      <p>Der Duftanhänger hält 4 bis 8 Wochen – entwickelt für den Innenraum.</p>
+      <h3>Kleine Chargen</h3>
+      <p>Abgefüllt in Deutschland – in kleinen Mengen, nicht auf Halde.</p>
     </div>
   </section>
 
@@ -402,7 +397,7 @@
   <section class="section about reveal" id="ueber">
     <div class="about-grid">
       <div class="about-text">
-        <p class="about-kicker">Fine Fragrance for the Drive</p>
+        <p class="about-quote">„Die Autos, die wir fahren, sagen viel über uns. Der Duft darin auch.“</p>
         <h2>Ein Autoduft, den es so nicht gab.</h2>
         <p>
           Wir mochten Autos, wir mochten Parfüm – und fanden nichts, das beides ernst nimmt.
@@ -422,23 +417,9 @@
     </div>
   </section>
 
-  <!-- Marken-Statement -->
-  <section class="brand-band reveal" id="marke">
-    <div class="brand-inner">
-      <p class="brand-kicker">Die Marke</p>
-      <h2>„Die Autos, die wir fahren, sagen viel über uns.<br>Der Duft darin auch."</h2>
-      <p class="brand-text">
-        Sieben Düfte, jeder in drei Formen – als Spray, als Glasanhänger, als Duftanhänger.
-        Damit du selbst entscheidest, wie präsent dein Auto riecht: ein kurzer Sprühstoß vor der Fahrt
-        oder ein Duft, der einfach da ist, jeden Tag.
-      </p>
-    </div>
-  </section>
-
-  <!-- Vorteile -->
-
   <!-- FAQ -->
   <section class="section faq-section reveal" id="faq">
+    <p class="section-kicker">Service</p>
     <h2 class="section-title">Häufige Fragen</h2>
     <div class="faq-list">
       <details class="faq-item">
@@ -473,15 +454,16 @@
   </section>
 
   <!-- Newsletter -->
-  <section class="newsletter reveal">
+  <!-- Newsletter: ausgeblendet, bis die Anmeldung angeschlossen ist (Adressen wurden bisher nirgends gespeichert) -->
+  <section class="newsletter reveal" hidden>
     <div class="newsletter-inner">
       <h2>Bleib auf dem Laufenden</h2>
-      <p>Neue Düfte, Drops und exklusive Rabatte – direkt in dein Postfach.</p>
+      <p>Neue Düfte, limitierte Editionen und Vorteile für Abonnenten.</p>
       <form class="newsletter-form" id="newsletterForm">
         <input type="email" placeholder="Deine E-Mail-Adresse" required>
         <button type="submit" class="btn btn-gold">Anmelden</button>
       </form>
-      <p class="newsletter-done" id="newsletterDone" hidden>Danke! Du bist dabei. ✦</p>
+      <p class="newsletter-done" id="newsletterDone" hidden>Danke, du bist dabei.</p>
     </div>
   </section>
 
@@ -489,8 +471,8 @@
   <footer class="site-footer">
     <div class="footer-cols">
       <div>
-        <img class="footer-logo" src="img/logo-transparent.png" alt="Caroud – Fine Fragrance for the Drive">
-        <p>Autodüfte, Duftsprays und Duftanhänger – est. 2026.</p>
+        <p class="footer-wordmark">CAROUD</p>
+        <p>Fine Fragrance for the Drive. Autodüfte, abgefüllt in Deutschland – est. 2026.</p>
         <p class="footer-social">
           <a href="https://www.instagram.com/caroud.de" target="_blank" rel="noopener">Instagram</a>
           &nbsp;·&nbsp;
@@ -539,7 +521,7 @@
   <!-- Toast -->
   <div class="toast" id="toast" hidden></div>
 
-  <script src="js/products.js?v=67"></script>
-  <script src="js/main.js?v=62"></script>
+  <script src="js/products.js?v=68"></script>
+  <script src="js/main.js?v=63"></script>
 </body>
 </html>

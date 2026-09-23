@@ -215,6 +215,11 @@ function crossMedia(g) {
   return src ? `<img src="${src}" alt="${g.name}" loading="lazy">` : artFor(g);
 }
 
+// Kleines Vorschaubild (Warenkorb, Suche, Mitnahme): Foto, sonst Grafik
+function thumbFor(p) {
+  return p.photo ? `<img class="thumb-photo" src="${p.photo}" alt="" loading="lazy">` : artFor(p);
+}
+
 function mediaFor(p) {
   if (!p.photo) return artFor(p);
   // Zweites Foto liegt darüber und blendet beim Drüberfahren mit der Maus ein
@@ -232,6 +237,13 @@ function byId(id) {
   return PRODUCTS.find((p) => p.id === id);
 }
 
+// Preis mit ehrlichem Vergleich: Sets zeigen "statt … einzeln", sonst nur der Preis.
+function preisHtml(p) {
+  const ref = p.priceOld && p.priceOld > p.price
+    ? `<span class="price-ref">statt ${euro(p.priceOld)} einzeln</span>` : "";
+  return `<span class="price-now">${euro(p.price)}</span>${ref}`;
+}
+
 // Hex-Farbe mit Transparenz, für Verläufe in der jeweiligen Duftfarbe
 function rgba(hex, a) {
   const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
@@ -243,54 +255,7 @@ function rgba(hex, a) {
 const heroArt = document.getElementById("heroArt");
 if (heroArt) {
   heroArt.innerHTML =
-    `<div class="bottle-wrap"><img class="hero-bottle" src="img/hero-flasche.webp?v=2" alt="Caroud Duftspray Pacific Cruise" width="440" height="1656" fetchpriority="high"></div>` +
-    `<div class="mist-layer"></div>` +
-    `<button class="spray-hit" type="button" aria-label="Sprühstoß auslösen" title="Draufdrücken"></button>`;
-
-  const mistLayer = heroArt.querySelector(".mist-layer");
-  const sprayHit = heroArt.querySelector(".spray-hit");
-  let fuehrtRunter = null;
-  let scrollBeimKlick = 0;
-
-  // Wenn der Nebel verflogen ist, den Besucher zu den Duftsprays mitnehmen.
-  // Nur abbrechen, wenn er in der Zwischenzeit selbst gescrollt hat.
-  function runterZuDenSprays() {
-    if (Math.abs(window.scrollY - scrollBeimKlick) > 60) return;
-    zuDenProdukten("Duftsprays");
-  }
-
-  // Sprühstoß: Nebeltropfen fliegen gestreut nach oben und verwehen
-  function spruehen() {
-    heroArt.classList.add("spraying");
-    heroArt.classList.remove("hint");
-    setTimeout(() => heroArt.classList.remove("spraying"), 480);
-    // Bei mehrfachem Drücken zählt erst der letzte Stoß
-    scrollBeimKlick = window.scrollY;
-    clearTimeout(fuehrtRunter);
-    fuehrtRunter = setTimeout(runterZuDenSprays, 1150);
-
-    // Breite Streuung bei Verzögerung und Weite – sonst fliegt ein geschlossener
-    // Klumpen davon statt einer Wolke, die am Kopf hängt und sich auflöst
-    for (let i = 0; i < 26; i++) {
-      const dot = document.createElement("span");
-      dot.className = "mist-dot";
-      const winkel = (-90 + (Math.random() * 78 - 39)) * (Math.PI / 180);
-      const weite = 28 + Math.random() * 145;
-      dot.style.setProperty("--dx", Math.cos(winkel) * weite + "px");
-      dot.style.setProperty("--dy", Math.sin(winkel) * weite + "px");
-      dot.style.setProperty("--s", (1.8 + Math.random() * 2.8).toFixed(2));
-      dot.style.animationDelay = Math.random() * 260 + "ms";
-      dot.style.animationDuration = 700 + Math.random() * 620 + "ms";
-      mistLayer.appendChild(dot);
-      setTimeout(() => dot.remove(), 1700);
-    }
-  }
-
-  sprayHit.addEventListener("click", spruehen);
-
-  // Kleiner Hinweis, dass der Kopf anklickbar ist – verschwindet nach dem ersten Mal
-  heroArt.classList.add("hint");
-  setTimeout(() => heroArt.classList.remove("hint"), 12000);
+    `<div class="bottle-wrap"><img class="hero-bottle" src="img/hero-flasche.webp?v=2" alt="Caroud Duftspray Pacific Cruise" width="440" height="1656" fetchpriority="high"></div>`;
 }
 
 // ---------- Die sieben Düfte ----------
@@ -301,11 +266,8 @@ if (scentGrid) {
     const card = document.createElement("button");
     card.className = "scent-card";
     card.type = "button";
-    // Grundton in Weiß darunter, sonst verschwinden dunkle Düfte wie Ombre Apex
-    // auf dem schwarzen Band
-    card.style.background =
-      `linear-gradient(165deg, ${rgba(s.color, 0.5)} 0%, rgba(255,255,255,0.03) 78%),` +
-      `linear-gradient(rgba(255,255,255,0.075), rgba(255,255,255,0.075))`;
+    // Alle Karten gleich (Slate) – die Duftfarbe steckt nur in der feinen Linie unter dem Namen
+    card.style.setProperty("--c", s.color);
     // Echtes Foto, wenn vorhanden – sonst die gezeichnete Sprühflasche mit Etikett
     const foto = DUFT_FOTOS.includes(s.key);
     if (foto) card.classList.add("has-foto");
@@ -314,6 +276,7 @@ if (scentGrid) {
         ? `<span class="scent-foto"><img src="img/duefte/${s.key}.webp?v=${ASSET_V}" alt="${s.name} Duftspray" loading="lazy"></span>`
         : `<span class="scent-swatch">${artFor(byId("spray-" + s.key))}</span>`}
       <span class="scent-name">${s.name}</span>
+      <span class="scent-line" aria-hidden="true"></span>
       <span class="scent-notes">${s.notes.slice(0, 3).join(" · ")}</span>`;
     card.addEventListener("click", () => { location.hash = "p/spray-" + s.key; });
     scentGrid.appendChild(card);
@@ -422,8 +385,20 @@ function updateProductTitle() {
   productTitle.textContent = fam ? basis + " · " + fam.name : basis;
 }
 
+// Die Duftrichtung hat nur bei den drei Duft-Linien eine Funktion
+const DUFT_KATEGORIEN = ["Duftsprays", "Duftanhänger Premium", "Glasanhänger"];
+
 function setFilter(f) {
   activeFilter = f;
+  const finderRow = document.querySelector(".finder-row");
+  if (finderRow) {
+    const zeigen = DUFT_KATEGORIEN.includes(f);
+    finderRow.hidden = !zeigen;
+    if (!zeigen && activeFamily !== "alle") {
+      activeFamily = "alle";
+      familyChips.querySelectorAll(".chip").forEach((c) => c.classList.toggle("active", c.dataset.family === "alle"));
+    }
+  }
   // aktiven Chip sichtbar scrollen und den Rand-Verlauf nachziehen
   setTimeout(() => {
     const aktiv = document.querySelector(".filter-chips .chip.is-on, .filter-chips .chip.active");
@@ -461,20 +436,15 @@ function renderProducts() {
     return;
   }
   list.forEach((p) => {
-    const saving = p.priceOld ? p.priceOld - p.price : 0;
     const card = document.createElement("div");
     card.className = "product-card";
     card.innerHTML = `
-      <div class="product-media" style="background:linear-gradient(170deg, ${rgba(p.color, 0.13)} 0%, #fbfaf7 62%)">
-        ${p.priceOld ? `<span class="sale-badge">Sparen ${euro(saving)}</span>` : ""}
+      <div class="product-media">
         ${mediaFor(p)}
         <button class="quick-add">+ In den Warenkorb</button>
       </div>
       <div class="product-name">${p.name}</div>
-      <div class="product-prices">
-        ${p.priceOld ? `<span class="price-old">${euro(p.priceOld)}</span>` : ""}
-        <span class="price-now">${euro(p.price)}</span>
-      </div>`;
+      <div class="product-prices">${preisHtml(p)}</div>`;
     card.querySelector(".quick-add").addEventListener("click", (e) => {
       e.stopPropagation();
       addToCart(p.id, 1);
@@ -572,7 +542,7 @@ function addToCart(id, qty, up) {
   normalizeCart();
   saveCart();
   renderCart();
-  showToast(`<span class="gold">✦</span> ${byId(id).name} hinzugefügt`);
+  showToast(`${byId(id).name} hinzugefügt`);
 }
 
 function changeQty(idx, delta) {
@@ -617,7 +587,7 @@ function renderUpsell() {
          </select></div>`
       : `<div class="upsell-slot" aria-hidden="true"></div>`;
     card.innerHTML = `
-      <div class="upsell-art">${artFor(base)}</div>
+      <div class="upsell-art">${thumbFor(base)}</div>
       <div class="upsell-name">${u.name}</div>
       <div class="upsell-prices">
         ${regular && regular > u.price ? `<span class="price-old">${euro(regular)}</span>` : ""}
@@ -664,12 +634,12 @@ function renderCart() {
   // Liegt irgendein anderer Artikel im Korb, faellt die Regel komplett weg.
   const status = versandStatus();
   if (status.frei) {
-    shippingTextEl.innerHTML = `<strong>✦ Versandkostenfrei</strong> – auf alle Bestellungen`;
+    shippingTextEl.innerHTML = `<strong>Versandkostenfrei</strong> – auf alle Bestellungen`;
     shippingFillEl.style.width = "100%";
   } else {
     const n = status.fehlend;
     shippingTextEl.innerHTML =
-      `<strong>✦ Fast geschafft:</strong> Noch ${n} Duftanhänger für Gratisversand ` +
+      `<strong>Fast geschafft:</strong> Noch ${n} Duftanhänger für Gratisversand ` +
       `– oder leg ein anderes Produkt dazu.`;
     shippingFillEl.style.width = Math.round((ANHAENGER_MIN - n) / ANHAENGER_MIN * 100) + "%";
   }
@@ -678,7 +648,7 @@ function renderCart() {
 
   cartItemsEl.innerHTML = "";
   if (!cart.length) {
-    cartItemsEl.innerHTML = `<p class="cart-empty">Dein Warenkorb ist noch leer.<br>Zeit, das zu ändern. ✦</p>`;
+    cartItemsEl.innerHTML = `<p class="cart-empty">Dein Warenkorb ist noch leer.</p>`;
     renderUpsell();
     return;
   }
@@ -689,7 +659,7 @@ function renderCart() {
     const row = document.createElement("div");
     row.className = "cart-item";
     row.innerHTML = `
-      <div class="cart-item-art">${artFor(p)}</div>
+      <div class="cart-item-art">${thumbFor(p)}</div>
       <div class="cart-item-info">
         <div class="cart-item-name">${p.name}${item.up ? ` <span class="upsell-tag">Mitnahme</span>` : ""}</div>
         <div class="cart-item-price">${preis < p.price ? `<span class="price-old">${euro(p.price)}</span> ` : ""}${euro(preis)}</div>
@@ -709,7 +679,7 @@ function renderCart() {
 }
 
 document.getElementById("checkoutBtn").addEventListener("click", () => {
-  showToast("Demo-Prototyp – der Checkout kommt mit Shopify. ✦");
+  showToast("Der Checkout wird gerade angeschlossen – bald verfügbar.");
 });
 
 normalizeCart(true);
@@ -748,24 +718,18 @@ function openProductModal(id) {
   const p = byId(id);
   if (!p) return;
   modalQty = 1;
-  const saving = p.priceOld ? p.priceOld - p.price : 0;
   // Denselben Duft in den anderen beiden Linien anbieten
   const geschwister = p.scent ? PRODUCTS.filter((x) => x.scent === p.scent && x.id !== p.id) : [];
   // Fakten zur Form – dieselben Angaben wie im Vergleich, direkt am Produkt
   const fakten = p.set ? [] : FAKTEN[p.type] || [];
-  const tint = p.color ? `background:linear-gradient(170deg, ${rgba(p.color, 0.22)} 0%, #f3efe7 70%)` : "";
   modalBody.innerHTML = `
-    <div class="modal-art" style="${tint}">${artFor(p)}</div>
+    <div class="modal-art">${p.photo ? `<img class="modal-photo" src="${p.photo}" alt="${p.name}">` : artFor(p)}</div>
     <div class="modal-info">
       <p class="modal-category">${p.category}</p>
       <h3>${p.name}</h3>
-      <div class="modal-prices">
-        ${p.priceOld ? `<span class="price-old">${euro(p.priceOld)}</span>` : ""}
-        <span class="price-now">${euro(p.price)}</span>
-        ${p.priceOld ? `<span class="sale-badge" style="position:static;margin-left:0.6rem;">Sparen ${euro(saving)}</span>` : ""}
-      </div>
+      <div class="modal-prices">${preisHtml(p)}</div>
       <p class="modal-desc">${p.desc}</p>
-      ${p.category === "Duftsprays" ? `<p class="gift-note">✦ Inklusive: Gratis-Duftmuster</p>` : ""}
+      ${p.category === "Duftsprays" ? `<p class="gift-note">Inklusive Gratis-Duftprobe</p>` : ""}
       <p class="notes-label">${p.category === "Sets & Boxen" || p.set ? "Inhalt" : p.category === "Pflege" ? "Details" : "Duftnoten"}</p>
       <div class="notes-row">${p.notes.map((n) => `<span class="note-chip">${n}</span>`).join("")}</div>
       ${fakten.length ? `
@@ -890,7 +854,7 @@ searchInput.addEventListener("input", () => {
     const row = document.createElement("div");
     row.className = "search-result";
     row.innerHTML = `
-      <div class="search-result-art">${artFor(p)}</div>
+      <div class="search-result-art">${thumbFor(p)}</div>
       <span class="search-result-name">${p.name}</span>
       <span class="search-result-price">${euro(p.price)}</span>`;
     row.addEventListener("click", () => {
@@ -1017,12 +981,12 @@ if (preloader && !introGesehen) {
   };
 
   // Ablauf: Flakon erscheint -> Kopf drückt -> Sprühstoß -> Nebel füllt Bildschirm -> lichtet sich
-  setTimeout(() => document.getElementById("sprayHead").classList.add("pressed"), 950);
+  setTimeout(() => document.getElementById("sprayHead").classList.add("pressed"), 420);
   setTimeout(() => {
     document.getElementById("sprayHead").classList.remove("pressed");
     burst(22);
-  }, 1080);
-  setTimeout(() => burst(16), 1250);
+  }, 520);
+  setTimeout(() => burst(16), 640);
 
   setTimeout(() => {
     const rect = origin.getBoundingClientRect();
@@ -1034,9 +998,9 @@ if (preloader && !introGesehen) {
         { transform: "scale(0)", opacity: 0.6 },
         { transform: `scale(${cover})`, opacity: 1 },
       ],
-      { duration: 900, easing: "ease-in", fill: "forwards" }
+      { duration: 620, easing: "ease-in", fill: "forwards" }
     );
-  }, 1200);
+  }, 600);
 
   // Sobald der Nebel deckt: Hintergrund freigeben, dann Nebel auflösen
   setTimeout(() => {
@@ -1044,12 +1008,12 @@ if (preloader && !introGesehen) {
     inner.style.opacity = "0";
     preloader.querySelector(".preloader-glow").style.display = "none";
     mist.animate([{ opacity: 1 }, { opacity: 0 }], {
-      duration: 850, easing: "ease-out", fill: "forwards",
+      duration: 600, easing: "ease-out", fill: "forwards",
     });
-  }, 2150);
+  }, 1250);
 
-  setTimeout(finish, 3050);
-  setTimeout(finish, 5000); // Sicherheitsnetz
+  setTimeout(finish, 1900);
+  setTimeout(finish, 3000); // Sicherheitsnetz
 }
 
 // ---------- Hero-Video (stumm, Dauerschleife) ----------
@@ -1076,7 +1040,8 @@ let pdpQty = 1;
 // Empfehlungen: bunte Mischung quer durch die Kategorien, Bestseller zuerst.
 // Der aktuelle Duft und Produkte ohne Preis bleiben draussen.
 function recoAuswahl(p) {
-  const pool = PRODUCTS.filter((x) => x.id !== p.id && x.scent !== p.scent && x.price > 0);
+  // Nur Produkte mit echtem Foto empfehlen – Zeichnungen fallen neben den Fotos ab
+  const pool = PRODUCTS.filter((x) => x.id !== p.id && x.scent !== p.scent && x.price > 0 && x.photo);
   const sortiert = pool.slice().sort((a, b) => (b.bestseller ? 1 : 0) - (a.bestseller ? 1 : 0));
   const gewaehlt = [];
   const kategorien = new Set([p.category]);
@@ -1104,16 +1069,11 @@ function recoKarten(p) {
       <h2 class="pdp-reco-head">Das könnte dir auch gefallen</h2>
       <div class="pdp-reco-row">
         ${recos.map((x) => {
-          const proz = x.priceOld ? Math.round((1 - x.price / x.priceOld) * 100) : 0;
           return `
           <button class="pdp-reco-card" type="button" data-reco="${x.id}">
-            ${proz ? `<span class="pdp-reco-badge">−${proz}%</span>` : ""}
             <span class="pdp-reco-art">${mediaFor(x)}</span>
             <span class="pdp-reco-name">${x.name}</span>
-            <span class="pdp-reco-price">
-              ${x.priceOld ? `<span class="price-old">${euro(x.priceOld)}</span>` : ""}
-              ${euro(x.price)}
-            </span>
+            <span class="pdp-reco-price">${euro(x.price)}</span>
           </button>`;
         }).join("")}
       </div>
@@ -1122,10 +1082,10 @@ function recoKarten(p) {
 
 function renderProduktseite(p) {
   pdpQty = 1;
-  const saving = p.priceOld ? p.priceOld - p.price : 0;
   const geschwister = p.scent ? PRODUCTS.filter((x) => x.scent === p.scent && x.id !== p.id) : [];
   const fakten = p.set ? [] : FAKTEN[p.type] || [];
-  const tint = p.color ? `background:linear-gradient(170deg, ${rgba(p.color, 0.2)} 0%, #f3efe7 70%)` : "";
+  const tint = p.color ? `background:linear-gradient(170deg, ${rgba(p.color, 0.18)} 0%, #f1f1ef 70%)` : "";
+  // Die gezeichnete Etikett-Ansicht nur, wenn es kein echtes Foto gibt
   produktPage.innerHTML = `
     <div class="container pdp">
       <nav class="pdp-breadcrumb"><a href="#produkte" data-pdp-back>← Zurück zum Shop</a></nav>
@@ -1139,18 +1099,13 @@ function renderProduktseite(p) {
             <button type="button" class="pdp-thumb active" data-thumb="foto" aria-label="Produktfoto"><img src="${p.photo}" alt=""></button>
             ${p.photo2 ? `<button type="button" class="pdp-thumb" data-thumb="foto2" aria-label="Produktfoto 2"><img src="${p.photo2}" alt=""></button>` : ""}
             ${p.photo3 ? `<button type="button" class="pdp-thumb" data-thumb="foto3" aria-label="Produktfoto 3"><img src="${p.photo3}" alt=""></button>` : ""}
-            <button type="button" class="pdp-thumb" data-thumb="art" aria-label="Etikett" style="${tint}">${artFor(p)}</button>
             ${p.video ? `<button type="button" class="pdp-thumb pdp-thumb-video" data-thumb="video" aria-label="Produktvideo"><img src="${videoPoster(p)}" alt=""><span class="play-badge" aria-hidden="true"></span></button>` : ""}
           </div>
         </div>` : `<div class="pdp-art" style="${tint}">${artFor(p)}</div>`}
         <div class="pdp-info">
           <p class="modal-category">${p.category}</p>
           <h1>${p.name}</h1>
-          <div class="modal-prices">
-            ${p.priceOld ? `<span class="price-old">${euro(p.priceOld)}</span>` : ""}
-            <span class="price-now">${euro(p.price)}</span>
-            ${p.priceOld ? `<span class="sale-badge" style="position:static;margin-left:0.6rem;">Sparen ${euro(saving)}</span>` : ""}
-          </div>
+          <div class="modal-prices">${preisHtml(p)}</div>
           <p class="pdp-tax">inkl. MwSt. – versandkostenfrei</p>
           <ul class="pdp-usps">
             <li>Versandkostenfrei ohne Mindestbestellwert</li>
@@ -1158,7 +1113,7 @@ function renderProduktseite(p) {
             <li>14 Tage Widerrufsrecht</li>
             <li>Auf Lager</li>
           </ul>
-          ${p.category === "Duftsprays" ? `<p class="gift-note">✦ Inklusive: Gratis-Duftmuster</p>` : ""}
+          ${p.category === "Duftsprays" ? `<p class="gift-note">Inklusive Gratis-Duftprobe</p>` : ""}
           ${p.type === "haenger" && !p.set ? `<p class="pdp-hinweis">Versandkostenfrei ab 3 Duftanhängern – oder zusammen mit einem anderen Produkt. Günstiger: das <a href="#p/set-haenger-3">3er-Set</a>.</p>` : ""}
           <div class="modal-actions">
             <div class="qty-row">
@@ -1172,7 +1127,7 @@ function renderProduktseite(p) {
             <p class="pdp-desc-head">Beschreibung</p>
             <p class="modal-desc">${p.desc}</p>
             <p class="notes-label">${p.category === "Sets & Boxen" || p.set ? "Inhalt" : p.category === "Pflege" ? "Details" : "Duftnoten"}</p>
-            <div class="notes-row">${p.notes.map((n) => `<span class="note-chip">${n}</span>`).join("")}</div>
+            ${p.pyramide ? "" : `<div class="notes-row">${p.notes.map((n) => `<span class="note-chip">${n}</span>`).join("")}</div>`}
             ${p.pyramide ? `
               <dl class="pyramide">
                 <div><dt>Kopfnote</dt><dd>${p.pyramide.kopf}</dd></div>
