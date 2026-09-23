@@ -197,6 +197,11 @@ function artFor(p) {
 }
 
 // Produktfoto, wenn vorhanden – sonst die gezeichnete Etikett-Grafik
+// Standbild (erstes Videobild) für Vorschau und Ladezeit
+function videoPoster(p) {
+  return p.video.replace(/\.mp4(\?|$)/, ".webp$1");
+}
+
 function mediaFor(p) {
   return p.photo
     ? `<img class="prod-photo" src="${p.photo}" alt="${p.name}" loading="lazy">`
@@ -1108,6 +1113,7 @@ function renderProduktseite(p) {
           <div class="pdp-thumbs">
             <button type="button" class="pdp-thumb active" data-thumb="foto" aria-label="Produktfoto"><img src="${p.photo}" alt=""></button>
             <button type="button" class="pdp-thumb" data-thumb="art" aria-label="Etikett" style="${tint}">${artFor(p)}</button>
+            ${p.video ? `<button type="button" class="pdp-thumb pdp-thumb-video" data-thumb="video" aria-label="Produktvideo"><img src="${videoPoster(p)}" alt=""><span class="play-badge" aria-hidden="true"></span></button>` : ""}
           </div>
         </div>` : `<div class="pdp-art" style="${tint}">${artFor(p)}</div>`}
         <div class="pdp-info">
@@ -1171,9 +1177,15 @@ function renderProduktseite(p) {
       produktPage.querySelectorAll("[data-thumb]").forEach((x) => x.classList.toggle("active", x === b));
       stage.classList.toggle("zeigt-art", b.dataset.thumb === "art");
       stage.style.cssText = b.dataset.thumb === "art" ? b.getAttribute("style") || "" : "";
-      stage.innerHTML = b.dataset.thumb === "art"
+      const art = b.dataset.thumb;
+      stage.innerHTML = art === "art"
         ? artFor(p)
-        : `<img class="pdp-photo" src="${p.photo}" alt="${p.name}">`;
+        : art === "video"
+          // Stumm, Dauerschleife, ohne Bedienleiste – wie ein GIF, nur viel kleiner
+          ? `<video class="pdp-photo" src="${p.video}" poster="${videoPoster(p)}" autoplay muted loop playsinline preload="auto" aria-label="${p.name} – Produktvideo"></video>`
+          : `<img class="pdp-photo" src="${p.photo}" alt="${p.name}">`;
+      const v = stage.querySelector("video");
+      if (v) { v.muted = true; v.play().catch(() => {}); }
     });
   });
   produktPage.querySelectorAll("[data-reco]").forEach((b) => {
