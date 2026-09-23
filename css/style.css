@@ -255,7 +255,7 @@ button { font-family: inherit; }
   .header-actions { justify-self: end; }
 }
 
-.logo img { height: 26px; width: auto; }
+.logo img { height: 22px; width: auto; }
 
 .header-actions { display: flex; gap: 0.35rem; }
 
@@ -1610,7 +1610,7 @@ button { font-family: inherit; }
 /* ============ Responsive ============ */
 @media (max-width: 640px) {
   .site-header { padding: 0 1rem; }
-  .logo img { height: 20px; }
+  .logo img { height: 17px; }
   .announcement-bar { font-size: 0.66rem; letter-spacing: 0.06em; padding: 0.5rem 0.8rem; line-height: 1.6; }
   /* 2-spaltiges Produktraster auf dem Handy */
   .product-grid { gap: 1.4rem 0.7rem; }
