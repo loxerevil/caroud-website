@@ -15,7 +15,7 @@
 // Bilder: die gedruckten Etiketten, gerendert aus den Druck-PDFs
 // (img/produkte/<typ>-<duft>.webp). Ohne img zeichnet main.js die Ersatzgrafik.
 // Version an Bild-URLs, damit Browser nach Etikett-Updates nicht alte Bilder aus dem Cache zeigen
-const ASSET_V = "43";
+const ASSET_V = "44";
 
 const CATEGORIES = [
   { name: "Duftsprays", type: "spray", color: "#111111", img: "img/produkte/spray-pacific-cruise.webp?v=" + ASSET_V },
@@ -41,6 +41,7 @@ const FAMILIEN = [
 const SCENTS = [
   {
     key: "pacific-cruise", name: "Pacific Cruise", color: "#5fb8e6", familie: "frisch",
+    pyramide: { kopf: "Zitronatzitrone, Orange, Zitrone, Minze, Schwarze Johannisbeere, Koriander", herz: "Aprikose, Basilikum, Karottensamen, Mairose", basis: "Feige, Dattel, Ambrette" },
     notes: ["Zitrus", "Schwarze Johannisbeere", "Minze", "Basilikum"],
     short: "Frisch wie Morgenluft am Meer: Zitrus, schwarze Johannisbeere und kühle Minze.",
     spray: "Frisch wie die erste Fahrt an der Küste: spritzige Zitrusfrüchte, schwarze Johannisbeere und kühle Minze über Basilikum, Aprikose und einem weichen Hauch Feige. Klar, belebend und leicht – der Duft für lange Strecken mit offenem Fenster.",
@@ -48,6 +49,7 @@ const SCENTS = [
   },
   {
     key: "erba-carbon", name: "Erba Carbon", color: "#2b2b2e", familie: "frisch",
+    pyramide: { kopf: "Sizilianische Orange, Kalabrische Bergamotte, Sizilianische Zitrone", herz: "Mediterrane Früchte", basis: "Weißer Moschus, Madagaskar-Vanille, Amber" },
     notes: ["Sizilianische Orange", "Bergamotte", "Mediterrane Früchte", "Weißer Moschus"],
     short: "Saftig und strahlend: sizilianische Orange, Bergamotte und reife Früchte auf weißem Moschus.",
     spray: "Saftig, strahlend, unverwechselbar: sizilianische Orange, Zitrone und kalabrische Bergamotte treffen auf reife mediterrane Früchte. Darunter weißer Moschus, Vanille und Amber, die den Innenraum lange und weich umhüllen.",
@@ -55,6 +57,7 @@ const SCENTS = [
   },
   {
     key: "fast-cherry", name: "Fast Cherry", color: "#a8122e", familie: "suess",
+    pyramide: { kopf: "Schwarze Kirsche, Kirschlikör, Bittermandel", herz: "Sauerkirsche, Pflaume, Türkische Rose, Jasmin Sambac", basis: "Tonkabohne, Vanille, Perubalsam, Sandelholz, Zimt, Nelke, Benzoe, Zeder, Patchouli, Vetiver" },
     notes: ["Schwarze Kirsche", "Kirschlikör", "Bittermandel", "Tonkabohne"],
     short: "Verführerisch süß: schwarze Kirsche, Kirschlikör und ein Hauch Bittermandel.",
     spray: "Tiefrot und verführerisch: schwarze Kirsche und Kirschlikör, geschärft von Bittermandel. Im Herzen Pflaume und Rose, getragen von Tonkabohne, Vanille und warmem Sandelholz. Intensiv, süß, unvergesslich.",
@@ -62,6 +65,7 @@ const SCENTS = [
   },
   {
     key: "driveination", name: "Driveination", color: "#aeb6bf", familie: "frisch",
+    pyramide: { kopf: "Zitronatzitrone, Kalabrische Bergamotte, Sizilianische Orange", herz: "Neroli, Ingwer, Ceylon-Zimt", basis: "Schwarzer Tee, Ambroxan, Guajakholz, Weihrauch" },
     notes: ["Zitrus", "Ingwer", "Schwarzer Tee", "Ambroxan"],
     short: "Klar und elegant: Zitrus, Ingwer und schwarzer Tee auf Ambroxan.",
     spray: "Klar, elegant, modern: Zitronatzitrone, Bergamotte und Orange starten mit Energie, Ingwer, Zimt und Neroli geben Tiefe. Schwarzer Tee, Ambroxan und Guajakholz bleiben als sauberer, edler Nachklang im Innenraum.",
@@ -69,6 +73,7 @@ const SCENTS = [
   },
   {
     key: "naxnos-asphalt", name: "Naxnos Asphalt", color: "#b8731c", familie: "suess",
+    pyramide: { kopf: "Lavendel, Bergamotte, Zitrone", herz: "Honig, Zimt, Cashmeran, Jasmin Sambac", basis: "Tabakblatt, Vanille, Tonkabohne" },
     notes: ["Honig", "Tabak", "Vanille", "Lavendel"],
     short: "Warm und weich: goldener Honig, Tabakblatt und Vanille, aufgehellt von Lavendel.",
     spray: "Warm wie Asphalt nach einem Sommertag: goldener Honig, Tabakblatt und Vanille, aufgehellt von Lavendel, Bergamotte und Zitrone. Zimt und Tonkabohne machen ihn rund – ein Duft, der den Innenraum wie eine Lounge wirken lässt.",
@@ -76,6 +81,7 @@ const SCENTS = [
   },
   {
     key: "ombre-apex", name: "Ombre Apex", color: "#3d2418", familie: "orientalisch",
+    pyramide: { kopf: "Himbeere, Safran", herz: "Rose, Oud (Adlerholz), Weihrauch", basis: "Amberholz, Benzoe, Birke, Geranie" },
     notes: ["Oud", "Himbeere", "Weihrauch", "Benzoe"],
     short: "Dunkel und kompromisslos: rauchiges Oud, ein Funken Himbeere, Weihrauch.",
     spray: "Dunkel und kompromisslos: rauchiges Oud und Weihrauch, durchzogen von Himbeere, Safran und Rose. Benzoe, Birke und Amberholz tragen ihn lange – der Duft für Nachtfahrten.",
@@ -83,6 +89,7 @@ const SCENTS = [
   },
   {
     key: "erba-tuned", name: "Erba Tuned", color: "#f0c419", familie: "frisch",
+    pyramide: { kopf: "Amalfi-Zitrone, Kalabrische Bergamotte, Brasilianische Orange, Ingwer", herz: "Grüner Apfel, Melone, Birne, Nelke, Kardamom, Zimt", basis: "Moschus, Amber, Madagaskar-Vanille, Hölzer" },
     notes: ["Zitrone", "Ingwer", "Birne", "Melone"],
     short: "Hell und saftig: Amalfi-Zitrone, ein Kick Ingwer, reife Birne und Melone.",
     spray: "Hell, saftig, goldig: Amalfi-Zitrone, Orange und Bergamotte mit einem Kick Ingwer, dazu grüner Apfel, Birne und Melone, gewürzt mit Kardamom und Zimt. Amber, Vanille und Moschus runden ihn warm ab.",
@@ -103,6 +110,9 @@ const LINES = [
     text: (s) => s.short + " Im 8-ml-Glasflakon für den Rückspiegel: das Duftöl verdunstet langsam über den Verschluss – ergiebiger und langlebiger als ein Anhänger aus Papier." },
 ];
 
+// Linien, fuer die es echte Produktfotos gibt (img/fotos/<linie>-<duft>.webp)
+const FOTO_LINIEN = ["spray", "haenger"];
+
 const SCENT_PRODUCTS = [];
 LINES.forEach((line) => {
   SCENTS.forEach((s) => {
@@ -112,6 +122,9 @@ LINES.forEach((line) => {
       type: line.type, category: line.category,
       color: s.color, label: s.name,
       img: line.noImg ? null : "img/produkte/" + line.type + "-" + s.key + ".webp?v=" + ASSET_V,
+      // echte Produktfotos (Duftspray + Duftanhaenger); ohne Foto zeigt der Shop die Etikett-Grafik
+      photo: FOTO_LINIEN.includes(line.type) ? "img/fotos/" + line.type + "-" + s.key + ".webp?v=" + ASSET_V : null,
+      pyramide: s.pyramide,
       price: line.price, priceOld: line.priceOld, bestseller: !!s.bestseller[line.type],
       desc: line.text(s),
       notes: s.notes,

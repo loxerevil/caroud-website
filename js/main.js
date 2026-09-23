@@ -188,6 +188,13 @@ function artFor(p) {
   return tuchSVG(p.color, p.label);
 }
 
+// Produktfoto, wenn vorhanden – sonst die gezeichnete Etikett-Grafik
+function mediaFor(p) {
+  return p.photo
+    ? `<img class="prod-photo" src="${p.photo}" alt="${p.name}" loading="lazy">`
+    : artFor(p);
+}
+
 function euro(v) {
   return "€" + v.toFixed(2).replace(".", ",");
 }
@@ -422,7 +429,7 @@ function renderProducts() {
     card.innerHTML = `
       <div class="product-media" style="background:linear-gradient(170deg, ${rgba(p.color, 0.13)} 0%, #ffffff 62%)">
         ${p.priceOld ? `<span class="sale-badge">Sparen ${euro(saving)}</span>` : ""}
-        ${artFor(p)}
+        ${mediaFor(p)}
         <button class="quick-add">+ In den Warenkorb</button>
       </div>
       <div class="product-name">${p.name}</div>
@@ -1085,7 +1092,16 @@ function renderProduktseite(p) {
     <div class="container pdp">
       <nav class="pdp-breadcrumb"><a href="#produkte" data-pdp-back>← Zurück zum Shop</a></nav>
       <div class="pdp-grid">
-        <div class="pdp-art" style="${tint}">${artFor(p)}</div>
+        ${p.photo ? `
+        <div class="pdp-art has-photo">
+          <div class="pdp-stage" data-stage>
+            <img class="pdp-photo" src="${p.photo}" alt="${p.name}">
+          </div>
+          <div class="pdp-thumbs">
+            <button type="button" class="pdp-thumb active" data-thumb="foto" aria-label="Produktfoto"><img src="${p.photo}" alt=""></button>
+            <button type="button" class="pdp-thumb" data-thumb="art" aria-label="Etikett" style="${tint}">${artFor(p)}</button>
+          </div>
+        </div>` : `<div class="pdp-art" style="${tint}">${artFor(p)}</div>`}
         <div class="pdp-info">
           <p class="modal-category">${p.category}</p>
           <h1>${p.name}</h1>
@@ -1116,6 +1132,12 @@ function renderProduktseite(p) {
             <p class="modal-desc">${p.desc}</p>
             <p class="notes-label">${p.category === "Sets & Boxen" || p.set ? "Inhalt" : p.category === "Pflege" ? "Details" : "Duftnoten"}</p>
             <div class="notes-row">${p.notes.map((n) => `<span class="note-chip">${n}</span>`).join("")}</div>
+            ${p.pyramide ? `
+              <dl class="pyramide">
+                <div><dt>Kopfnote</dt><dd>${p.pyramide.kopf}</dd></div>
+                <div><dt>Herznote</dt><dd>${p.pyramide.herz}</dd></div>
+                <div><dt>Basisnote</dt><dd>${p.pyramide.basis}</dd></div>
+              </dl>` : ""}
             ${fakten.length ? `
               <dl class="fakten">
                 ${fakten.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")}
@@ -1134,6 +1156,18 @@ function renderProduktseite(p) {
       </div>
       ${recoKarten(p)}
     </div>`;
+  // Galerie: Foto <-> Etikett umschalten
+  const stage = produktPage.querySelector("[data-stage]");
+  produktPage.querySelectorAll("[data-thumb]").forEach((b) => {
+    b.addEventListener("click", () => {
+      produktPage.querySelectorAll("[data-thumb]").forEach((x) => x.classList.toggle("active", x === b));
+      stage.classList.toggle("zeigt-art", b.dataset.thumb === "art");
+      stage.style.cssText = b.dataset.thumb === "art" ? b.getAttribute("style") || "" : "";
+      stage.innerHTML = b.dataset.thumb === "art"
+        ? artFor(p)
+        : `<img class="pdp-photo" src="${p.photo}" alt="${p.name}">`;
+    });
+  });
   produktPage.querySelectorAll("[data-reco]").forEach((b) => {
     b.addEventListener("click", () => { location.hash = "p/" + b.dataset.reco; });
   });
