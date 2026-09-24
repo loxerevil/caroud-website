@@ -2185,3 +2185,47 @@ body.pdp-aktiv .site-header {
   .bf-cd-label { display: block; width: 100%; margin: 0 0 0.4rem; }
   .bf-countdown { flex-wrap: wrap; justify-content: center; }
 }
+
+/* Hero-Slider (nur während der Black Week) */
+.hero-slides { position: relative; z-index: 2; width: 100%; display: grid; }
+.hero-slides > .hero-slide { grid-area: 1 / 1; margin: 0 auto; opacity: 0; transform: translateX(40px); pointer-events: none;
+  transition: opacity 0.9s ease, transform 1s cubic-bezier(0.22, 0.7, 0.3, 1); visibility: hidden; }
+.hero-slides > .hero-slide.ist-aktiv { opacity: 1; transform: none; pointer-events: auto; visibility: visible; transition: opacity 0.9s ease, transform 1s cubic-bezier(0.22, 0.7, 0.3, 1), visibility 0s; }
+.hero-slides > .hero-slide:not(.ist-aktiv) { transition: opacity 0.6s ease, transform 0.8s ease, visibility 0s 0.8s; }
+.hero::after { transition: background 0.9s ease; }
+.hero.bf-zeigt::after { background: linear-gradient(90deg, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.72) 50%, rgba(0, 0, 0, 0.5) 100%); }
+.hero-slide-bf .hero-title { letter-spacing: -0.01em; }
+.hero-bf-karten { position: relative; height: min(460px, 56vh); }
+.hero-bf-karte { position: absolute; top: 50%; left: 50%; width: min(230px, 42%); aspect-ratio: 4 / 5; border-radius: 12px; overflow: hidden;
+  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.08); transition: transform 0.5s cubic-bezier(0.22, 0.7, 0.3, 1); }
+.hero-bf-karte img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.hero-bf-karte.k0 { transform: translate(-128%, -46%) rotate(-7deg); z-index: 1; }
+.hero-bf-karte.k1 { transform: translate(-50%, -54%); z-index: 3; }
+.hero-bf-karte.k2 { transform: translate(28%, -46%) rotate(7deg); z-index: 2; }
+.hero-bf-karte:hover { z-index: 4; }
+.hero-bf-karte.k0:hover { transform: translate(-128%, -50%) rotate(-5deg) scale(1.04); }
+.hero-bf-karte.k1:hover { transform: translate(-50%, -58%) scale(1.04); }
+.hero-bf-karte.k2:hover { transform: translate(28%, -50%) rotate(5deg) scale(1.04); }
+.hero-bf-tag { position: absolute; top: 0.6rem; left: 0.6rem; background: #fff; color: #000; font-size: 0.72rem; font-weight: 700; padding: 0.28rem 0.5rem; border-radius: 3px; }
+.hero-bf-name { position: absolute; left: 0; right: 0; bottom: 0; padding: 1.4rem 0.7rem 0.6rem; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: #fff;
+  background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.75)); text-align: left; }
+.hero-punkte { position: absolute; z-index: 3; left: 50%; bottom: 1.6rem; transform: translateX(-50%); display: flex; gap: 0.6rem; }
+.hero-punkte button { width: 28px; height: 3px; border: 0; padding: 0; background: rgba(255, 255, 255, 0.3); cursor: pointer; border-radius: 2px; transition: background 0.3s ease, width 0.3s ease; }
+.hero-punkte button.ist-aktiv { background: #fff; width: 44px; }
+@media (max-width: 860px) {
+  .hero-bf-karten { height: 220px; margin-top: 1.2rem; }
+  .hero-bf-karte { width: 118px; border-radius: 8px; }
+  .hero-bf-name { font-size: 0.58rem; padding: 1rem 0.5rem 0.45rem; }
+  .hero-bf-tag { font-size: 0.62rem; top: 0.4rem; left: 0.4rem; }
+  .hero-punkte { bottom: 0.9rem; }
+  .hero.bf-zeigt::after { background: linear-gradient(180deg, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.7) 50%, rgba(0, 0, 0, 0.9) 100%); }
+}
+@media (prefers-reduced-motion: reduce) { .hero-slides > .hero-slide { transition: none; transform: none; } }
+
+.hero-slide-bf .hero-title { font-size: clamp(2.3rem, 4.9vw, 3.9rem); }
+.hero-bf-karte { width: min(205px, 38%); }
+.hero-bf-karte.k0 { transform: translate(-118%, -46%) rotate(-7deg); }
+.hero-bf-karte.k2 { transform: translate(18%, -46%) rotate(7deg); }
+.hero-bf-karte.k0:hover { transform: translate(-118%, -50%) rotate(-5deg) scale(1.04); }
+.hero-bf-karte.k2:hover { transform: translate(18%, -50%) rotate(5deg) scale(1.04); }
+@media (max-width: 860px) { .hero-bf-karte { width: 112px; } }

@@ -328,7 +328,7 @@ function zuDenProdukten(filter) {
   document.body.classList.add("bf-aktiv");
   // Ankündigungsleiste
   const leiste = document.querySelector(".announce-msg");
-  if (leiste) leiste.innerHTML = "Black Week: bis zu 7&nbsp;€ Rabatt auf Düfte &amp; Sets&nbsp;· versandkostenfrei ab 40&nbsp;€";
+  if (leiste) leiste.innerHTML = "Black Week: bis zu 7&nbsp;€ Rabatt auf Düfte &amp; Sets";
   const grid = sek.querySelector("[data-bf-grid]");
   const deals = BLACK_FRIDAY.deals.map((d) => byId(d.id)).filter((p) => p && p.bfDeal);
   grid.innerHTML = deals.map((p) => {
@@ -367,7 +367,91 @@ function zuDenProdukten(filter) {
   };
   tick();
   setInterval(tick, 30000);
+  heroSlider();
 })();
+
+// Hero wird während der Black Week zum Slider: normaler Hero <-> Black-Week-Folie
+function heroSlider() {
+  const hero = document.querySelector(".hero");
+  const erste = hero && hero.querySelector(".hero-inner");
+  if (!erste) return;
+  const bfSprays = ["spray-pacific-cruise", "spray-fast-cherry", "spray-ombre-apex"].map(byId).filter((p) => p && p.bfDeal);
+  const maxSpar = Math.max(...BLACK_FRIDAY.deals.map((d) => { const p = byId(d.id); return p && p.bfDeal ? p.bfNormal - p.price : 0; }));
+  const wrap = document.createElement("div");
+  wrap.className = "hero-slides";
+  erste.parentNode.insertBefore(wrap, erste);
+  wrap.appendChild(erste);
+  erste.classList.add("hero-slide", "ist-aktiv");
+  const bf = document.createElement("div");
+  bf.className = "hero-inner hero-slide hero-slide-bf";
+  bf.setAttribute("aria-hidden", "true");
+  bf.innerHTML = `
+    <div class="hero-text">
+      <p class="hero-kicker">Black Week · nur bis 30. November</p>
+      <h2 class="hero-title">Black Friday.<br>Bis zu ${Math.round(maxSpar)}&nbsp;€ sparen.</h2>
+      <p class="hero-sub">Drei Düfte, zwei Sets, die Mystery Box und mehr – acht Angebote, eine Woche.
+        Ab 40&nbsp;€ versandkostenfrei.</p>
+      <div class="hero-cta">
+        <a href="#blackfriday" class="btn btn-gold" data-zu-bf>Zu den Angeboten</a>
+        <a href="#p/mystery-box" class="btn btn-outline">Mystery Box</a>
+      </div>
+      <p class="hero-note" data-hero-cd></p>
+    </div>
+    <div class="hero-bf-karten" aria-hidden="true">
+      ${bfSprays.map((p, i) => `
+        <a class="hero-bf-karte k${i}" href="#p/${p.id}" tabindex="-1">
+          <img src="${p.photo}" alt="" loading="lazy">
+          <span class="hero-bf-tag">−${Math.round(p.bfNormal - p.price)} €</span>
+          <span class="hero-bf-name">${p.label}</span>
+        </a>`).join("")}
+    </div>`;
+  wrap.appendChild(bf);
+  bf.querySelector("[data-zu-bf]").addEventListener("click", (e) => {
+    e.preventDefault();
+    const kopf = document.querySelector(".top-sticky") || document.getElementById("siteHeader");
+    const versatz = kopf ? kopf.getBoundingClientRect().height : 0;
+    gleiteZu(document.getElementById("blackfriday").getBoundingClientRect().top + window.scrollY - versatz, 900);
+  });
+  // Kleiner Countdown auf der Folie
+  const cd = bf.querySelector("[data-hero-cd]");
+  const ende = Date.parse(BLACK_FRIDAY.ende);
+  const cdTick = () => {
+    const r = Math.max(0, ende - Date.now());
+    const t = Math.floor(r / 864e5), s = Math.floor((r % 864e5) / 36e5), mi = Math.floor((r % 36e5) / 6e4);
+    cd.textContent = `Endet in ${t} Tagen, ${s} Std, ${mi} Min`;
+  };
+  cdTick(); setInterval(cdTick, 30000);
+  // Punkte
+  const folien = [erste, bf];
+  const punkte = document.createElement("div");
+  punkte.className = "hero-punkte";
+  punkte.innerHTML = folien.map((_, i) => `<button type="button" aria-label="Folie ${i + 1}"${i === 0 ? ' class="ist-aktiv"' : ""}></button>`).join("");
+  hero.appendChild(punkte);
+  let aktiv = 0;
+  const zeige = (i) => {
+    aktiv = (i + folien.length) % folien.length;
+    folien.forEach((f, k) => { f.classList.toggle("ist-aktiv", k === aktiv); f.setAttribute("aria-hidden", k === aktiv ? "false" : "true"); });
+    punkte.querySelectorAll("button").forEach((b, k) => b.classList.toggle("ist-aktiv", k === aktiv));
+    hero.classList.toggle("bf-zeigt", aktiv === 1);
+  };
+  punkte.querySelectorAll("button").forEach((b, k) => b.addEventListener("click", () => { zeige(k); neustart(); }));
+  // Automatisch weiter, Pause beim Drüberfahren
+  let timer = null;
+  const neustart = () => { clearInterval(timer); timer = setInterval(() => zeige(aktiv + 1), 7000); };
+  hero.addEventListener("mouseenter", () => clearInterval(timer));
+  hero.addEventListener("mouseleave", neustart);
+  // Wischen am Handy
+  let sx = null, sy = null;
+  hero.addEventListener("touchstart", (e) => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+  hero.addEventListener("touchend", (e) => {
+    if (sx === null) return;
+    const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy; sx = null;
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) { zeige(aktiv + (dx < 0 ? 1 : -1)); neustart(); }
+  }, { passive: true });
+  // Mit der Black-Week-Folie starten, damit die Aktion sofort auffällt
+  zeige(1);
+  neustart();
+}
 
 // ---------- Einblick in die Boxen (Startseite) ----------
 (function boxenTeaser() {
