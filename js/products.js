@@ -434,3 +434,39 @@ const PROBE_PRODUCTS = SCENTS.map((s) => ({
 }));
 
 const PRODUCTS = SCENT_PRODUCTS.concat(OTHER_PRODUCTS, PROBE_PRODUCTS);
+
+// ---- Black Friday / Black Week ----
+// Läuft automatisch im Zeitraum start–ende (deutsche Zeit). Zum Ansehen vorab: caroud.de/?blackfriday=vorschau
+// Während der Aktion gilt der Aktionspreis überall (Shop, Produktseite, Warenkorb); durchgestrichen steht
+// der normale Preis der letzten 30 Tage (Preisangabenverordnung § 11).
+// Gewinn je Angebot (ungünstigster Fall, allein bestellt) steht jeweils im Kommentar.
+const BLACK_FRIDAY = {
+  start: "2026-11-23T00:00:00+01:00",
+  ende: "2026-12-01T00:00:00+01:00",
+  deals: [
+    { id: "spray-pacific-cruise", preis: 21.90 },  // statt 26,90 · Gewinn ~9,30 €
+    { id: "spray-fast-cherry",    preis: 21.90 },  // statt 26,90 · Gewinn ~9,30 €
+    { id: "spray-ombre-apex",     preis: 21.90 },  // statt 26,90 · Gewinn ~9,30 €
+    { id: "set-spray-2",          preis: 42.90 },  // statt 47,90 · Gewinn ~16 € (versandkostenfrei)
+    { id: "bundle-signature",     preis: 49.90 },  // statt 56,90 · Gewinn ~22 € (versandkostenfrei)
+    { id: "mystery-box",          preis: 29.90 },  // statt 34,90 · Gewinn ~8,90 €
+    { id: "glas-erba-tuned",      preis: 9.90 },   // statt 12,90 · Gewinn ~6,20 €
+    { id: "set-haenger-5",        preis: 11.90 },  // statt 14,90 · Gewinn ~8 €
+  ],
+};
+function blackFridayAktiv() {
+  try { if (new URLSearchParams(location.search).get("blackfriday") === "vorschau") return true; } catch (_) {}
+  const jetzt = Date.now();
+  return jetzt >= Date.parse(BLACK_FRIDAY.start) && jetzt < Date.parse(BLACK_FRIDAY.ende);
+}
+const BF_AKTIV = blackFridayAktiv();
+if (BF_AKTIV) {
+  BLACK_FRIDAY.deals.forEach((d) => {
+    const p = PRODUCTS.find((x) => x.id === d.id);
+    if (!p || d.preis >= p.price) return;
+    p.bfNormal = p.price;
+    p.priceOld = p.price;
+    p.price = d.preis;
+    p.bfDeal = true;
+  });
+}

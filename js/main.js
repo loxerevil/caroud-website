@@ -320,6 +320,55 @@ function zuDenProdukten(filter) {
   gleiteZu(ziel, 900);
 }
 
+// ---------- Black Friday / Black Week ----------
+(function blackFriday() {
+  const sek = document.getElementById("blackfriday");
+  if (!sek || !BF_AKTIV) return;
+  sek.hidden = false;
+  document.body.classList.add("bf-aktiv");
+  // Ankündigungsleiste
+  const leiste = document.querySelector(".announce-msg");
+  if (leiste) leiste.innerHTML = "Black Week: bis zu 7&nbsp;€ Rabatt auf Düfte &amp; Sets&nbsp;· versandkostenfrei ab 40&nbsp;€";
+  const grid = sek.querySelector("[data-bf-grid]");
+  const deals = BLACK_FRIDAY.deals.map((d) => byId(d.id)).filter((p) => p && p.bfDeal);
+  grid.innerHTML = deals.map((p) => {
+    const spar = p.bfNormal - p.price;
+    return `
+      <article class="bf-karte">
+        <a class="bf-bild" href="#p/${p.id}">
+          ${p.photo ? `<img src="${p.photo}" alt="${p.name}" loading="lazy">` : artFor(p)}
+          <span class="bf-tag">−${euro(spar).replace("€", "").replace(",00", "").trim()} €</span>
+        </a>
+        <div class="bf-info">
+          <a class="bf-name" href="#p/${p.id}">${p.name}</a>
+          <div class="bf-preise">${preisHtml(p)}</div>
+          <button type="button" class="bf-add" data-bf-add="${p.id}">${p.wahl ? "Düfte wählen" : "In den Warenkorb"}</button>
+        </div>
+      </article>`;
+  }).join("");
+  grid.querySelectorAll("[data-bf-add]").forEach((b) => {
+    b.addEventListener("click", () => {
+      const p = byId(b.dataset.bfAdd);
+      if (p.wahl) { location.hash = "p/" + p.id; return; }
+      addToCart(p.id, 1);
+      openCart();
+    });
+  });
+  // Countdown bis Aktionsende
+  const cd = sek.querySelector("[data-bf-countdown]");
+  const ende = Date.parse(BLACK_FRIDAY.ende);
+  const tick = () => {
+    let rest = Math.max(0, ende - Date.now());
+    const t = Math.floor(rest / 864e5); rest -= t * 864e5;
+    const s = Math.floor(rest / 36e5); rest -= s * 36e5;
+    const min = Math.floor(rest / 6e4);
+    const teil = (z, l) => `<span class="bf-cd-teil"><strong>${String(z).padStart(2, "0")}</strong><span>${l}</span></span>`;
+    cd.innerHTML = `<span class="bf-cd-label">Endet in</span>${teil(t, "Tage")}${teil(s, "Std")}${teil(min, "Min")}`;
+  };
+  tick();
+  setInterval(tick, 30000);
+})();
+
 // ---------- Einblick in die Boxen (Startseite) ----------
 (function boxenTeaser() {
   const sek = document.getElementById("boxen");
@@ -464,6 +513,7 @@ function renderProducts() {
     card.innerHTML = `
       <div class="product-media">
         ${mediaFor(p)}
+        ${p.bfDeal ? `<span class="bf-badge">Black Friday</span>` : ""}
         <button class="quick-add">+ In den Warenkorb</button>
       </div>
       <div class="product-name">${p.name}</div>
@@ -1145,6 +1195,7 @@ function renderProduktseite(p) {
           <p class="modal-category">${p.category}</p>
           <h1>${p.name}</h1>
           <div class="modal-prices">${preisHtml(p)}</div>
+          ${p.bfDeal ? `<p class="bf-hinweis">Black-Week-Angebot – nur bis 30. November</p>` : ""}
           <p class="pdp-tax">inkl. MwSt., zzgl. <a href="widerruf.html">Versand</a> – versandkostenfrei ab 40 €</p>
           <ul class="pdp-usps">
             <li>Versandkostenfrei ab 40 €</li>

@@ -30,7 +30,7 @@
   <!-- Überschriftenschrift vorladen, damit der Hero-Titel nicht erst in Georgia aufblitzt -->
   <link rel="preload" href="fonts/playfair-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/inter-400.woff" as="font" type="font/woff" crossorigin>
-  <link rel="stylesheet" href="css/style.css?v=73">
+  <link rel="stylesheet" href="css/style.css?v=74">
 
   <!-- Strukturierte Daten für Google. Produkt-Markup fehlt bewusst,
        solange keine echten Preise hinterlegt sind. -->
@@ -217,6 +217,19 @@
         <p class="hero-note">Versandkostenfrei ab 40&nbsp;€&nbsp;· Versand in&nbsp;24&nbsp;h&nbsp;· Abgefüllt in Deutschland</p>
       </div>
       <div class="hero-produkt" id="heroArt" aria-hidden="true"></div>
+    </div>
+  </section>
+
+  <!-- Black Friday / Black Week: erscheint nur im Aktionszeitraum (siehe BLACK_FRIDAY in products.js) -->
+  <section class="bf-band" id="blackfriday" hidden>
+    <div class="bf-inner">
+      <div class="bf-kopf">
+        <p class="bf-kicker">Black Week · 23.–30. November</p>
+        <h2 class="bf-title">Black Friday bei Caroud.</h2>
+        <p class="bf-copy">Acht Angebote, eine Woche. Nur solange der Vorrat reicht – und ab 40 € versandkostenfrei.</p>
+        <div class="bf-countdown" data-bf-countdown aria-live="polite"></div>
+      </div>
+      <div class="bf-grid" data-bf-grid></div>
     </div>
   </section>
 
@@ -540,7 +553,7 @@
   <!-- Toast -->
   <div class="toast" id="toast" hidden></div>
 
-  <script src="js/products.js?v=89"></script>
-  <script src="js/main.js?v=76"></script>
+  <script src="js/products.js?v=90"></script>
+  <script src="js/main.js?v=77"></script>
 </body>
 </html>
