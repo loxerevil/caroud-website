@@ -2209,15 +2209,11 @@ body.pdp-aktiv .site-header {
 .hero-bf-tag { position: absolute; top: 0.6rem; left: 0.6rem; background: #fff; color: #000; font-size: 0.72rem; font-weight: 700; padding: 0.28rem 0.5rem; border-radius: 3px; }
 .hero-bf-name { position: absolute; left: 0; right: 0; bottom: 0; padding: 1.4rem 0.7rem 0.6rem; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: #fff;
   background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.75)); text-align: left; }
-.hero-punkte { position: absolute; z-index: 3; left: 50%; bottom: 1.6rem; transform: translateX(-50%); display: flex; gap: 0.6rem; }
-.hero-punkte button { width: 28px; height: 3px; border: 0; padding: 0; background: rgba(255, 255, 255, 0.3); cursor: pointer; border-radius: 2px; transition: background 0.3s ease, width 0.3s ease; }
-.hero-punkte button.ist-aktiv { background: #fff; width: 44px; }
 @media (max-width: 860px) {
   .hero-bf-karten { height: 220px; margin-top: 1.2rem; }
   .hero-bf-karte { width: 118px; border-radius: 8px; }
   .hero-bf-name { font-size: 0.58rem; padding: 1rem 0.5rem 0.45rem; }
   .hero-bf-tag { font-size: 0.62rem; top: 0.4rem; left: 0.4rem; }
-  .hero-punkte { bottom: 0.9rem; }
   .hero.bf-zeigt::after { background: linear-gradient(180deg, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.7) 50%, rgba(0, 0, 0, 0.9) 100%); }
 }
 @media (prefers-reduced-motion: reduce) { .hero-slides > .hero-slide { transition: none; transform: none; } }
@@ -2229,3 +2225,49 @@ body.pdp-aktiv .site-header {
 .hero-bf-karte.k0:hover { transform: translate(-118%, -50%) rotate(-5deg) scale(1.04); }
 .hero-bf-karte.k2:hover { transform: translate(18%, -50%) rotate(5deg) scale(1.04); }
 @media (max-width: 860px) { .hero-bf-karte { width: 112px; } }
+
+/* ---- Hero-Slider (v104): Info-Folien + Fortschrittsanzeige ---- */
+.hero.hat-slider { padding-bottom: 6.5rem; }
+.hero.info-zeigt::after { background: linear-gradient(90deg, rgba(10, 11, 13, 0.93) 0%, rgba(10, 11, 13, 0.74) 48%, rgba(10, 11, 13, 0.45) 100%); }
+.hero-bild { position: relative; justify-self: center; display: block; width: min(430px, 88%); aspect-ratio: 1; border-radius: 16px; overflow: hidden;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.08); transform: rotate(2deg); transition: transform 0.6s cubic-bezier(0.22, 0.7, 0.3, 1); }
+.hero-bild img { width: 100%; height: 100%; object-fit: cover; display: block; transform: scale(1.06); transition: transform 9s linear; }
+.hero-slide.ist-aktiv .hero-bild img { transform: scale(1); }
+.hero-bild:hover { transform: rotate(0deg) scale(1.02); }
+.hero-slide-info .hero-title { font-size: clamp(2.4rem, 5.2vw, 4.1rem); }
+/* Texte der aktiven Folie laufen nacheinander ein */
+.hero-slide .hero-text > * { transition: opacity 0.7s ease, transform 0.8s cubic-bezier(0.22, 0.7, 0.3, 1); }
+.hero-slide:not(.ist-aktiv) .hero-text > * { opacity: 0; transform: translateY(14px); }
+.hero-slide.ist-aktiv .hero-text > :nth-child(2) { transition-delay: 0.08s; }
+.hero-slide.ist-aktiv .hero-text > :nth-child(3) { transition-delay: 0.16s; }
+.hero-slide.ist-aktiv .hero-text > :nth-child(4) { transition-delay: 0.24s; }
+.hero-slide.ist-aktiv .hero-text > :nth-child(5) { transition-delay: 0.3s; }
+
+.hero-nav { position: absolute; z-index: 3; left: 50%; bottom: 1.8rem; transform: translateX(-50%); width: 100%; max-width: 1180px; padding: 0 1.6rem;
+  display: flex; align-items: center; gap: 1.6rem; }
+.hero-zaehler { display: flex; align-items: baseline; gap: 0.35rem; font-variant-numeric: tabular-nums; color: rgba(255, 255, 255, 0.5); font-size: 0.78rem; letter-spacing: 0.12em; flex-shrink: 0; }
+.hero-zaehler strong { color: #fff; font-weight: 500; font-size: 1.05rem; }
+.hero-segmente { flex: 1; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 0.9rem; max-width: 720px; }
+.hero-seg { background: none; border: 0; padding: 0.5rem 0 0; cursor: pointer; text-align: left; color: rgba(255, 255, 255, 0.45); font: inherit; transition: color 0.3s ease; }
+.hero-seg:hover, .hero-seg.ist-aktiv { color: #fff; }
+.hero-seg-linie { display: block; height: 2px; background: rgba(255, 255, 255, 0.2); border-radius: 2px; overflow: hidden; }
+.hero-seg-linie i { display: block; height: 100%; background: #fff; transform: scaleX(0); transform-origin: left center; }
+.hero-seg-name { display: block; margin-top: 0.6rem; font-size: 0.66rem; letter-spacing: 0.2em; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hero-pfeile { display: flex; gap: 0.5rem; margin-left: auto; flex-shrink: 0; }
+.hero-pfeil { width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.3); background: rgba(0, 0, 0, 0.2); color: #fff; cursor: pointer;
+  display: grid; place-items: center; transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease; }
+.hero-pfeil:hover { background: #fff; color: #000; border-color: #fff; }
+
+@media (max-width: 860px) {
+  .hero.hat-slider { padding-bottom: 4.6rem; }
+  .hero.info-zeigt::after { background: linear-gradient(180deg, rgba(10, 11, 13, 0.82) 0%, rgba(10, 11, 13, 0.66) 50%, rgba(10, 11, 13, 0.9) 100%); }
+  .hero-bild { width: min(230px, 62%); margin-top: 1.4rem; border-radius: 12px; }
+  .hero-slide-info .hero-title { font-size: clamp(2rem, 8.2vw, 2.8rem); }
+  .hero-nav { bottom: 1.1rem; gap: 0.9rem; padding: 0 1.2rem; }
+  .hero-seg-name, .hero-pfeile { display: none; }
+  .hero-segmente { gap: 0.4rem; }
+  .hero-seg { padding: 0.7rem 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-slide .hero-text > *, .hero-bild img { transition: none; transform: none; }
+}

@@ -367,91 +367,194 @@ function zuDenProdukten(filter) {
   };
   tick();
   setInterval(tick, 30000);
-  heroSlider();
 })();
 
-// Hero wird während der Black Week zum Slider: normaler Hero <-> Black-Week-Folie
+// ---------- Hero-Slider ----------
+// Der Hero wechselt automatisch alle 9 Sekunden zwischen mehreren Info-Folien.
+// Während der Black Week kommt vorne eine Angebots-Folie dazu.
+const HERO_DAUER = 9000;
 function heroSlider() {
   const hero = document.querySelector(".hero");
   const erste = hero && hero.querySelector(".hero-inner");
   if (!erste) return;
-  const bfSprays = ["spray-pacific-cruise", "spray-fast-cherry", "spray-ombre-apex"].map(byId).filter((p) => p && p.bfDeal);
-  const maxSpar = Math.max(...BLACK_FRIDAY.deals.map((d) => { const p = byId(d.id); return p && p.bfDeal ? p.bfNormal - p.price : 0; }));
+  const preis = (id) => { const p = byId(id); return p ? euro(p.price) : ""; };
+  const foto = (id) => { const p = byId(id); return p && p.photo ? p.photo : ""; };
+
+  // Info-Folien (Reihenfolge = Reihenfolge im Slider)
+  const infos = [
+    {
+      name: "Mystery Box",
+      kicker: "Mystery Box · Warenwert über 50&nbsp;€",
+      titel: "Lass dich<br>überraschen.",
+      text: "Mindestens ein Duftspray, drei Duftanhänger und ein Glasanhänger – welche Düfte drin sind, erfährst du erst beim Auspacken.",
+      ctas: [["#p/mystery-box", "Box entdecken", "btn-gold"], ["#boxen", "Alle Boxen", "btn-outline"]],
+      notiz: `Für ${preis("mystery-box")}&nbsp;· Versand in&nbsp;24&nbsp;h`,
+      bild: foto("mystery-box"), link: "#p/mystery-box",
+    },
+    {
+      name: "Probierset",
+      kicker: "Probierset · 3&nbsp;×&nbsp;30&nbsp;ml",
+      titel: "Erst testen.<br>Dann entscheiden.",
+      text: "Such dir drei Düfte aus und probier sie in Ruhe im Auto – bevor du dich für die große Flasche entscheidest.",
+      ctas: [["#p/probierset-3", "Düfte wählen", "btn-gold"], ["#p/probierset-7", "Alle 7 Düfte", "btn-outline"]],
+      notiz: `3 Düfte ${preis("probierset-3")}&nbsp;· alle 7 Düfte ${preis("probierset-7")}`,
+      bild: foto("probierset-3"), link: "#p/probierset-3",
+    },
+    {
+      name: "Duftanhänger",
+      kicker: "Duftanhänger · 7 Düfte",
+      titel: "Kleiner Anhänger.<br>Großer Duft.",
+      text: "Einfach an den Spiegel hängen und losfahren. Einzeln oder im Set – frei kombinierbar aus allen sieben Düften.",
+      ctas: [["#produkte", "Anhänger ansehen", "btn-gold", "Duftanhänger Premium"], ["#p/set-haenger-5", "5er-Set", "btn-outline"]],
+      notiz: `Ab ${preis("haenger-pacific-cruise") || "3,90&nbsp;€"}&nbsp;· 5er-Set ${preis("set-haenger-5")}`,
+      bild: foto("set-haenger-5"), link: "#p/set-haenger-5",
+    },
+  ];
+
   const wrap = document.createElement("div");
   wrap.className = "hero-slides";
   erste.parentNode.insertBefore(wrap, erste);
   wrap.appendChild(erste);
-  erste.classList.add("hero-slide", "ist-aktiv");
-  const bf = document.createElement("div");
-  bf.className = "hero-inner hero-slide hero-slide-bf";
-  bf.setAttribute("aria-hidden", "true");
-  bf.innerHTML = `
-    <div class="hero-text">
-      <p class="hero-kicker">Black Week · nur bis 30. November</p>
-      <h2 class="hero-title">Black Friday.<br>Bis zu ${Math.round(maxSpar)}&nbsp;€ sparen.</h2>
-      <p class="hero-sub">Drei Düfte, zwei Sets, die Mystery Box und mehr – acht Angebote, eine Woche.
-        Ab 40&nbsp;€ versandkostenfrei.</p>
-      <div class="hero-cta">
-        <a href="#blackfriday" class="btn btn-gold" data-zu-bf>Zu den Angeboten</a>
-        <a href="#p/mystery-box" class="btn btn-outline">Mystery Box</a>
+  erste.classList.add("hero-slide");
+  const folien = [{ el: erste, name: "Caroud" }];
+
+  const baue = (f) => {
+    const el = document.createElement("div");
+    el.className = "hero-inner hero-slide hero-slide-info";
+    el.innerHTML = `
+      <div class="hero-text">
+        <p class="hero-kicker">${f.kicker}</p>
+        <h2 class="hero-title">${f.titel}</h2>
+        <p class="hero-sub">${f.text}</p>
+        <div class="hero-cta">
+          ${f.ctas.map(([h, t, k, filter]) => `<a href="${h}" class="btn ${k}"${filter ? ` data-filter="${filter}"` : ""}>${t}</a>`).join("")}
+        </div>
+        <p class="hero-note">${f.notiz}</p>
       </div>
-      <p class="hero-note" data-hero-cd></p>
-    </div>
-    <div class="hero-bf-karten" aria-hidden="true">
-      ${bfSprays.map((p, i) => `
-        <a class="hero-bf-karte k${i}" href="#p/${p.id}" tabindex="-1">
-          <img src="${p.photo}" alt="" loading="lazy">
-          <span class="hero-bf-tag">−${Math.round(p.bfNormal - p.price)} €</span>
-          <span class="hero-bf-name">${p.label}</span>
-        </a>`).join("")}
-    </div>`;
-  wrap.appendChild(bf);
-  bf.querySelector("[data-zu-bf]").addEventListener("click", (e) => {
-    e.preventDefault();
-    const kopf = document.querySelector(".top-sticky") || document.getElementById("siteHeader");
-    const versatz = kopf ? kopf.getBoundingClientRect().height : 0;
-    gleiteZu(document.getElementById("blackfriday").getBoundingClientRect().top + window.scrollY - versatz, 900);
-  });
-  // Kleiner Countdown auf der Folie
-  const cd = bf.querySelector("[data-hero-cd]");
-  const ende = Date.parse(BLACK_FRIDAY.ende);
-  const cdTick = () => {
-    const r = Math.max(0, ende - Date.now());
-    const t = Math.floor(r / 864e5), s = Math.floor((r % 864e5) / 36e5), mi = Math.floor((r % 36e5) / 6e4);
-    cd.textContent = `Endet in ${t} Tagen, ${s} Std, ${mi} Min`;
+      <a class="hero-bild" href="${f.link}" tabindex="-1" aria-hidden="true"><img src="${f.bild}" alt="" loading="lazy"></a>`;
+    el.querySelectorAll("a[data-filter]").forEach((a) => a.addEventListener("click", () => {
+      if (typeof setFamily === "function") setFamily("alle");
+      if (typeof setFilter === "function") setFilter(a.dataset.filter);
+    }));
+    wrap.appendChild(el);
+    return el;
   };
-  cdTick(); setInterval(cdTick, 30000);
-  // Punkte
-  const folien = [erste, bf];
-  const punkte = document.createElement("div");
-  punkte.className = "hero-punkte";
-  punkte.innerHTML = folien.map((_, i) => `<button type="button" aria-label="Folie ${i + 1}"${i === 0 ? ' class="ist-aktiv"' : ""}></button>`).join("");
-  hero.appendChild(punkte);
-  let aktiv = 0;
+  infos.forEach((f) => { if (f.bild) folien.push({ el: baue(f), name: f.name }); });
+
+  // Black-Week-Folie (nur im Aktionszeitraum), direkt nach der Startfolie
+  if (typeof BF_AKTIV !== "undefined" && BF_AKTIV) {
+    const bfSprays = ["spray-pacific-cruise", "spray-fast-cherry", "spray-ombre-apex"].map(byId).filter((p) => p && p.bfDeal);
+    const maxSpar = Math.max(...BLACK_FRIDAY.deals.map((d) => { const p = byId(d.id); return p && p.bfDeal ? p.bfNormal - p.price : 0; }));
+    const bf = document.createElement("div");
+    bf.className = "hero-inner hero-slide hero-slide-bf";
+    bf.innerHTML = `
+      <div class="hero-text">
+        <p class="hero-kicker">Black Week · nur bis 30. November</p>
+        <h2 class="hero-title">Black Friday.<br>Bis zu ${Math.round(maxSpar)}&nbsp;€ sparen.</h2>
+        <p class="hero-sub">Drei Düfte, zwei Sets, die Mystery Box und mehr – acht Angebote, eine Woche.
+          Ab 40&nbsp;€ versandkostenfrei.</p>
+        <div class="hero-cta">
+          <a href="#blackfriday" class="btn btn-gold" data-zu-bf>Zu den Angeboten</a>
+          <a href="#p/mystery-box" class="btn btn-outline">Mystery Box</a>
+        </div>
+        <p class="hero-note" data-hero-cd></p>
+      </div>
+      <div class="hero-bf-karten" aria-hidden="true">
+        ${bfSprays.map((p, i) => `
+          <a class="hero-bf-karte k${i}" href="#p/${p.id}" tabindex="-1">
+            <img src="${p.photo}" alt="" loading="lazy">
+            <span class="hero-bf-tag">−${Math.round(p.bfNormal - p.price)} €</span>
+            <span class="hero-bf-name">${p.label}</span>
+          </a>`).join("")}
+      </div>`;
+    wrap.appendChild(bf);
+    bf.querySelector("[data-zu-bf]").addEventListener("click", (e) => {
+      e.preventDefault();
+      const kopf = document.querySelector(".top-sticky") || document.getElementById("siteHeader");
+      const versatz = kopf ? kopf.getBoundingClientRect().height : 0;
+      gleiteZu(document.getElementById("blackfriday").getBoundingClientRect().top + window.scrollY - versatz, 900);
+    });
+    const cd = bf.querySelector("[data-hero-cd]");
+    const ende = Date.parse(BLACK_FRIDAY.ende);
+    const cdTick = () => {
+      const r = Math.max(0, ende - Date.now());
+      const t = Math.floor(r / 864e5), s = Math.floor((r % 864e5) / 36e5), mi = Math.floor((r % 36e5) / 6e4);
+      cd.textContent = `Endet in ${t} Tagen, ${s} Std, ${mi} Min`;
+    };
+    cdTick(); setInterval(cdTick, 30000);
+    folien.splice(1, 0, { el: bf, name: "Black Week", bf: true });
+  }
+  if (folien.length < 2) return;
+
+  // Anzeige: Zähler + je Folie ein Balken, der sich über die Laufzeit füllt
+  const nav = document.createElement("div");
+  nav.className = "hero-nav";
+  nav.style.setProperty("--hero-dauer", HERO_DAUER + "ms");
+  const zwei = (n) => String(n).padStart(2, "0");
+  nav.innerHTML = `
+    <span class="hero-zaehler"><strong data-hz>01</strong><span>/ ${zwei(folien.length)}</span></span>
+    <div class="hero-segmente">
+      ${folien.map((f, i) => `<button type="button" class="hero-seg" aria-label="Folie ${i + 1}: ${f.name}"><span class="hero-seg-linie"><i></i></span><span class="hero-seg-name">${f.name}</span></button>`).join("")}
+    </div>
+    <div class="hero-pfeile">
+      <button type="button" class="hero-pfeil" data-hp="-1" aria-label="Vorherige Folie"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>
+      <button type="button" class="hero-pfeil" data-hp="1" aria-label="Nächste Folie"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>
+    </div>`;
+  hero.appendChild(nav);
+  hero.classList.add("hat-slider");
+  const segs = [...nav.querySelectorAll(".hero-seg")];
+  const zaehler = nav.querySelector("[data-hz]");
+
+  // Zeitsteuerung per JS (nicht per CSS-Animation), damit Pausieren sauber klappt
+  let aktiv = -1, start = 0, rest = HERO_DAUER, pausiert = false, raf = null;
   const zeige = (i) => {
     aktiv = (i + folien.length) % folien.length;
-    folien.forEach((f, k) => { f.classList.toggle("ist-aktiv", k === aktiv); f.setAttribute("aria-hidden", k === aktiv ? "false" : "true"); });
-    punkte.querySelectorAll("button").forEach((b, k) => b.classList.toggle("ist-aktiv", k === aktiv));
-    hero.classList.toggle("bf-zeigt", aktiv === 1);
+    folien.forEach((f, k) => {
+      f.el.classList.toggle("ist-aktiv", k === aktiv);
+      f.el.setAttribute("aria-hidden", k === aktiv ? "false" : "true");
+      f.el.inert = k !== aktiv;
+    });
+    segs.forEach((b, k) => {
+      b.classList.toggle("ist-aktiv", k === aktiv);
+      b.classList.toggle("ist-fertig", k < aktiv);
+      b.querySelector("i").style.transform = k < aktiv ? "scaleX(1)" : "scaleX(0)";
+    });
+    zaehler.textContent = zwei(aktiv + 1);
+    hero.classList.toggle("bf-zeigt", !!folien[aktiv].bf);
+    hero.classList.toggle("info-zeigt", aktiv > 0 && !folien[aktiv].bf);
+    rest = HERO_DAUER; start = performance.now();
   };
-  punkte.querySelectorAll("button").forEach((b, k) => b.addEventListener("click", () => { zeige(k); neustart(); }));
-  // Automatisch weiter, Pause beim Drüberfahren
-  let timer = null;
-  const neustart = () => { clearInterval(timer); timer = setInterval(() => zeige(aktiv + 1), 7000); };
-  hero.addEventListener("mouseenter", () => clearInterval(timer));
-  hero.addEventListener("mouseleave", neustart);
+  const schritt = (jetzt) => {
+    if (!pausiert) {
+      const anteil = Math.min(1, 1 - (rest - (jetzt - start)) / HERO_DAUER);
+      segs[aktiv].querySelector("i").style.transform = `scaleX(${anteil})`;
+      if (anteil >= 1) zeige(aktiv + 1);
+    }
+    raf = requestAnimationFrame(schritt);
+  };
+  const pause = () => { if (pausiert) return; pausiert = true; rest -= performance.now() - start; };
+  const weiter = () => { if (!pausiert) return; pausiert = false; start = performance.now(); };
+
+  segs.forEach((b, k) => b.addEventListener("click", () => { zeige(k); }));
+  nav.querySelectorAll("[data-hp]").forEach((b) => b.addEventListener("click", () => zeige(aktiv + Number(b.dataset.hp))));
+  // Pause, solange die Maus auf dem Text/Bild liegt oder der Tab im Hintergrund ist
+  wrap.addEventListener("mouseenter", pause);
+  wrap.addEventListener("mouseleave", weiter);
+  document.addEventListener("visibilitychange", () => (document.hidden ? pause() : weiter()));
   // Wischen am Handy
   let sx = null, sy = null;
   hero.addEventListener("touchstart", (e) => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
   hero.addEventListener("touchend", (e) => {
     if (sx === null) return;
     const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy; sx = null;
-    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) { zeige(aktiv + (dx < 0 ? 1 : -1)); neustart(); }
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) zeige(aktiv + (dx < 0 ? 1 : -1));
   }, { passive: true });
-  // Mit der Black-Week-Folie starten, damit die Aktion sofort auffällt
-  zeige(1);
-  neustart();
+
+  // Während der Black Week mit der Angebotsfolie starten, sonst mit der Startfolie
+  zeige(BF_AKTIV ? 1 : 0);
+  raf = requestAnimationFrame(schritt);
 }
+heroSlider();
 
 // ---------- Einblick in die Boxen (Startseite) ----------
 (function boxenTeaser() {
