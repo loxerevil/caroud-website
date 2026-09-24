@@ -116,7 +116,7 @@ const FOTO_LINIEN = ["spray", "haenger", "glas"];
 // Linien mit Produktvideo (stumm, Dauerschleife) als letztes Bild in der Galerie
 const VIDEO_LINIEN = ["haenger"];
 // Produktvideos, die es nur fuer einzelne Duefte gibt (img/videos/<linie>-<duft>.mp4 + .webp)
-const VIDEO_DUEFTE = { spray: ["driveination", "erba-carbon", "erba-tuned", "fast-cherry", "naxnos-asphalt", "ombre-apex"] };
+const VIDEO_DUEFTE = { spray: ["pacific-cruise", "erba-carbon", "fast-cherry", "driveination", "naxnos-asphalt", "ombre-apex", "erba-tuned"] };
 // Bilder fuer die Kacheln "<Duft> gibt es auch als" (heller Studio-Stil, img/auchals/).
 // Spray, Glasanhaenger und Duftprobe sehen bei jedem Duft gleich aus -> ein Bild je Linie.
 // Fuer die Duftanhaenger je Duft ein eigenes Bild (img/auchals/haenger-<duft>.webp), sobald vorhanden.
@@ -163,6 +163,14 @@ const MOMENTE = {
     tags: ["Sommer", "Küstenstraßen", "Frische Innenräume"],
   },
 };
+// Stimmungsblock "Der Moment" auf den Duftanhaenger-Seiten: Foto img/moment/haenger-<duft>.webp + Text.
+const MOMENTE_HAENGER = {
+  "pacific-cruise": {
+    titel: "Der Blick aufs Meer, am Rückspiegel.",
+    text: "Ein Stück Küstenstraße, das mitfährt: Zitrone, Orange und kühle Minze kommen zuerst, schwarze Johannisbeere und ein Hauch Basilikum geben dem Duft Tiefe, Feige und Dattel machen ihn weich. Der Anhänger in unserer eigenen Caroud-Form ist beidseitig bedruckt und hängt an einer schwarzen Kordel – dezent genug für jeden Innenraum. Er duftet vier bis acht Wochen, je nachdem, wie viel Luft durchs Auto zieht, und ist danach einfach zu ersetzen. Frisch, leicht und nie aufdringlich: der Duft für alle, die Sommer im Auto haben wollen, auch wenn draußen Montag ist.",
+    tags: ["Rückspiegel", "Frisch & leicht", "4–8 Wochen"],
+  },
+};
 // Linien mit zweitem Produktfoto (Stimmungsbild) – Dateiname <linie>-<duft>-2.webp
 const FOTO2_LINIEN = ["spray"];
 
@@ -184,7 +192,9 @@ LINES.forEach((line) => {
         ? "img/videos/" + line.type + "-" + s.key + ".mp4?v=" + ASSET_V : null,
       pyramide: s.pyramide,
       // Stimmungsblock nur auf den Duftspray-Seiten
-      moment: line.type === "spray" && MOMENTE[s.key] ? Object.assign({ img: "img/moment/" + s.key + ".webp?v=" + ASSET_V }, MOMENTE[s.key]) : null,
+      moment: line.type === "spray" && MOMENTE[s.key] ? Object.assign({ img: "img/moment/" + s.key + ".webp?v=" + ASSET_V }, MOMENTE[s.key])
+        : line.type === "haenger" && MOMENTE_HAENGER[s.key] ? Object.assign({ img: "img/moment/haenger-" + s.key + ".webp?v=" + ASSET_V }, MOMENTE_HAENGER[s.key])
+        : null,
       price: line.price, priceOld: line.priceOld, bestseller: !!s.bestseller[line.type],
       desc: line.text(s),
       notes: s.notes,
