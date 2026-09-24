@@ -22,10 +22,10 @@ function sprayBottleSVG(color, label, img) {
   const etikett = img
     ? `<image href="${img}" x="42" y="88" width="36" height="46" preserveAspectRatio="xMidYMid slice"/>`
     : `<rect x="42" y="88" width="36" height="46" rx="3" fill="#fff" stroke="#ddd"/>
-       <text x="60" y="103" text-anchor="middle" font-size="9" font-weight="600" font-family="Inter, Segoe UI, Arial, sans-serif" letter-spacing="1" fill="#111">CAROUD</text>
+       <text x="60" y="103" text-anchor="middle" font-size="9" font-weight="600" font-family="Playfair Display, Georgia, serif" letter-spacing="1" fill="#111">CAROUD</text>
        <rect x="48" y="109" width="24" height="4" rx="2" fill="${color}" stroke="rgba(0,0,0,0.2)"/>
-       <text x="60" y="124" text-anchor="middle" font-size="7" font-family="Inter, Segoe UI, Arial, sans-serif" fill="#555">${label}</text>
-       <text x="60" y="131" text-anchor="middle" font-size="5" font-family="Inter, Segoe UI, Arial, sans-serif" fill="#999">- est. 2026 -</text>`;
+       <text x="60" y="124" text-anchor="middle" font-size="7" font-family="Playfair Display, Georgia, serif" fill="#555">${label}</text>
+       <text x="60" y="131" text-anchor="middle" font-size="5" font-family="Playfair Display, Georgia, serif" fill="#999">- est. 2026 -</text>`;
   return `
   <svg class="prod-art" viewBox="0 0 120 200" xmlns="http://www.w3.org/2000/svg">
     ${SPRAY_KORPUS}
@@ -47,10 +47,10 @@ function haengerSVG(color, label, img) {
     <path d="M70 4 Q90 24 70 44 Q50 24 70 4" fill="none" stroke="#333" stroke-width="2.5"/>
     <path d="M52 44 H88 Q92 44 92 50 L90 62 H98 Q104 62 104 70 V184 Q104 192 96 192 H44 Q36 192 36 184 V70 Q36 62 42 62 H50 L48 50 Q48 44 52 44 Z" fill="${color}" stroke="rgba(0,0,0,0.18)"/>
     <rect x="48" y="92" width="44" height="52" rx="3" fill="#fff" stroke="#ddd"/>
-    <text x="70" y="109" text-anchor="middle" font-size="10" font-weight="600" font-family="Inter, Segoe UI, Arial, sans-serif" letter-spacing="1" fill="#111">CAROUD</text>
+    <text x="70" y="109" text-anchor="middle" font-size="10" font-weight="600" font-family="Playfair Display, Georgia, serif" letter-spacing="1" fill="#111">CAROUD</text>
     <rect x="56" y="116" width="28" height="4" rx="2" fill="${color}" stroke="rgba(0,0,0,0.2)"/>
-    <text x="70" y="131" text-anchor="middle" font-size="8" font-family="Inter, Segoe UI, Arial, sans-serif" fill="#555">${label}</text>
-    <text x="70" y="139" text-anchor="middle" font-size="5.5" font-family="Inter, Segoe UI, Arial, sans-serif" fill="#999">- est. 2026 -</text>
+    <text x="70" y="131" text-anchor="middle" font-size="8" font-family="Playfair Display, Georgia, serif" fill="#555">${label}</text>
+    <text x="70" y="139" text-anchor="middle" font-size="5.5" font-family="Playfair Display, Georgia, serif" fill="#999">- est. 2026 -</text>
   </svg>`;
 }
 
@@ -90,8 +90,8 @@ function tuchSVG(color, label) {
     <path d="M34 92 Q90 78 146 92" fill="none" stroke="#b9a06a" stroke-width="1.6"/>
     <path d="M28 150 Q90 164 152 150" fill="none" stroke="#b9a06a" stroke-width="2.2"/>
     <rect x="76" y="108" width="28" height="18" rx="2" fill="#fff" stroke="#ddd"/>
-    <text x="90" y="120" text-anchor="middle" font-size="7" font-weight="600" font-family="Inter, Segoe UI, Arial, sans-serif" letter-spacing="0.8" fill="#111">CAROUD</text>
-    <text x="90" y="186" text-anchor="middle" font-size="10" font-weight="600" font-family="Inter, Segoe UI, Arial, sans-serif" letter-spacing="2" fill="#555">${label.toUpperCase()}</text>
+    <text x="90" y="120" text-anchor="middle" font-size="7" font-weight="600" font-family="Playfair Display, Georgia, serif" letter-spacing="0.8" fill="#111">CAROUD</text>
+    <text x="90" y="186" text-anchor="middle" font-size="10" font-weight="600" font-family="Playfair Display, Georgia, serif" letter-spacing="2" fill="#555">${label.toUpperCase()}</text>
   </svg>`;
 }
 
@@ -105,11 +105,11 @@ function abzieherSVG(color, label) {
     <rect x="34" y="122" width="112" height="9" rx="3" fill="#b9a06a"/>
     <path d="M34 131 Q90 138 146 131 L144 140 Q90 147 36 140 Z" fill="#8f8f8f"/>
     <rect x="72" y="105" width="36" height="14" rx="2" fill="#fff" stroke="#ddd"/>
-    <text x="90" y="115" text-anchor="middle" font-size="7" font-weight="600" font-family="Inter, Segoe UI, Arial, sans-serif" letter-spacing="0.8" fill="#111">CAROUD</text>
+    <text x="90" y="115" text-anchor="middle" font-size="7" font-weight="600" font-family="Playfair Display, Georgia, serif" letter-spacing="0.8" fill="#111">CAROUD</text>
     <g stroke="#9ec6d6" stroke-width="2" stroke-linecap="round" opacity="0.7">
       <line x1="50" y1="156" x2="46" y2="170"/><line x1="90" y1="158" x2="90" y2="172"/><line x1="130" y1="156" x2="134" y2="170"/>
     </g>
-    <text x="90" y="192" text-anchor="middle" font-size="10" font-weight="600" font-family="Inter, Segoe UI, Arial, sans-serif" letter-spacing="2" fill="#555">${label.toUpperCase()}</text>
+    <text x="90" y="192" text-anchor="middle" font-size="10" font-weight="600" font-family="Playfair Display, Georgia, serif" letter-spacing="2" fill="#555">${label.toUpperCase()}</text>
   </svg>`;
 }
 
@@ -120,8 +120,8 @@ function baumSVG(color, label) {
     <path d="M70 30 L104 88 H88 L112 138 H92 L114 182 H26 L48 138 H28 L52 88 H36 Z" fill="${color}" stroke="rgba(0,0,0,0.18)"/>
     <rect x="62" y="182" width="16" height="12" rx="2" fill="#5b4630"/>
     <rect x="42" y="118" width="56" height="28" rx="3" fill="#fff" stroke="#ddd"/>
-    <text x="70" y="132" text-anchor="middle" font-size="9" font-weight="600" font-family="Inter, Segoe UI, Arial, sans-serif" letter-spacing="1" fill="#111">CAROUD</text>
-    <text x="70" y="141" text-anchor="middle" font-size="6.5" font-family="Inter, Segoe UI, Arial, sans-serif" fill="#555">${label}</text>
+    <text x="70" y="132" text-anchor="middle" font-size="9" font-weight="600" font-family="Playfair Display, Georgia, serif" letter-spacing="1" fill="#111">CAROUD</text>
+    <text x="70" y="141" text-anchor="middle" font-size="6.5" font-family="Playfair Display, Georgia, serif" fill="#555">${label}</text>
   </svg>`;
 }
 
@@ -130,10 +130,10 @@ function glasSVG(color, label, img) {
   const etikett = img
     ? `<image href="${img}" x="48" y="64" width="44" height="72" preserveAspectRatio="xMidYMid meet"/>`
     : `<rect x="48" y="64" width="44" height="72" rx="2" fill="${color}" stroke="rgba(0,0,0,0.2)"/>
-       <text x="70" y="92" text-anchor="middle" font-size="9" font-weight="600" font-family="Inter, Segoe UI, Arial, sans-serif" letter-spacing="1" fill="#fff">CAROUD</text>
+       <text x="70" y="92" text-anchor="middle" font-size="9" font-weight="600" font-family="Playfair Display, Georgia, serif" letter-spacing="1" fill="#fff">CAROUD</text>
        <rect x="63" y="98" width="14" height="3" rx="1.5" fill="#b9a06a"/>
-       <text x="70" y="114" text-anchor="middle" font-size="7" font-family="Inter, Segoe UI, Arial, sans-serif" fill="#fff">${label}</text>
-       <text x="70" y="128" text-anchor="middle" font-size="5.5" font-family="Inter, Segoe UI, Arial, sans-serif" fill="rgba(255,255,255,0.7)">8 ML</text>`;
+       <text x="70" y="114" text-anchor="middle" font-size="7" font-family="Playfair Display, Georgia, serif" fill="#fff">${label}</text>
+       <text x="70" y="128" text-anchor="middle" font-size="5.5" font-family="Playfair Display, Georgia, serif" fill="rgba(255,255,255,0.7)">8 ML</text>`;
   return `
   <svg class="prod-art" viewBox="0 0 140 200" xmlns="http://www.w3.org/2000/svg">
     <path d="M70 32 V24 C56 20 57 8 70 8 C83 8 84 20 70 24 Z" fill="none" stroke="#6b5a3e" stroke-width="2.5" stroke-linejoin="round"/>
@@ -155,16 +155,16 @@ function probierSVG(color, label, anzahl) {
       <rect x="10" y="44" width="6" height="8" rx="1" fill="#2a2a2a"/>
       <rect x="0" y="60" width="26" height="86" rx="5" fill="${tint}" stroke="rgba(0,0,0,0.25)"/>
       <rect x="3" y="78" width="20" height="46" rx="2" fill="#111"/>
-      <text x="13" y="97" text-anchor="middle" font-size="5.5" font-weight="600" font-family="Inter, Segoe UI, Arial, sans-serif" letter-spacing="0.6" fill="#fff">CAROUD</text>
+      <text x="13" y="97" text-anchor="middle" font-size="5.5" font-weight="600" font-family="Playfair Display, Georgia, serif" letter-spacing="0.6" fill="#fff">CAROUD</text>
       <rect x="9" y="101" width="8" height="2" rx="1" fill="#b9a06a"/>
-      <text x="13" y="112" text-anchor="middle" font-size="4.6" font-family="Inter, Segoe UI, Arial, sans-serif" fill="#b9a06a">15 ML</text>
+      <text x="13" y="112" text-anchor="middle" font-size="4.6" font-family="Playfair Display, Georgia, serif" fill="#b9a06a">15 ML</text>
     </g>`;
   return `
   <svg class="prod-art" viewBox="0 0 140 200" xmlns="http://www.w3.org/2000/svg">
     <g transform="translate(18 18)">
       ${anzahl === 1 ? `<g transform="translate(39 0)">${mini(0, "#3a3a3a")}</g>` : `${mini(0, "#3a3a3a")}${mini(39, "#555")}${mini(78, "#3a3a3a")}`}
     </g>
-    <text x="70" y="188" text-anchor="middle" font-size="8" font-family="Inter, Segoe UI, Arial, sans-serif" letter-spacing="1.5" fill="#8a8a8a">${label.toUpperCase()}</text>
+    <text x="70" y="188" text-anchor="middle" font-size="8" font-family="Playfair Display, Georgia, serif" letter-spacing="1.5" fill="#8a8a8a">${label.toUpperCase()}</text>
   </svg>`;
 }
 
@@ -178,9 +178,9 @@ function mysterySVG(color, label) {
     <rect x="14" y="60" width="112" height="6" fill="rgba(185,160,106,0.55)"/>
     <path d="M70 34 C60 34 56 40 56 46 H64 C64 42 66 40 70 40 C74 40 76 42 76 46 C76 52 66 52 66 60 H74 C74 56 84 55 84 46 C84 39 79 34 70 34 Z" fill="#b9a06a"/>
     <circle cx="70" cy="66" r="2.6" fill="#b9a06a"/>
-    <text x="70" y="118" text-anchor="middle" font-size="10" font-weight="600" font-family="Inter, Segoe UI, Arial, sans-serif" letter-spacing="2" fill="#f3ede0">CAROUD</text>
-    <text x="70" y="132" text-anchor="middle" font-size="7" font-family="Inter, Segoe UI, Arial, sans-serif" letter-spacing="1.5" fill="#b9a06a">MYSTERY BOX</text>
-    <text x="70" y="188" text-anchor="middle" font-size="8" font-family="Inter, Segoe UI, Arial, sans-serif" letter-spacing="1.5" fill="#8a8a8a">WARENWERT 50 €+</text>
+    <text x="70" y="118" text-anchor="middle" font-size="10" font-weight="600" font-family="Playfair Display, Georgia, serif" letter-spacing="2" fill="#f3ede0">CAROUD</text>
+    <text x="70" y="132" text-anchor="middle" font-size="7" font-family="Playfair Display, Georgia, serif" letter-spacing="1.5" fill="#b9a06a">MYSTERY BOX</text>
+    <text x="70" y="188" text-anchor="middle" font-size="8" font-family="Playfair Display, Georgia, serif" letter-spacing="1.5" fill="#8a8a8a">WARENWERT 50 €+</text>
   </svg>`;
 }
 

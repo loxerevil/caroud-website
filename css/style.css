@@ -1,11 +1,28 @@
-/* ============ Schrift: nur Inter (SIL Open Font License), selbst gehostet ============
+/* ============ Schrift: nur Playfair Display (SIL Open Font License), selbst gehostet ============
    Nur Latin-Subset, drei Schnitte, zusammen 96 KB. Kein Aufruf zu Google beim Seitenbesuch.
    600 deckt 600–800 ab, damit Überschriften mit weight 700 die echte Datei nehmen
    und der Browser nichts künstlich nachfettet. */
-/* Inter (SIL Open Font License) – feste Textschrift statt Systemschrift, Latin-Subset */
-@font-face { font-family: "Inter"; font-style: normal; font-weight: 400; font-display: swap; src: url("../fonts/inter-400.woff") format("woff"); }
-@font-face { font-family: "Inter"; font-style: normal; font-weight: 500; font-display: swap; src: url("../fonts/inter-500.woff") format("woff"); }
-@font-face { font-family: "Inter"; font-style: normal; font-weight: 600; font-display: swap; src: url("../fonts/inter-600.woff") format("woff"); }
+@font-face {
+  font-family: "Playfair Display";
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url("../fonts/playfair-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Playfair Display";
+  font-style: normal;
+  font-weight: 600 800;
+  font-display: swap;
+  src: url("../fonts/playfair-600.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Playfair Display";
+  font-style: italic;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url("../fonts/playfair-400-italic.woff2") format("woff2");
+}
 
 /* ============ Caroud – Basis ============ */
 :root {
@@ -23,8 +40,8 @@
   --paper: #f5f5f3;             /* neutrales Off-White als Seitenhintergrund */
   --line: #e3e3e0;              /* Kartenränder auf Hell */
   --white: #ffffff;
-  --font: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  --serif: var(--font); /* eine Schrift fuer alles: Inter */
+  --font: "Playfair Display", Georgia, "Times New Roman", serif; /* eine Schrift fuer alles */
+  --serif: var(--font);
   --header-h: 62px;
 }
 
@@ -2299,20 +2316,7 @@ body.pdp-aktiv .site-header {
 .pdp-reco-price .price-old { margin-right: 0; }
 @media (max-width: 860px) { .pdp-reco-name { font-size: 0.82rem; } .pdp-reco-price { font-size: 0.85rem; } }
 
-/* ---- Eine Schrift (v111): Ueberschriften in Inter statt Playfair ---- */
-.hero-title,
-.section-title,
-.about-quote,
-.about-text h2,
-.vergleich-karte h3,
-.koll-title,
-.scent-name,
-.newsletter h2,
-.footer-wordmark,
-.pdp-info h1,
-.pdp-moment-title,
-.pdp-reco-head,
-.boxen-title,
-.boxen-fakten strong,
-.bf-title,
-.bf-cd-teil strong { font-weight: 500; letter-spacing: -0.02em; }
+
+/* ---- Eine Schrift (v112): Playfair ueberall, Titel wie "Bestseller" ---- */
+button, input, select, textarea { font-family: var(--font); }
+body { font-variant-numeric: lining-nums; font-feature-settings: "lnum" 1; }
