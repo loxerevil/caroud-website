@@ -115,6 +115,8 @@ const LINES = [
 const FOTO_LINIEN = ["spray", "haenger", "glas"];
 // Linien mit Produktvideo (stumm, Dauerschleife) als letztes Bild in der Galerie
 const VIDEO_LINIEN = ["haenger"];
+// Produktvideos, die es nur fuer einzelne Duefte gibt (img/videos/<linie>-<duft>.mp4 + .webp)
+const VIDEO_DUEFTE = { spray: ["driveination", "erba-carbon", "erba-tuned"] };
 // Bilder fuer die Kacheln "<Duft> gibt es auch als" (heller Studio-Stil, img/auchals/).
 // Spray, Glasanhaenger und Duftprobe sehen bei jedem Duft gleich aus -> ein Bild je Linie.
 // Fuer die Duftanhaenger je Duft ein eigenes Bild (img/auchals/haenger-<duft>.webp), sobald vorhanden.
@@ -178,7 +180,8 @@ LINES.forEach((line) => {
       photo2: FOTO2_LINIEN.includes(line.type) ? "img/fotos/" + line.type + "-" + s.key + "-2.webp?v=" + ASSET_V : null,
       // drittes Foto: Studiobild vor Duftfarben-Hintergrund (auch in den Duft-Karten)
       photo3: FOTO2_LINIEN.includes(line.type) ? "img/fotos/" + line.type + "-" + s.key + "-3.webp?v=" + ASSET_V : null,
-      video: VIDEO_LINIEN.includes(line.type) ? "img/videos/" + line.type + "-" + s.key + ".mp4?v=" + ASSET_V : null,
+      video: VIDEO_LINIEN.includes(line.type) || (VIDEO_DUEFTE[line.type] || []).includes(s.key)
+        ? "img/videos/" + line.type + "-" + s.key + ".mp4?v=" + ASSET_V : null,
       pyramide: s.pyramide,
       // Stimmungsblock nur auf den Duftspray-Seiten
       moment: line.type === "spray" && MOMENTE[s.key] ? Object.assign({ img: "img/moment/" + s.key + ".webp?v=" + ASSET_V }, MOMENTE[s.key]) : null,
