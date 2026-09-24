@@ -170,6 +170,36 @@ const MOMENTE_HAENGER = {
     text: "Ein Stück Küstenstraße, das mitfährt: Zitrone, Orange und kühle Minze kommen zuerst, schwarze Johannisbeere und ein Hauch Basilikum geben dem Duft Tiefe, Feige und Dattel machen ihn weich. Der Anhänger in unserer eigenen Caroud-Form ist beidseitig bedruckt und hängt an einer schwarzen Kordel – dezent genug für jeden Innenraum. Er duftet vier bis acht Wochen, je nachdem, wie viel Luft durchs Auto zieht, und ist danach einfach zu ersetzen. Frisch, leicht und nie aufdringlich: der Duft für alle, die Sommer im Auto haben wollen, auch wenn draußen Montag ist.",
     tags: ["Rückspiegel", "Frisch & leicht", "4–8 Wochen"],
   },
+  "erba-carbon": {
+    titel: "Die Stadt bei Nacht, frisch poliert.",
+    text: "Glasfassaden, nasser Asphalt, das Auto glänzt im Licht der Türme. Sizilianische Orange und Bergamotte kommen zuerst, mediterrane Früchte in der Mitte, weißer Moschus und Vanille bleiben. Erba Carbon riecht nach einem Wagen, der gerade aus der Aufbereitung kommt – sauber, ohne nach Reiniger zu riechen. Der Anhänger in der Caroud-Form ist beidseitig bedruckt, hängt an einer schwarzen Kordel und duftet vier bis acht Wochen, je nach Belüftung. Für alle, die ihr Auto jeden Tag so haben wollen wie am Tag der Abholung.",
+    tags: ["Rückspiegel", "Neuwagen-Gefühl", "4–8 Wochen"],
+  },
+  "fast-cherry": {
+    titel: "Rotes Licht, nasse Straße.",
+    text: "Nachtfahrt durch die Stadt, die Rücklichter ziehen Streifen auf den Asphalt. Schwarze Kirsche und Kirschlikör mit einem Hauch Bittermandel, darunter Tonkabohne, Vanille und ein wenig Zimt. Süß, aber nicht brav – der Duft für die Fahrt, bei der die Musik einen Tick zu laut ist. Als Anhänger in der Caroud-Form am Rückspiegel: beidseitig bedruckt, schwarze Kordel, vier bis acht Wochen Duft. Ein kleines Stück Abend, das morgens noch da ist.",
+    tags: ["Rückspiegel", "Süß & dunkel", "4–8 Wochen"],
+  },
+  "driveination": {
+    titel: "Passstraße bei Sonnenaufgang.",
+    text: "Noch kein Verkehr, nur Kurven, kühle Bergluft und das erste Licht über den Gipfeln. Zitrone und Bergamotte wecken, Ingwer und Neroli halten wach, schwarzer Tee und Weihrauch geben Ruhe. Driveination ist der Duft für den Tag, an dem etwas ansteht – klar im Kopf, bevor du ausgestiegen bist. Der Anhänger in der Caroud-Form hängt dezent am Rückspiegel, ist beidseitig bedruckt und duftet vier bis acht Wochen. Danach einfach den nächsten einhängen.",
+    tags: ["Rückspiegel", "Frühe Termine", "4–8 Wochen"],
+  },
+  "naxnos-asphalt": {
+    titel: "Landstraße im Herbstlicht.",
+    text: "Goldene Stunde, die Bäume am Straßenrand brennen orange, der Asphalt ist noch warm vom Tag. Honig, Tabakblatt und Vanille legen sich weich über den Innenraum, ein wenig Lavendel und Bergamotte halten alles in der Schwebe. Der gemütlichste Duft der Reihe – wie ein Ledersessel, den man mitnehmen kann. Als Anhänger in der Caroud-Form: beidseitig bedruckt, schwarze Kordel, vier bis acht Wochen Wärme am Rückspiegel. Passt zu kalten Morgen und langen Heimfahrten.",
+    tags: ["Rückspiegel", "Warm & weich", "4–8 Wochen"],
+  },
+  "ombre-apex": {
+    titel: "Die Terrasse über der Stadt.",
+    text: "Unten glitzern die Lichter, oben ist es still, das Auto steht schon bereit. Oud, Rose und Weihrauch, aufgehellt von Himbeere und Safran, darunter Amberholz und Benzoe. Dunkel, kostbar, unaufdringlich – unser Abendduft. Der Anhänger in der Caroud-Form ist die leise Variante davon: beidseitig bedruckt, schwarze Kordel, vier bis acht Wochen am Rückspiegel, ohne den Innenraum zu überladen. Für alle, bei denen der letzte Eindruck zählt.",
+    tags: ["Rückspiegel", "Abendduft", "4–8 Wochen"],
+  },
+  "erba-tuned": {
+    titel: "Mittelmeer, Serpentinen, Sonne.",
+    text: "Zypressen am Straßenrand, türkisblaues Wasser in der Bucht, die Fenster weit offen. Amalfi-Zitrone, Ingwer und grüner Apfel, dazu Melone und Birne – frech, hell, nie zu süß. Erba Tuned ist der Duft für den Sommerabend am Treffen, wenn das Auto frisch geputzt in der Sonne steht. Als Anhänger in der Caroud-Form am Rückspiegel: beidseitig bedruckt, schwarze Kordel, vier bis acht Wochen Duft. Der Urlaub bleibt im Auto, auch wenn er längst vorbei ist.",
+    tags: ["Rückspiegel", "Sommer & frisch", "4–8 Wochen"],
+  },
 };
 // Linien mit zweitem Produktfoto (Stimmungsbild) – Dateiname <linie>-<duft>-2.webp
 const FOTO2_LINIEN = ["spray"];
