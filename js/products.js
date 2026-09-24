@@ -16,7 +16,7 @@
 // Bilder: die gedruckten Etiketten, gerendert aus den Druck-PDFs
 // (img/produkte/<typ>-<duft>.webp). Ohne img zeichnet main.js die Ersatzgrafik.
 // Version an Bild-URLs, damit Browser nach Etikett-Updates nicht alte Bilder aus dem Cache zeigen
-const ASSET_V = "53";
+const ASSET_V = "54";
 
 const CATEGORIES = [
   { name: "Duftsprays", type: "spray", color: "#111111", img: "img/produkte/spray-pacific-cruise.webp?v=" + ASSET_V },
@@ -202,7 +202,9 @@ const MOMENTE_HAENGER = {
   },
 };
 // Linien mit zweitem Produktfoto (Stimmungsbild) – Dateiname <linie>-<duft>-2.webp
-const FOTO2_LINIEN = ["spray"];
+const FOTO2_LINIEN = ["spray", "haenger"];
+// Linien mit drittem Foto (Studiobild vor Duftfarben-Hintergrund) – Dateiname <linie>-<duft>-3.webp
+const FOTO3_LINIEN = ["spray"];
 
 const SCENT_PRODUCTS = [];
 LINES.forEach((line) => {
@@ -217,7 +219,7 @@ LINES.forEach((line) => {
       photo: FOTO_LINIEN.includes(line.type) ? "img/fotos/" + line.type + "-" + s.key + ".webp?v=" + ASSET_V : null,
       photo2: FOTO2_LINIEN.includes(line.type) ? "img/fotos/" + line.type + "-" + s.key + "-2.webp?v=" + ASSET_V : null,
       // drittes Foto: Studiobild vor Duftfarben-Hintergrund (auch in den Duft-Karten)
-      photo3: FOTO2_LINIEN.includes(line.type) ? "img/fotos/" + line.type + "-" + s.key + "-3.webp?v=" + ASSET_V : null,
+      photo3: FOTO3_LINIEN.includes(line.type) ? "img/fotos/" + line.type + "-" + s.key + "-3.webp?v=" + ASSET_V : null,
       video: VIDEO_LINIEN.includes(line.type) || (VIDEO_DUEFTE[line.type] || []).includes(s.key)
         ? "img/videos/" + line.type + "-" + s.key + ".mp4?v=" + ASSET_V : null,
       pyramide: s.pyramide,
