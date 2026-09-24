@@ -357,6 +357,7 @@ const OTHER_PRODUCTS = [
     price: 16.90, priceOld: 21.90, bestseller: true,
     desc: "Drei Düfte deiner Wahl als 30-ml-Sprays zum Kennenlernen – bevor du dich für die große Flasche entscheidest. Deine Wunsch-Düfte gibst du im Checkout an.",
     notes: ["3 × 30 ml", "Düfte frei wählbar"],
+    photo: "img/fotos/probierset-3.webp?v=" + ASSET_V,
   },
   {
     id: "probierset-7",
