@@ -123,6 +123,44 @@ const AUCH_ALS_HAENGER = ["pacific-cruise", "erba-carbon", "fast-cherry", "drive
 // Düfte mit eigenem Foto für die Karten "Sieben Düfte" (img/duefte/<duft>.webp).
 // Sobald alle Fotos da sind, einfach die weiteren Düfte hier eintragen.
 const DUFT_FOTOS = ["pacific-cruise", "erba-carbon", "fast-cherry", "driveination", "naxnos-asphalt", "ombre-apex", "erba-tuned"];
+// Stimmungsblock "Der Moment" auf den Duftspray-Seiten: Foto img/moment/<duft>.webp + Text.
+const MOMENTE = {
+  "pacific-cruise": {
+    titel: "Küstenstraße, Fenster runter.",
+    text: "Sonntagmorgen, die Straße folgt dem Meer, die Sonne steht noch tief. Zitrone und Minze kommen wie der erste Fahrtwind herein, schwarze Johannisbeere gibt Tiefe, Feige und Dattel bleiben, wenn die Fahrt längst vorbei ist. Für alle, die im Auto lieber unterwegs sind als anzukommen.",
+    tags: ["Roadtrip", "Cabrio-Wetter", "Sommerpendeln"],
+  },
+  "erba-carbon": {
+    titel: "Glas, Stahl, frisch poliert.",
+    text: "Der Wagen steht vor dem Büroturm, der Regen hat gerade aufgehört, alles glänzt. Sizilianische Orange und Bergamotte vorne, weißer Moschus und Vanille im Abgang – sauber wie ein Auto, das gerade aus der Aufbereitung kommt, ohne nach Reiniger zu riechen.",
+    tags: ["Neuwagen-Gefühl", "Detailing-Fans", "Stadt bei Nacht"],
+  },
+  "fast-cherry": {
+    titel: "Nachtfahrt durch die Stadt.",
+    text: "Rotes Licht auf nasser Straße, die Musik einen Tick zu laut. Schwarze Kirsche, Kirschlikör und ein Hauch Bittermandel, darunter Tonkabohne und Vanille. Süß, aber nicht brav – der Duft für die Fahrt, die nicht nach Hause führt, sondern raus.",
+    tags: ["Nachtfahrten", "Date Night", "Sportwagen"],
+  },
+  "driveination": {
+    titel: "Passstraße bei Sonnenaufgang.",
+    text: "Noch kein Verkehr, nur Kurven, kühle Luft und der erste Sonnenstrahl über den Gipfeln. Zitrus und Ingwer wecken, schwarzer Tee und Weihrauch halten die Ruhe. Klar im Kopf, bevor du überhaupt ausgestiegen bist.",
+    tags: ["Frühe Termine", "Bergstraßen", "Klarer Kopf"],
+  },
+  "naxnos-asphalt": {
+    titel: "Landstraße im Abendlicht.",
+    text: "Goldene Stunde, der Asphalt noch warm vom Tag, kein Ziel außer der Straße selbst. Honig, Tabakblatt und Vanille legen sich weich über Leder, ein wenig Lavendel hält alles in der Schwebe. Der gemütlichste Duft der Reihe – Wärme zum Mitnehmen.",
+    tags: ["Ledersitze", "Herbst & Winter", "Klassiker"],
+  },
+  "ombre-apex": {
+    titel: "Die Terrasse über der Stadt.",
+    text: "Unten glitzern die Lichter, oben ist es still, das Auto steht schon bereit. Oud, Rose und Weihrauch, aufgehellt von Himbeere und Safran. Dunkel, kostbar, unaufdringlich – der Duft für den Abend, an dem der letzte Eindruck zählt.",
+    tags: ["Abendveranstaltungen", "Limousinen", "Dunkle Innenräume"],
+  },
+  "erba-tuned": {
+    titel: "Mittelmeer, Serpentinen, Sonne.",
+    text: "Zypressen am Straßenrand, türkisblaues Wasser unten in der Bucht, die Fenster weit offen. Amalfi-Zitrone, Ingwer und grüner Apfel, dazu Melone und Birne – frech, hell, nie zu süß. Der Sommer bleibt im Auto, auch wenn der Urlaub vorbei ist.",
+    tags: ["Sommer", "Küstenstraßen", "Frische Innenräume"],
+  },
+};
 // Linien mit zweitem Produktfoto (Stimmungsbild) – Dateiname <linie>-<duft>-2.webp
 const FOTO2_LINIEN = ["spray"];
 
@@ -142,6 +180,8 @@ LINES.forEach((line) => {
       photo3: FOTO2_LINIEN.includes(line.type) ? "img/fotos/" + line.type + "-" + s.key + "-3.webp?v=" + ASSET_V : null,
       video: VIDEO_LINIEN.includes(line.type) ? "img/videos/" + line.type + "-" + s.key + ".mp4?v=" + ASSET_V : null,
       pyramide: s.pyramide,
+      // Stimmungsblock nur auf den Duftspray-Seiten
+      moment: line.type === "spray" && MOMENTE[s.key] ? Object.assign({ img: "img/moment/" + s.key + ".webp?v=" + ASSET_V }, MOMENTE[s.key]) : null,
       price: line.price, priceOld: line.priceOld, bestseller: !!s.bestseller[line.type],
       desc: line.text(s),
       notes: s.notes,

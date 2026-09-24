@@ -1061,6 +1061,24 @@ function recoAuswahl(p) {
   return gewaehlt;
 }
 
+function momentBlock(p) {
+  const mo = p.moment;
+  if (!mo) return "";
+  return `
+    <section class="pdp-moment" aria-label="Der Moment">
+      <div class="pdp-moment-img"><img src="${mo.img}" alt="${p.label} – ${mo.titel}" loading="lazy"></div>
+      <div class="pdp-moment-text">
+        <p class="pdp-moment-kicker">Der Moment</p>
+        <h2 class="pdp-moment-title">${mo.titel}</h2>
+        <p class="pdp-moment-copy">${mo.text}</p>
+        <div class="pdp-moment-tags">
+          <span class="pdp-moment-tags-label">Passt zu</span>
+          ${mo.tags.map((t) => `<span class="note-chip">${t}</span>`).join("")}
+        </div>
+      </div>
+    </section>`;
+}
+
 function recoKarten(p) {
   const recos = recoAuswahl(p);
   if (!recos.length) return "";
@@ -1150,6 +1168,7 @@ function renderProduktseite(p) {
             </div>` : ""}
         </div>
       </div>
+      ${momentBlock(p)}
       ${recoKarten(p)}
     </div>`;
   // Galerie: Foto, Foto 2, Etikett, Video umschalten

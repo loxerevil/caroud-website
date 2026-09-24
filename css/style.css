@@ -1889,6 +1889,27 @@ body.pdp-aktiv .site-header {
 
 
 /* Empfehlungszeile auf der Produktseite */
+/* Stimmungsblock "Der Moment" (Duftspray-Seiten) */
+.pdp-moment {
+  margin-top: 3.5rem; border-top: 1px solid #ececec; padding-top: 2.4rem;
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.6rem; align-items: center;
+}
+.pdp-moment-img { border-radius: 10px; overflow: hidden; aspect-ratio: 1 / 1; background: var(--grey-light); }
+.pdp-moment-img img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.pdp-moment-kicker {
+  font-size: 0.7rem; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--grey); margin: 0 0 0.7rem;
+}
+.pdp-moment-title { font-family: var(--serif); font-weight: 400; font-size: 1.7rem; line-height: 1.2; margin: 0 0 1rem; }
+.pdp-moment-copy { font-size: 0.95rem; line-height: 1.7; color: var(--ink-2); margin: 0 0 1.3rem; }
+.pdp-moment-tags { display: flex; flex-wrap: wrap; align-items: center; gap: 0.45rem; }
+.pdp-moment-tags-label { font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--grey); margin-right: 0.3rem; }
+@media (min-width: 820px) {
+  .pdp-moment { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 3rem; margin-top: 4rem; padding-top: 3rem; }
+  .pdp-moment-text { padding-right: 1rem; }
+  .pdp-moment-title { font-size: 2rem; }
+}
+
 .pdp-reco { margin-top: 3.5rem; border-top: 1px solid #ececec; padding-top: 2.4rem; }
 .pdp-reco-head {
   text-align: center; font-size: 1.3rem; font-weight: 400; margin: 0 0 1.6rem;
