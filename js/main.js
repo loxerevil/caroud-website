@@ -1157,6 +1157,7 @@ function renderProduktseite(p) {
               <dl class="fakten">
                 ${fakten.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")}
               </dl>` : ""}
+            ${sicherheitHtml(p)}
           </div>
           ${geschwister.length ? `
             <p class="notes-label">${p.label} gibt es auch als</p>
@@ -1280,6 +1281,41 @@ function renderProduktseite(p) {
     addToCart(p.id, pdpQty, false, p.wahl ? gewaehlt.slice() : null);
     openCart();
   });
+}
+
+// Bereich "Sicherheit & Inhaltsstoffe" – Kennzeichnung nach CLP, Allergene und Sicherheitsdatenblatt
+const GHS_SYMBOL = {
+  GHS02: `<path fill="#000" d="M0 -30 C 8 -18, 20 -12, 20 4 C 20 18, 11 28, 0 30 C -11 28, -20 18, -20 4 C -20 -6, -14 -12, -10 -18 C -10 -8, -4 -6, -2 -12 C 0 -18, -4 -24, 0 -30 Z"/>`,
+  GHS07: `<path fill="#000" d="M-7 -30 H7 L4 12 H-4 Z"/><circle fill="#000" cx="0" cy="24" r="7"/>`,
+};
+const GHS_NAME = { GHS02: "Flamme (entzündbar)", GHS07: "Ausrufezeichen (reizend, sensibilisierend)" };
+function ghsIcon(code) {
+  return `<svg class="ghs" viewBox="-60 -60 120 120" role="img" aria-label="${GHS_NAME[code] || code}">
+    <rect x="-40" y="-40" width="80" height="80" transform="rotate(45)" fill="#fff" stroke="#e30613" stroke-width="8"/>
+    <g transform="scale(0.95)">${GHS_SYMBOL[code] || ""}</g></svg>`;
+}
+function sicherheitHtml(p) {
+  const art = SICHERHEIT_LINIE[p.linie];
+  if (!art || !p.scent) return "";
+  const s = SICHERHEIT[art];
+  const allergene = ALLERGENE[p.scent];
+  const sdb = SDB[p.scent] && SDB[p.scent][art];
+  return `
+    <details class="pdp-sicherheit">
+      <summary>Sicherheit &amp; Inhaltsstoffe${SICHERHEIT_VORLAEUFIG ? ` <span class="sich-badge">vorläufig</span>` : ""}</summary>
+      <div class="sich-body">
+        <p class="sich-label">Inhaltsstoffe</p>
+        <p>${s.inhalt}</p>
+        <p class="sich-label">Enthält (Duftstoff-Allergene)</p>
+        <p>${allergene || "Wird nach Erhalt des Sicherheitsdatenblatts ergänzt."}</p>
+        <p class="sich-label">Kennzeichnung</p>
+        <div class="sich-ghs">${s.piktogramme.map(ghsIcon).join("")}<strong>${s.signal}</strong></div>
+        <ul class="sich-liste">${s.h.map((x) => `<li>${x}</li>`).join("")}</ul>
+        <ul class="sich-liste sich-p">${s.p.map((x) => `<li>${x}</li>`).join("")}</ul>
+        <p class="sich-label">Sicherheitsdatenblatt</p>
+        <p>${sdb ? `<a href="${sdb}" target="_blank" rel="noopener">Sicherheitsdatenblatt (PDF) herunterladen</a>` : "Folgt in Kürze. Auf Anfrage senden wir es dir gern per E-Mail – <a href=\"kontakt.html\">Kontakt</a>."}</p>
+      </div>
+    </details>`;
 }
 
 // Leiste zur Duftauswahl bei Sets mit frei wählbaren Düften

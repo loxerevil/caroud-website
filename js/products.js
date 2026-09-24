@@ -206,6 +206,36 @@ const FOTO2_LINIEN = ["spray", "haenger"];
 // Linien mit drittem Foto (Studiobild vor Duftfarben-Hintergrund) – Dateiname <linie>-<duft>-3.webp
 const FOTO3_LINIEN = ["spray"];
 
+// ---- Sicherheit & Inhaltsstoffe (Bereich "Sicherheit & Inhaltsstoffe" auf der Produktseite) ----
+// VORLÄUFIG: Einstufung nach den Etikettentexten. Sobald die Sicherheitsdatenblätter (SDB) vom
+// Lieferanten da sind: Allergene je Duft in ALLERGENE eintragen, SDB-PDFs nach docs/sdb/ legen
+// und den Pfad in SDB eintragen, Einstufung in SICHERHEIT gegen das SDB prüfen und
+// SICHERHEIT_VORLAEUFIG auf false setzen.
+const SICHERHEIT_VORLAEUFIG = true;
+const SICHERHEIT = {
+  spray: {
+    inhalt: "Alcohol denat., Parfum (Duftöl 15 %), Aqua",
+    piktogramme: ["GHS02", "GHS07"], signal: "Gefahr",
+    h: ["H225 Flüssigkeit und Dampf leicht entzündbar.", "H319 Verursacht schwere Augenreizung.", "H317 Kann allergische Hautreaktionen verursachen."],
+    p: ["P102 Darf nicht in die Hände von Kindern gelangen.", "P210 Von Hitze, heißen Oberflächen, Funken, offenen Flammen und anderen Zündquellen fernhalten. Nicht rauchen.", "P233 Behälter dicht verschlossen halten.", "P305+P351+P338 Bei Kontakt mit den Augen: Einige Minuten lang behutsam mit Wasser spülen. Kontaktlinsen nach Möglichkeit entfernen. Weiter spülen.", "P501 Inhalt/Behälter der örtlichen Entsorgung zuführen."],
+  },
+  duftoel: {
+    inhalt: "Parfum (Duftöl 50 %), Dipropylene Glycol",
+    piktogramme: ["GHS07"], signal: "Achtung",
+    h: ["H317 Kann allergische Hautreaktionen verursachen."],
+    p: ["P102 Darf nicht in die Hände von Kindern gelangen.", "P262 Nicht in die Augen, auf die Haut oder auf die Kleidung gelangen lassen.", "P501 Inhalt/Behälter der örtlichen Entsorgung zuführen."],
+  },
+};
+// Welche Linie welche Einstufung nutzt
+const SICHERHEIT_LINIE = { spray: "spray", probe: "spray", glas: "duftoel", haenger: "duftoel" };
+// Allergene je Duft laut SDB, z. B. "Limonene, Linalool, Citral" – leer = noch nicht bekannt
+const ALLERGENE = {
+  "pacific-cruise": "", "erba-carbon": "", "fast-cherry": "", "driveination": "",
+  "naxnos-asphalt": "", "ombre-apex": "", "erba-tuned": "",
+};
+// Sicherheitsdatenblatt je Duft und Gemisch, z. B. { spray: "docs/sdb/pacific-cruise-spray.pdf", duftoel: "docs/sdb/pacific-cruise-duftoel.pdf" }
+const SDB = {};
+
 const SCENT_PRODUCTS = [];
 LINES.forEach((line) => {
   SCENTS.forEach((s) => {
