@@ -346,15 +346,15 @@ const OTHER_PRODUCTS = [
     notes: ["2 × 8 ml", "Düfte frei wählbar"],
     photo: "img/fotos/set-glas-2.webp?v=" + ASSET_V,
   },
-  // Probiersets – 15-ml-Sprühfläschchen zum Kennenlernen
+  // Probiersets – 30-ml-Sprühfläschchen zum Kennenlernen
   {
     id: "probierset-3",
     name: "Probierset – 3 Düfte",
     type: "probier", category: "Sets & Boxen", set: true,
     color: "#b9a06a", label: "3 Düfte",
     price: 16.90, priceOld: 21.90, bestseller: true,
-    desc: "Drei Düfte deiner Wahl als 15-ml-Sprays zum Kennenlernen – bevor du dich für die große Flasche entscheidest. Deine Wunsch-Düfte gibst du im Checkout an.",
-    notes: ["3 × 15 ml", "Düfte frei wählbar"],
+    desc: "Drei Düfte deiner Wahl als 30-ml-Sprays zum Kennenlernen – bevor du dich für die große Flasche entscheidest. Deine Wunsch-Düfte gibst du im Checkout an.",
+    notes: ["3 × 30 ml", "Düfte frei wählbar"],
   },
   {
     id: "probierset-7",
@@ -362,8 +362,8 @@ const OTHER_PRODUCTS = [
     type: "probier", category: "Sets & Boxen", set: true,
     color: "#b9a06a", label: "Alle 7",
     price: 29.90, priceOld: 39.90, bestseller: true,
-    desc: "Die komplette Caroud-Kollektion als 15-ml-Sprays: alle sieben Düfte in einer Box. Finde deinen Favoriten – oder verschenke die ganze Reihe.",
-    notes: ["7 × 15 ml", "Alle 7 Düfte", "Geschenk-Box"],
+    desc: "Die komplette Caroud-Kollektion als 30-ml-Sprays: alle sieben Düfte in einer Box. Finde deinen Favoriten – oder verschenke die ganze Reihe.",
+    notes: ["7 × 30 ml", "Alle 7 Düfte", "Geschenk-Box"],
   },
   // Mystery Box
   {
@@ -378,19 +378,19 @@ const OTHER_PRODUCTS = [
   },
 ];
 
-// ---- Einzelne 15-ml-Duftproben, je Duft eine ----
+// ---- Einzelne 30-ml-Duftproben, je Duft eine ----
 // Nur als Mitnahmeartikel im Warenkorb, deshalb hidden + upsellOnly.
 // Eigene Produkte statt einer Sammel-ID, damit die Duftauswahl im
 // Warenkorb echte Artikel trifft (wie bei Anhaenger und Glasanhaenger).
 const PROBE_PRODUCTS = SCENTS.map((s) => ({
   id: "probe-" + s.key,
-  name: s.name + " Duftprobe 15 ml",
+  name: s.name + " Duftprobe 30 ml",
   type: "probier", category: "Sets & Boxen",
   hidden: true, upsellOnly: true, einzel: true,
   color: s.color, label: s.name,
   price: 3.90, priceOld: null, bestseller: false,
-  desc: s.short + " Als 15-ml-Spray zum Ausprobieren – nur als Mitnahmeartikel im Warenkorb.",
-  notes: ["15 ml", s.name],
+  desc: s.short + " Als 30-ml-Spray zum Ausprobieren – nur als Mitnahmeartikel im Warenkorb.",
+  notes: ["30 ml", s.name],
   scent: s.key, familie: s.familie, linie: "probe", linieName: "Duftprobe",
 }));
 

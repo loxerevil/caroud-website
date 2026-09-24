@@ -148,7 +148,7 @@ function glasSVG(color, label, img) {
 
 
 function probierSVG(color, label, anzahl) {
-  // Drei 15-ml-Mini-Sprays nebeneinander – die Probier-Groesse
+  // Drei 30-ml-Mini-Sprays nebeneinander – die Probier-Groesse
   const mini = (x, tint) => `
     <g transform="translate(${x} 0)">
       <rect x="8" y="52" width="10" height="8" rx="2" fill="#1a1a1a"/>
@@ -478,7 +478,7 @@ const shippingFillEl = document.getElementById("shippingFill");
 // Gilt nur, solange mindestens ein regulaerer Artikel im Korb liegt.
 const UPSELL = [
   { id: "haenger-pacific-cruise", price: 2.49, name: "Duftanhänger", scentChoice: "haenger" },
-  { id: "probe-pacific-cruise",   price: 3.90, name: "Duftprobe 15 ml", scentChoice: "probe" },
+  { id: "probe-pacific-cruise",   price: 3.90, name: "Duftprobe 30 ml", scentChoice: "probe" },
   { id: "pflege-innenraum", price: 4.90, name: "Innenraum-Tuch" },
   { id: "glas-pacific-cruise",    price: 9.90, name: "Glasanhänger", scentChoice: "glas" },
   { id: "pflege-mikrofaser", price: 8.90, name: "Mikrofaser 3er-Set" },
