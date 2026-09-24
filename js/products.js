@@ -16,7 +16,7 @@
 // Bilder: die gedruckten Etiketten, gerendert aus den Druck-PDFs
 // (img/produkte/<typ>-<duft>.webp). Ohne img zeichnet main.js die Ersatzgrafik.
 // Version an Bild-URLs, damit Browser nach Etikett-Updates nicht alte Bilder aus dem Cache zeigen
-const ASSET_V = "52";
+const ASSET_V = "53";
 
 const CATEGORIES = [
   { name: "Duftsprays", type: "spray", color: "#111111", img: "img/produkte/spray-pacific-cruise.webp?v=" + ASSET_V },
@@ -116,7 +116,7 @@ const FOTO_LINIEN = ["spray", "haenger", "glas"];
 // Linien mit Produktvideo (stumm, Dauerschleife) als letztes Bild in der Galerie
 const VIDEO_LINIEN = ["haenger"];
 // Produktvideos, die es nur fuer einzelne Duefte gibt (img/videos/<linie>-<duft>.mp4 + .webp)
-const VIDEO_DUEFTE = { spray: ["driveination", "erba-carbon", "erba-tuned", "fast-cherry", "naxnos-asphalt"] };
+const VIDEO_DUEFTE = { spray: ["driveination", "erba-carbon", "erba-tuned", "fast-cherry", "naxnos-asphalt", "ombre-apex"] };
 // Bilder fuer die Kacheln "<Duft> gibt es auch als" (heller Studio-Stil, img/auchals/).
 // Spray, Glasanhaenger und Duftprobe sehen bei jedem Duft gleich aus -> ein Bild je Linie.
 // Fuer die Duftanhaenger je Duft ein eigenes Bild (img/auchals/haenger-<duft>.webp), sobald vorhanden.
