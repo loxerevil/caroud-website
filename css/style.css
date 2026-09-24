@@ -2296,3 +2296,13 @@ body.pdp-aktiv .site-header {
   .hero-segmente { flex: 1; grid-auto-columns: 1fr; gap: 0.4rem; }
   .hero-zaehler strong { font-size: 1.1rem; }
 }
+
+/* ---- Hero-Navigation (v107): ohne Kasten, gleichmäßig über die Inhaltsbreite verteilt ---- */
+.hero-nav { width: 100%; max-width: 1180px; padding: 0 1.6rem; gap: 1.8rem; justify-content: space-between;
+  background: none; border: 0; border-radius: 0; -webkit-backdrop-filter: none; backdrop-filter: none; }
+.hero-segmente { flex: 1; grid-auto-columns: 1fr; gap: 1.6rem; }
+@media (max-width: 1100px) { .hero-segmente { grid-auto-columns: 1fr; gap: 1.1rem; } }
+@media (max-width: 860px) {
+  .hero-nav { left: 50%; right: auto; transform: translateX(-50%); padding: 0 1.2rem; gap: 0.9rem; }
+  .hero-segmente { gap: 0.4rem; }
+}
