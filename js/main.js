@@ -1168,8 +1168,40 @@ function renderProduktseite(p) {
           : `<img class="pdp-photo" src="${art === "foto2" ? p.photo2 : art === "foto3" ? p.photo3 : p.photo}" alt="${p.name}">`;
       const v = stage.querySelector("video");
       if (v) { v.muted = true; v.play().catch(() => {}); }
+      stage.querySelectorAll(".pdp-arrow").forEach((x) => x.remove());
+      pfeile.forEach((x) => stage.appendChild(x));
     });
   });
+  const pfeile = [];
+  // Wischen (Handy): nach links = nächstes Bild, nach rechts = vorheriges.
+  // Pointer-Events auf der Bildbühne, dazu Pfeile als sichtbare Alternative.
+  if (stage) {
+    const thumbs = () => [...produktPage.querySelectorAll("[data-thumb]")];
+    const blaettern = (richtung) => {
+      const list = thumbs(); if (list.length < 2) return;
+      const i = list.findIndex((t) => t.classList.contains("active"));
+      list[(i + richtung + list.length) % list.length].click();
+    };
+    let sx = null, sy = null, lx = null, ly = null;
+    stage.addEventListener("pointerdown", (e) => { if (e.pointerType === "mouse") return; sx = lx = e.clientX; sy = ly = e.clientY; }, { passive: true });
+    stage.addEventListener("pointermove", (e) => { if (sx !== null) { lx = e.clientX; ly = e.clientY; } }, { passive: true });
+    const ende = () => {
+      if (sx === null) return;
+      const dx = lx - sx, dy = ly - sy; sx = sy = lx = ly = null;
+      if (Math.abs(dx) >= 30 && Math.abs(dx) > Math.abs(dy)) blaettern(dx < 0 ? 1 : -1);
+    };
+    stage.addEventListener("pointerup", ende, { passive: true });
+    stage.addEventListener("pointercancel", ende, { passive: true });
+    if (thumbs().length > 1) {
+      const mk = (cls, r, label) => {
+        const b = document.createElement("button"); b.type = "button"; b.className = "pdp-arrow " + cls;
+        b.setAttribute("aria-label", label); b.innerHTML = r < 0 ? "&#8249;" : "&#8250;";
+        b.addEventListener("click", (e) => { e.stopPropagation(); blaettern(r); }); return b;
+      };
+      pfeile.push(mk("pdp-arrow-l", -1, "Vorheriges Bild"), mk("pdp-arrow-r", 1, "Nächstes Bild"));
+      pfeile.forEach((x) => stage.appendChild(x));
+    }
+  }
   produktPage.querySelectorAll("[data-reco]").forEach((b) => {
     b.addEventListener("click", () => { location.hash = "p/" + b.dataset.reco; });
   });
