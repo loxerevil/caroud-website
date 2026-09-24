@@ -321,6 +321,12 @@ function zuDenProdukten(filter) {
 }
 
 // ---------- Black Friday / Black Week ----------
+// Black-Friday-Rabatt in Prozent (abgerundet, damit nie mehr versprochen wird als drin ist)
+function bfProzent(p) { return Math.floor(((p.bfNormal - p.price) / p.bfNormal) * 100); }
+function bfMaxProzent() {
+  return Math.max(0, ...BLACK_FRIDAY.deals.map((d) => { const p = byId(d.id); return p && p.bfDeal ? bfProzent(p) : 0; }));
+}
+
 (function blackFriday() {
   const sek = document.getElementById("blackfriday");
   if (!sek || !BF_AKTIV) return;
@@ -328,7 +334,7 @@ function zuDenProdukten(filter) {
   document.body.classList.add("bf-aktiv");
   // Ankündigungsleiste
   const leiste = document.querySelector(".announce-msg");
-  if (leiste) leiste.innerHTML = "Black Week: bis zu 7&nbsp;€ Rabatt auf Düfte &amp; Sets";
+  if (leiste) leiste.innerHTML = `Black Week: bis zu ${bfMaxProzent()}&nbsp;% Rabatt auf Düfte &amp; Sets`;
   const grid = sek.querySelector("[data-bf-grid]");
   const deals = BLACK_FRIDAY.deals.map((d) => byId(d.id)).filter((p) => p && p.bfDeal);
   grid.innerHTML = deals.map((p) => {
@@ -337,7 +343,7 @@ function zuDenProdukten(filter) {
       <article class="bf-karte">
         <a class="bf-bild" href="#p/${p.id}">
           ${p.photo ? `<img src="${p.photo}" alt="${p.name}" loading="lazy">` : artFor(p)}
-          <span class="bf-tag">−${euro(spar).replace("€", "").replace(",00", "").trim()} €</span>
+          <span class="bf-tag">−${bfProzent(p)}&nbsp;%</span>
         </a>
         <div class="bf-info">
           <a class="bf-name" href="#p/${p.id}">${p.name}</a>
@@ -444,13 +450,12 @@ function heroSlider() {
   // Black-Week-Folie (nur im Aktionszeitraum), direkt nach der Startfolie
   if (typeof BF_AKTIV !== "undefined" && BF_AKTIV) {
     const bfSprays = ["spray-pacific-cruise", "spray-fast-cherry", "spray-ombre-apex"].map(byId).filter((p) => p && p.bfDeal);
-    const maxSpar = Math.max(...BLACK_FRIDAY.deals.map((d) => { const p = byId(d.id); return p && p.bfDeal ? p.bfNormal - p.price : 0; }));
     const bf = document.createElement("div");
     bf.className = "hero-inner hero-slide hero-slide-bf";
     bf.innerHTML = `
       <div class="hero-text">
         <p class="hero-kicker">Black Week · nur bis 30. November</p>
-        <h2 class="hero-title">Black Friday.<br>Bis zu ${Math.round(maxSpar)}&nbsp;€ sparen.</h2>
+        <h2 class="hero-title">Black Friday.<br>Bis zu ${bfMaxProzent()}&nbsp;% sparen.</h2>
         <p class="hero-sub">Drei Düfte, zwei Sets, die Mystery Box und mehr – acht Angebote, eine Woche.
           Ab 40&nbsp;€ versandkostenfrei.</p>
         <div class="hero-cta">
@@ -463,7 +468,7 @@ function heroSlider() {
         ${bfSprays.map((p, i) => `
           <a class="hero-bf-karte k${i}" href="#p/${p.id}" tabindex="-1">
             <img src="${p.photo}" alt="" loading="lazy">
-            <span class="hero-bf-tag">−${Math.round(p.bfNormal - p.price)} €</span>
+            <span class="hero-bf-tag">−${bfProzent(p)}&nbsp;%</span>
             <span class="hero-bf-name">${p.label}</span>
           </a>`).join("")}
       </div>`;
@@ -1564,6 +1569,7 @@ function renderProduktseite(p) {
         const idx = gewaehlt.indexOf(k);
         if (idx >= 0) gewaehlt.splice(idx, 1);
         else if (gewaehlt.length < p.wahl.anzahl) gewaehlt.push(k);
+        else if (p.wahl.anzahl === 1) gewaehlt.splice(0, 1, k);
         else { showToast(`Du hast schon ${p.wahl.anzahl} Düfte gewählt – tippe einen an, um ihn zu tauschen.`); return; }
         // Die gewählte Probe gross zeigen
         const thumb = produktPage.querySelector(`[data-thumb][data-scent="${k}"]`);
@@ -1626,7 +1632,7 @@ function duftwahlHtml(p) {
   return `
     <div class="duftwahl" data-wahl>
       <div class="duftwahl-kopf">
-        <p class="duftwahl-titel">Deine ${p.wahl.anzahl} Düfte</p>
+        <p class="duftwahl-titel">${p.wahl.anzahl === 1 ? "Dein Duft" : `Deine ${p.wahl.anzahl} Düfte`}</p>
         <span class="duftwahl-count" data-wahl-count></span>
       </div>
       <div class="duftwahl-row">

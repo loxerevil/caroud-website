@@ -327,6 +327,28 @@ const OTHER_PRODUCTS = [
     notes: ["2× Spray", "3× Anhänger"],
     photo: "img/fotos/bundle-signature.webp?v=" + ASSET_V,
   },
+  // Pflege-Boxen: Duft + Waschzubehör. Duft wird auf der Produktseite gewählt,
+  // die Anhänger kommen im selben Duft wie das Spray.
+  {
+    id: "box-pit-stop",
+    name: "Pit Stop Box",
+    type: "bundle", category: "Sets & Boxen",
+    color: "#111111", label: "Pit Stop",
+    price: 42.90, priceOld: 53.50, bestseller: false, // 26,90 + 2 × 3,90 + 11,90 + 6,90
+    desc: "Kurz rein, sauber raus: 1 Duftspray und 2 Duftanhänger im Duft deiner Wahl, dazu das Mikrofasertuch-Set und ein Innenraum-Tuch. Alles, damit dein Auto sauber aussieht und gut riecht – in einer Box.",
+    notes: ["1× Duftspray 150 ml", "2× Duftanhänger", "Mikrofasertücher 3er-Set", "Innenraum-Tuch", "Versandkostenfrei"],
+    wahl: { anzahl: 1, linie: "spray" },
+  },
+  {
+    id: "box-full-detail",
+    name: "Full Detail Box",
+    type: "bundle", category: "Sets & Boxen",
+    color: "#a8323e", label: "Full Detail",
+    price: 79.90, priceOld: 107.20, bestseller: false, // 2 × 26,90 + 2 × 3,90 + 14,90 + 11,90 + 11,90 + 6,90
+    desc: "Die komplette Aufbereitung für zu Hause: 2 Duftsprays in deinen Wunsch-Düften, je Duft ein passender Duftanhänger, dazu Trockentuch, Wasserabzieher, Mikrofasertuch-Set und Innenraum-Tuch. Von der Wäsche bis zum letzten Sprühstoß.",
+    notes: ["2× Duftspray 150 ml", "2× Duftanhänger", "Trockentuch 60 × 90", "Wasserabzieher", "Mikrofasertücher 3er-Set", "Innenraum-Tuch", "Versandkostenfrei"],
+    wahl: { anzahl: 2, linie: "spray" },
+  },
   // Sets – gleiche Produkte, bessere Staffelpreise. Düfte frei wählbar (Angabe im Checkout).
   {
     id: "set-spray-2",
