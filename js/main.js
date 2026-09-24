@@ -255,7 +255,7 @@ function rgba(hex, a) {
 const heroArt = document.getElementById("heroArt");
 if (heroArt) {
   heroArt.innerHTML =
-    `<div class="bottle-wrap"><img class="hero-bottle" src="img/hero-flasche.webp?v=3" alt="Caroud Duftspray Pacific Cruise" width="440" height="1656" fetchpriority="high"></div>`;
+    `<div class="bottle-wrap"><img class="hero-bottle" src="img/hero-flasche.webp?v=4" alt="Caroud Duftspray Pacific Cruise" width="503" height="1680" fetchpriority="high"></div>`;
 }
 
 // ---------- Die sieben Düfte ----------
