@@ -449,6 +449,7 @@ function renderProducts() {
       <div class="product-prices">${preisHtml(p)}</div>`;
     card.querySelector(".quick-add").addEventListener("click", (e) => {
       e.stopPropagation();
+      if (p.wahl) { location.hash = "p/" + p.id; return; }
       addToCart(p.id, 1);
     });
     card.addEventListener("click", () => { location.hash = "p/" + p.id; });
@@ -535,11 +536,12 @@ function cartSubtotal() {
   return cart.reduce((s, i) => s + linePrice(i) * i.qty, 0);
 }
 
-function addToCart(id, qty, up) {
+function addToCart(id, qty, up, wahl) {
   up = !!up;
-  const entry = cart.find((i) => i.id === id && !!i.up === up);
+  const wKey = (wahl || []).join(",");
+  const entry = cart.find((i) => i.id === id && !!i.up === up && (i.wahl || []).join(",") === wKey);
   if (entry) entry.qty += qty;
-  else cart.push({ id, qty, up });
+  else cart.push(wahl && wahl.length ? { id, qty, up, wahl } : { id, qty, up });
   normalizeCart();
   saveCart();
   renderCart();
@@ -657,6 +659,7 @@ function renderCart() {
       <div class="cart-item-art">${thumbFor(p)}</div>
       <div class="cart-item-info">
         <div class="cart-item-name">${p.name}${item.up ? ` <span class="upsell-tag">Mitnahme</span>` : ""}</div>
+        ${item.wahl && item.wahl.length ? `<div class="cart-item-wahl">${item.wahl.map((k) => SCENTS.find((s) => s.key === k)?.name || k).join(" · ")}</div>` : ""}
         <div class="cart-item-price">${preis < p.price ? `<span class="price-old">${euro(p.price)}</span> ` : ""}${euro(preis)}</div>
         <div class="qty-row">
           <button class="qty-btn" data-minus>−</button>
@@ -761,6 +764,7 @@ function openProductModal(id) {
     document.getElementById("modalQtyVal").textContent = modalQty;
   });
   modalBody.querySelector("#modalAdd").addEventListener("click", () => {
+    if (p.wahl) { closeModal(); location.hash = "p/" + p.id; return; }
     addToCart(p.id, modalQty);
     closeModal();
     openCart();
@@ -1112,6 +1116,7 @@ function renderProduktseite(p) {
             <button type="button" class="pdp-thumb active" data-thumb="foto" aria-label="Produktfoto"><img src="${p.photo}" alt=""></button>
             ${p.photo2 ? `<button type="button" class="pdp-thumb" data-thumb="foto2" aria-label="Produktfoto 2"><img src="${p.photo2}" alt=""></button>` : ""}
             ${p.photo3 ? `<button type="button" class="pdp-thumb" data-thumb="foto3" aria-label="Produktfoto 3"><img src="${p.photo3}" alt=""></button>` : ""}
+            ${(p.galerie || []).map((g, i) => `<button type="button" class="pdp-thumb" data-thumb="g${i}" data-src="${g.src}"${g.scent ? ` data-scent="${g.scent}"` : ""} aria-label="${g.label || "Foto"}"><img src="${g.src}" alt="" loading="lazy"></button>`).join("")}
             ${p.video ? `<button type="button" class="pdp-thumb pdp-thumb-video" data-thumb="video" aria-label="Produktvideo"><img src="${videoPoster(p)}" alt=""><span class="play-badge" aria-hidden="true"></span></button>` : ""}
           </div>
         </div>` : `<div class="pdp-art" style="${tint}">${artFor(p)}</div>`}
@@ -1127,6 +1132,7 @@ function renderProduktseite(p) {
             <li>Auf Lager</li>
           </ul>
           ${p.category === "Duftsprays" ? `<p class="gift-note">Inklusive Gratis-Duftanhänger</p>` : ""}
+          ${p.wahl ? duftwahlHtml(p) : ""}
           ${p.type === "haenger" && !p.set ? `<p class="pdp-hinweis">Günstiger im Set: das <a href="#p/set-haenger-3">3er-Set</a> oder das <a href="#p/set-haenger-5">5er-Set</a>.</p>` : ""}
           <div class="modal-actions">
             <div class="qty-row">
@@ -1179,7 +1185,7 @@ function renderProduktseite(p) {
         : art === "video"
           // Stumm, Dauerschleife, ohne Bedienleiste – wie ein GIF, nur viel kleiner
           ? `<video class="pdp-photo" src="${p.video}" poster="${videoPoster(p)}" autoplay muted loop playsinline preload="auto" aria-label="${p.name} – Produktvideo"></video>`
-          : `<img class="pdp-photo" src="${art === "foto2" ? p.photo2 : art === "foto3" ? p.photo3 : p.photo}" alt="${p.name}">`;
+          : `<img class="pdp-photo" src="${b.dataset.src || (art === "foto2" ? p.photo2 : art === "foto3" ? p.photo3 : p.photo)}" alt="${p.name}">`;
       const v = stage.querySelector("video");
       if (v) { v.muted = true; v.play().catch(() => {}); }
       stage.querySelectorAll(".pdp-arrow").forEach((x) => x.remove());
@@ -1230,10 +1236,71 @@ function renderProduktseite(p) {
     pdpQty++;
     document.getElementById("pdpQtyVal").textContent = pdpQty;
   });
-  produktPage.querySelector("#pdpAdd").addEventListener("click", () => {
-    addToCart(p.id, pdpQty);
+  // Duftwahl: Düfte antippen (bis zur Anzahl des Sets), gewählte Probe erscheint groß
+  const gewaehlt = [];
+  const wahlBox = produktPage.querySelector("[data-wahl]");
+  const addBtn = produktPage.querySelector("#pdpAdd");
+  const wahlUpdate = () => {
+    if (!wahlBox) return;
+    const n = p.wahl.anzahl;
+    wahlBox.querySelectorAll("[data-wahl-duft]").forEach((b) => {
+      const idx = gewaehlt.indexOf(b.dataset.wahlDuft);
+      b.classList.toggle("aktiv", idx >= 0);
+      b.setAttribute("aria-pressed", idx >= 0 ? "true" : "false");
+      b.querySelector(".duftwahl-nr").textContent = idx >= 0 ? idx + 1 : "";
+    });
+    wahlBox.querySelector("[data-wahl-count]").textContent = `${gewaehlt.length} von ${n} gewählt`;
+    const liste = wahlBox.querySelector("[data-wahl-liste]");
+    liste.textContent = gewaehlt.length ? gewaehlt.map((k) => SCENTS.find((s) => s.key === k).name).join(" · ") : "Tippe auf deine Wunsch-Düfte.";
+    addBtn.classList.toggle("wartet", gewaehlt.length < n);
+    addBtn.textContent = gewaehlt.length < n ? `Noch ${n - gewaehlt.length} ${n - gewaehlt.length === 1 ? "Duft" : "Düfte"} wählen` : "In den Warenkorb legen";
+  };
+  if (wahlBox) {
+    wahlBox.querySelectorAll("[data-wahl-duft]").forEach((b) => {
+      b.addEventListener("click", () => {
+        const k = b.dataset.wahlDuft;
+        const idx = gewaehlt.indexOf(k);
+        if (idx >= 0) gewaehlt.splice(idx, 1);
+        else if (gewaehlt.length < p.wahl.anzahl) gewaehlt.push(k);
+        else { showToast(`Du hast schon ${p.wahl.anzahl} Düfte gewählt – tippe einen an, um ihn zu tauschen.`); return; }
+        // Die gewählte Probe gross zeigen
+        const thumb = produktPage.querySelector(`[data-thumb][data-scent="${k}"]`);
+        if (thumb && idx < 0) thumb.click();
+        wahlUpdate();
+      });
+    });
+    wahlUpdate();
+  }
+  addBtn.addEventListener("click", () => {
+    if (p.wahl && gewaehlt.length < p.wahl.anzahl) {
+      showToast(`Bitte wähle noch ${p.wahl.anzahl - gewaehlt.length} ${p.wahl.anzahl - gewaehlt.length === 1 ? "Duft" : "Düfte"}.`);
+      wahlBox?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+    addToCart(p.id, pdpQty, false, p.wahl ? gewaehlt.slice() : null);
     openCart();
   });
+}
+
+// Leiste zur Duftauswahl bei Sets mit frei wählbaren Düften
+function duftwahlHtml(p) {
+  const bild = (s) => p.wahl.linie === "probe" ? "img/fotos/probe-" + s.key + ".webp?v=" + ASSET_V
+    : byId(p.wahl.linie + "-" + s.key)?.photo || "";
+  return `
+    <div class="duftwahl" data-wahl>
+      <div class="duftwahl-kopf">
+        <p class="duftwahl-titel">Deine ${p.wahl.anzahl} Düfte</p>
+        <span class="duftwahl-count" data-wahl-count></span>
+      </div>
+      <div class="duftwahl-row">
+        ${SCENTS.map((s) => `
+          <button type="button" class="duftwahl-item" data-wahl-duft="${s.key}" aria-pressed="false">
+            <span class="duftwahl-bild"><img src="${bild(s)}" alt="" loading="lazy"><span class="duftwahl-nr"></span></span>
+            <span class="duftwahl-name">${s.name}</span>
+          </button>`).join("")}
+      </div>
+      <p class="duftwahl-liste" data-wahl-liste></p>
+    </div>`;
 }
 
 const shopSektionen = Array.from(document.querySelectorAll("body > section")).filter((el) => el.id !== "produktPage");

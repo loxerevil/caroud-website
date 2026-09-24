@@ -355,9 +355,13 @@ const OTHER_PRODUCTS = [
     type: "probier", category: "Sets & Boxen", set: true,
     color: "#b9a06a", label: "3 Düfte",
     price: 16.90, priceOld: 17.70, bestseller: true,
-    desc: "Drei Düfte deiner Wahl als 30-ml-Sprays zum Kennenlernen – bevor du dich für die große Flasche entscheidest. Deine Wunsch-Düfte gibst du im Checkout an.",
+    desc: "Drei Düfte deiner Wahl als 30-ml-Sprays zum Kennenlernen – bevor du dich für die große Flasche entscheidest. Wähle deine drei Düfte direkt hier aus.",
     notes: ["3 × 30 ml", "Düfte frei wählbar"],
     photo: "img/fotos/probierset-3.webp?v=" + ASSET_V,
+    // Weitere Galeriebilder: alle sieben Proben einzeln
+    galerie: SCENTS.map((s) => ({ src: "img/fotos/probe-" + s.key + ".webp?v=" + ASSET_V, scent: s.key, label: s.name })),
+    // Duftauswahl auf der Produktseite: so viele Düfte, aus dieser Linie
+    wahl: { anzahl: 3, linie: "probe" },
   },
   {
     id: "probierset-7",

@@ -2049,3 +2049,24 @@ body.pdp-aktiv .site-header {
 .cart-foot .cart-line { font-size: 0.85rem; color: var(--grey); margin-top: 0.35rem; }
 .cart-foot .cart-total { margin-top: 0.5rem; padding-top: 0.6rem; border-top: 1px solid var(--line); }
 .pdp-tax a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+
+/* Duftwahl bei Sets mit frei wählbaren Düften */
+.duftwahl { margin: 0.4rem 0 1.4rem; padding: 1rem 1rem 0.8rem; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
+.duftwahl-kopf { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; margin-bottom: 0.8rem; }
+.duftwahl-titel { margin: 0; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink); }
+.duftwahl-count { font-size: 0.78rem; color: var(--grey); }
+.duftwahl-row { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0.45rem; }
+.duftwahl-item { background: none; border: 0; padding: 0; cursor: pointer; font-family: inherit; display: flex; flex-direction: column; align-items: center; gap: 0.35rem; }
+.duftwahl-bild { position: relative; display: block; width: 100%; aspect-ratio: 1 / 1; border-radius: 8px; overflow: hidden; outline: 2px solid transparent; outline-offset: 2px; transition: outline-color 0.15s ease, opacity 0.15s ease; opacity: 0.72; }
+.duftwahl-bild img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.duftwahl-item:hover .duftwahl-bild { opacity: 1; }
+.duftwahl-item.aktiv .duftwahl-bild { outline-color: var(--ink); opacity: 1; }
+.duftwahl-nr { position: absolute; top: 4px; right: 4px; min-width: 18px; height: 18px; border-radius: 9px; background: var(--ink); color: #fff; font-size: 0.66rem; font-weight: 600; line-height: 18px; text-align: center; display: none; }
+.duftwahl-item.aktiv .duftwahl-nr { display: block; }
+.duftwahl-name { font-size: 0.64rem; line-height: 1.2; text-align: center; color: var(--ink-2); letter-spacing: 0.02em; }
+.duftwahl-liste { margin: 0.8rem 0 0; font-size: 0.82rem; color: var(--grey); min-height: 1.2em; }
+#pdpAdd.wartet { background: #8b8d92; border-color: #8b8d92; }
+.cart-item-wahl { font-size: 0.72rem; color: var(--grey); margin: 0.1rem 0 0.2rem; line-height: 1.35; }
+@media (max-width: 560px) {
+  .duftwahl-row { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
