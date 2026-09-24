@@ -422,7 +422,7 @@ function heroSlider() {
   erste.parentNode.insertBefore(wrap, erste);
   wrap.appendChild(erste);
   erste.classList.add("hero-slide");
-  const folien = [{ el: erste, name: "Caroud" }];
+  const folien = [{ el: erste, name: "Duftsprays" }];
 
   const baue = (f) => {
     const el = document.createElement("div");
