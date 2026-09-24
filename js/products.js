@@ -390,6 +390,8 @@ const PROBE_PRODUCTS = SCENTS.map((s) => ({
   type: "probier", category: "Sets & Boxen",
   hidden: true, upsellOnly: true, einzel: true,
   color: s.color, label: s.name,
+  // Produktfoto der 30-ml-Probe (auch Kachel "gibt es auch als" und Warenkorb)
+  photo: "img/fotos/probe-" + s.key + ".webp?v=" + ASSET_V,
   price: 3.90, priceOld: null, bestseller: false,
   desc: s.short + " Als 30-ml-Spray zum Ausprobieren – nur als Mitnahmeartikel im Warenkorb.",
   notes: ["30 ml", s.name],

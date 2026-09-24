@@ -209,6 +209,8 @@ function crossMedia(g) {
   if (g.linie === "haenger") {
     if (AUCH_ALS_HAENGER.includes(g.scent)) src = "img/auchals/haenger-" + g.scent + ".webp?v=" + ASSET_V;
     else if (g.photo) src = g.photo;
+  } else if (g.linie === "probe" && g.photo) {
+    src = g.photo;
   } else if (AUCH_ALS_BILDER[g.linie]) {
     src = AUCH_ALS_BILDER[g.linie] + "?v=" + ASSET_V;
   }
