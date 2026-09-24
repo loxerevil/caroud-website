@@ -30,7 +30,7 @@
   <!-- Überschriftenschrift vorladen, damit der Hero-Titel nicht erst in Georgia aufblitzt -->
   <link rel="preload" href="fonts/playfair-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/inter-400.woff" as="font" type="font/woff" crossorigin>
-  <link rel="stylesheet" href="css/style.css?v=71">
+  <link rel="stylesheet" href="css/style.css?v=73">
 
   <!-- Strukturierte Daten für Google. Produkt-Markup fehlt bewusst,
        solange keine echten Preise hinterlegt sind. -->
@@ -348,6 +348,34 @@
     </div>
   </section>
 
+  <!-- Einblick in die Boxen: Mystery Box gross, darunter drei weitere Boxen (Preise kommen aus products.js) -->
+  <section class="boxen-teaser reveal" id="boxen">
+    <div class="boxen-inner">
+      <div class="boxen-text">
+        <p class="section-kicker">Sets &amp; Boxen</p>
+        <h2 class="boxen-title">Die Mystery Box.</h2>
+        <p class="boxen-copy">Wir packen, du wirst überrascht. In jeder Box steckt ein Duftspray, ein Glasanhänger und drei
+          Duftanhänger – welche Düfte, verraten wir erst, wenn du sie öffnest. Der perfekte Einstieg in die Kollektion
+          und ein Geschenk, das garantiert niemand schon hat.</p>
+        <ul class="boxen-fakten">
+          <li><strong>50 €+</strong><span>Warenwert</span></li>
+          <li><strong>5 Teile</strong><span>Spray, Glas &amp; Anhänger</span></li>
+          <li><strong>?</strong><span>Überraschungs-Düfte</span></li>
+        </ul>
+        <div class="boxen-preis" data-box-preis="mystery-box"></div>
+        <div class="boxen-cta">
+          <a class="btn btn-light" href="#p/mystery-box">Mystery Box ansehen</a>
+          <button class="btn btn-outline" type="button" data-boxen-alle>Alle Boxen &amp; Sets</button>
+        </div>
+      </div>
+      <a class="boxen-bild" href="#p/mystery-box" aria-label="Mystery Box ansehen">
+        <img src="img/fotos/mystery-box.webp?v=54" alt="Caroud Mystery Box, halb geöffnet" loading="lazy" width="1024" height="1024">
+        <span class="boxen-badge">Überraschung</span>
+      </a>
+    </div>
+    <div class="boxen-mehr" data-boxen-mehr></div>
+  </section>
+
   <!-- Vertrauen: direkt unter den Produkten, wo die Kaufentscheidung fällt -->
   <section class="section usp-row reveal">
     <div class="usp">
@@ -513,6 +541,6 @@
   <div class="toast" id="toast" hidden></div>
 
   <script src="js/products.js?v=89"></script>
-  <script src="js/main.js?v=74"></script>
+  <script src="js/main.js?v=76"></script>
 </body>
 </html>

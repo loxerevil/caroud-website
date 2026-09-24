@@ -320,6 +320,27 @@ function zuDenProdukten(filter) {
   gleiteZu(ziel, 900);
 }
 
+// ---------- Einblick in die Boxen (Startseite) ----------
+(function boxenTeaser() {
+  const sek = document.getElementById("boxen");
+  if (!sek) return;
+  sek.querySelectorAll("[data-box-preis]").forEach((el) => {
+    const p = byId(el.dataset.boxPreis);
+    if (p) el.innerHTML = preisHtml(p);
+  });
+  sek.querySelector("[data-boxen-alle]")?.addEventListener("click", () => zuDenProdukten("Sets & Boxen"));
+  const mehr = sek.querySelector("[data-boxen-mehr]");
+  const ids = ["probierset-3", "bundle-starter", "bundle-signature"];
+  mehr.innerHTML = ids.map(byId).filter(Boolean).map((p) => `
+    <a class="boxen-karte" href="#p/${p.id}">
+      <span class="boxen-karte-bild">${p.photo ? `<img src="${p.photo}" alt="" loading="lazy">` : artFor(p)}</span>
+      <span class="boxen-karte-text">
+        <span class="boxen-karte-name">${p.name}</span>
+        <span class="boxen-karte-preis">${preisHtml(p)}</span>
+      </span>
+    </a>`).join("");
+})();
+
 // ---------- Formen-Vergleich: Tabs am Handy ----------
 
 const vtabs = document.querySelectorAll(".vtab");
@@ -1177,17 +1198,38 @@ function renderProduktseite(p) {
   const stage = produktPage.querySelector("[data-stage]");
   produktPage.querySelectorAll("[data-thumb]").forEach((b) => {
     b.addEventListener("click", () => {
-      produktPage.querySelectorAll("[data-thumb]").forEach((x) => x.classList.toggle("active", x === b));
+      const alleThumbs = [...produktPage.querySelectorAll("[data-thumb]")];
+      const vorher = alleThumbs.findIndex((x) => x.classList.contains("active"));
+      const nachher = alleThumbs.indexOf(b);
+      if (vorher === nachher) return;
+      const richtung = nachher > vorher ? 1 : -1;
+      alleThumbs.forEach((x) => x.classList.toggle("active", x === b));
       stage.classList.toggle("zeigt-art", b.dataset.thumb === "art");
       stage.style.cssText = b.dataset.thumb === "art" ? b.getAttribute("style") || "" : "";
       const art = b.dataset.thumb;
-      stage.innerHTML = art === "art"
+      const alt = [...stage.children].filter((x) => !x.classList.contains("pdp-arrow"));
+      const neu = document.createElement("div");
+      neu.className = "pdp-slide";
+      neu.innerHTML = art === "art"
         ? artFor(p)
         : art === "video"
           // Stumm, Dauerschleife, ohne Bedienleiste – wie ein GIF, nur viel kleiner
           ? `<video class="pdp-photo" src="${p.video}" poster="${videoPoster(p)}" autoplay muted loop playsinline preload="auto" aria-label="${p.name} – Produktvideo"></video>`
           : `<img class="pdp-photo" src="${b.dataset.src || (art === "foto2" ? p.photo2 : art === "foto3" ? p.photo3 : p.photo)}" alt="${p.name}">`;
-      const v = stage.querySelector("video");
+      stage.appendChild(neu);
+      // Sanfter Wechsel: altes Bild gleitet leicht weg und blendet aus, neues gleitet aus der Richtung herein
+      const ruhig = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      alt.forEach((el) => {
+        el.classList.add("pdp-alt");
+        if (ruhig) { el.remove(); return; }
+        el.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: `translateX(${-richtung * 6}%)` }],
+          { duration: 420, easing: "ease-in-out", fill: "forwards" }).onfinish = () => el.remove();
+      });
+      if (!ruhig) {
+        neu.animate([{ opacity: 0, transform: `translateX(${richtung * 10}%)` }, { opacity: 1, transform: "none" }],
+          { duration: 480, easing: "cubic-bezier(0.22, 0.7, 0.3, 1)" });
+      }
+      const v = neu.querySelector("video");
       if (v) { v.muted = true; v.play().catch(() => {}); }
       stage.querySelectorAll(".pdp-arrow").forEach((x) => x.remove());
       pfeile.forEach((x) => stage.appendChild(x));
@@ -1236,6 +1278,27 @@ function renderProduktseite(p) {
   produktPage.querySelector("[data-pplus]").addEventListener("click", () => {
     pdpQty++;
     document.getElementById("pdpQtyVal").textContent = pdpQty;
+  });
+  // "Sicherheit & Inhaltsstoffe" weich auf- und zuklappen statt springen
+  produktPage.querySelectorAll(".pdp-sicherheit").forEach((d) => {
+    const sum = d.querySelector("summary");
+    const body = d.querySelector(".sich-body");
+    sum.addEventListener("click", (e) => {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      e.preventDefault();
+      if (d.dataset.laeuft) return;
+      d.dataset.laeuft = "1";
+      if (!d.open) {
+        d.open = true;
+        const h = body.scrollHeight;
+        body.animate([{ height: "0px", opacity: 0 }, { height: h + "px", opacity: 1 }],
+          { duration: 380, easing: "cubic-bezier(0.22, 0.7, 0.3, 1)" }).onfinish = () => { delete d.dataset.laeuft; };
+      } else {
+        const h = body.scrollHeight;
+        body.animate([{ height: h + "px", opacity: 1 }, { height: "0px", opacity: 0 }],
+          { duration: 300, easing: "ease-in" }).onfinish = () => { d.open = false; delete d.dataset.laeuft; };
+      }
+    });
   });
   // Duftwahl: Düfte antippen (bis zur Anzahl des Sets), gewählte Probe erscheint groß
   const gewaehlt = [];
