@@ -116,7 +116,7 @@ const FOTO_LINIEN = ["spray", "haenger", "glas"];
 // Linien mit Produktvideo (stumm, Dauerschleife) als letztes Bild in der Galerie
 const VIDEO_LINIEN = ["haenger"];
 // Produktvideos, die es nur fuer einzelne Duefte gibt (img/videos/<linie>-<duft>.mp4 + .webp)
-const VIDEO_DUEFTE = { spray: ["driveination", "erba-carbon", "erba-tuned"] };
+const VIDEO_DUEFTE = { spray: ["driveination", "erba-carbon", "erba-tuned", "fast-cherry"] };
 // Bilder fuer die Kacheln "<Duft> gibt es auch als" (heller Studio-Stil, img/auchals/).
 // Spray, Glasanhaenger und Duftprobe sehen bei jedem Duft gleich aus -> ein Bild je Linie.
 // Fuer die Duftanhaenger je Duft ein eigenes Bild (img/auchals/haenger-<duft>.webp), sobald vorhanden.
