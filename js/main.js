@@ -475,12 +475,11 @@ const shippingTextEl = document.getElementById("shippingText");
 const shippingFillEl = document.getElementById("shippingFill");
 
 // ---------- Mitnahme-Angebote im Warenkorb ----------
-// Der Versand ist bei jeder Bestellung schon bezahlt – deshalb koennen
-// Zusatzartikel im Warenkorb guenstiger angeboten werden als im Katalog.
+// Zusatzartikel im Warenkorb gibt es guenstiger als im Katalog.
 // Gilt nur, solange mindestens ein regulaerer Artikel im Korb liegt.
 const UPSELL = [
-  { id: "haenger-pacific-cruise", price: 2.49, name: "Duftanhänger", scentChoice: "haenger" },
-  { id: "probe-pacific-cruise",   price: 3.90, name: "Duftprobe 30 ml", scentChoice: "probe" },
+  { id: "haenger-pacific-cruise", price: 2.90, name: "Duftanhänger", scentChoice: "haenger" },
+  { id: "probe-pacific-cruise",   price: 4.90, name: "Duftprobe 30 ml", scentChoice: "probe" },
   { id: "pflege-innenraum", price: 4.90, name: "Innenraum-Tuch" },
   { id: "glas-pacific-cruise",    price: 9.90, name: "Glasanhänger", scentChoice: "glas" },
   { id: "pflege-mikrofaser", price: 8.90, name: "Mikrofaser 3er-Set" },
@@ -606,22 +605,14 @@ function renderUpsell() {
   if (!row.children.length) box.hidden = true;
 }
 
-// Ab so vielen einzelnen Duftanhaengern traegt die Bestellung den Versand.
-const ANHAENGER_MIN = 3;
+// Versand: 3,90 € pauschal, ab 40 € Warenwert versandkostenfrei.
+const VERSAND_PREIS = 3.90;
+const VERSANDFREI_AB = 40;
 
-// Ist die Bestellung versandkostenfrei? Sobald irgendein Artikel im Korb liegt,
-// der kein einzelner Duftanhaenger ist (Sets zaehlen als normaler Artikel), ja.
-// Sonst erst ab ANHAENGER_MIN Anhaengern.
 function versandStatus() {
-  if (!cart.length) return { frei: true, fehlend: 0 };
-  let anhaenger = 0;
-  for (const i of cart) {
-    const p = byId(i.id);
-    if (!p) continue;
-    if (p.type === "haenger" && !p.set) anhaenger += i.qty;
-    else return { frei: true, fehlend: 0 };
-  }
-  return { frei: anhaenger >= ANHAENGER_MIN, fehlend: Math.max(0, ANHAENGER_MIN - anhaenger) };
+  const sub = cartSubtotal();
+  const frei = sub >= VERSANDFREI_AB;
+  return { frei, kosten: frei || !cart.length ? 0 : VERSAND_PREIS, fehlend: Math.max(0, VERSANDFREI_AB - sub), sub };
 }
 
 function renderCart() {
@@ -632,21 +623,23 @@ function renderCart() {
   const subtotal = cartSubtotal();
   cartSubtotalEl.textContent = euro(subtotal);
 
-  // Einzelne Duftanhaenger tragen den Gratisversand erst ab drei Stueck.
-  // Liegt irgendein anderer Artikel im Korb, faellt die Regel komplett weg.
   const status = versandStatus();
-  if (status.frei) {
-    shippingTextEl.innerHTML = `<strong>Versandkostenfrei</strong> – auf alle Bestellungen`;
+  if (!cart.length) {
+    shippingTextEl.innerHTML = `<strong>Versandkostenfrei ab ${euro(VERSANDFREI_AB)}</strong>`;
+    shippingFillEl.style.width = "0%";
+  } else if (status.frei) {
+    shippingTextEl.innerHTML = `<strong>Versandkostenfrei</strong> – dein Paket geht gratis raus`;
     shippingFillEl.style.width = "100%";
   } else {
-    const n = status.fehlend;
-    shippingTextEl.innerHTML =
-      `<strong>Fast geschafft:</strong> Noch ${n} Duftanhänger für Gratisversand ` +
-      `– oder leg ein anderes Produkt dazu.`;
-    shippingFillEl.style.width = Math.round((ANHAENGER_MIN - n) / ANHAENGER_MIN * 100) + "%";
+    shippingTextEl.innerHTML = `Noch <strong>${euro(status.fehlend)}</strong> bis zum kostenlosen Versand`;
+    shippingFillEl.style.width = Math.round(subtotal / VERSANDFREI_AB * 100) + "%";
   }
+  const shipEl = document.getElementById("cartShipping");
+  const totalEl = document.getElementById("cartTotal");
+  if (shipEl) shipEl.textContent = !cart.length ? "–" : status.frei ? "kostenlos" : euro(VERSAND_PREIS);
+  if (totalEl) totalEl.textContent = euro(subtotal + status.kosten);
   const checkoutBtn = document.getElementById("checkoutBtn");
-  if (checkoutBtn) checkoutBtn.disabled = !status.frei;
+  if (checkoutBtn) checkoutBtn.disabled = !cart.length;
 
   cartItemsEl.innerHTML = "";
   if (!cart.length) {
@@ -731,7 +724,7 @@ function openProductModal(id) {
       <h3>${p.name}</h3>
       <div class="modal-prices">${preisHtml(p)}</div>
       <p class="modal-desc">${p.desc}</p>
-      ${p.category === "Duftsprays" ? `<p class="gift-note">Inklusive Gratis-Duftprobe</p>` : ""}
+      ${p.category === "Duftsprays" ? `<p class="gift-note">Inklusive Gratis-Duftanhänger</p>` : ""}
       <p class="notes-label">${p.category === "Sets & Boxen" || p.set ? "Inhalt" : p.category === "Pflege" ? "Details" : "Duftnoten"}</p>
       <div class="notes-row">${p.notes.map((n) => `<span class="note-chip">${n}</span>`).join("")}</div>
       ${fakten.length ? `
@@ -1126,15 +1119,15 @@ function renderProduktseite(p) {
           <p class="modal-category">${p.category}</p>
           <h1>${p.name}</h1>
           <div class="modal-prices">${preisHtml(p)}</div>
-          <p class="pdp-tax">inkl. MwSt. – versandkostenfrei</p>
+          <p class="pdp-tax">inkl. MwSt., zzgl. <a href="widerruf.html">Versand</a> – versandkostenfrei ab 40 €</p>
           <ul class="pdp-usps">
-            <li>Versandkostenfrei ohne Mindestbestellwert</li>
+            <li>Versandkostenfrei ab 40 €</li>
             <li>Versand in 24 h</li>
             <li>14 Tage Widerrufsrecht</li>
             <li>Auf Lager</li>
           </ul>
-          ${p.category === "Duftsprays" ? `<p class="gift-note">Inklusive Gratis-Duftprobe</p>` : ""}
-          ${p.type === "haenger" && !p.set ? `<p class="pdp-hinweis">Versandkostenfrei ab 3 Duftanhängern – oder zusammen mit einem anderen Produkt. Günstiger: das <a href="#p/set-haenger-3">3er-Set</a>.</p>` : ""}
+          ${p.category === "Duftsprays" ? `<p class="gift-note">Inklusive Gratis-Duftanhänger</p>` : ""}
+          ${p.type === "haenger" && !p.set ? `<p class="pdp-hinweis">Günstiger im Set: das <a href="#p/set-haenger-3">3er-Set</a> oder das <a href="#p/set-haenger-5">5er-Set</a>.</p>` : ""}
           <div class="modal-actions">
             <div class="qty-row">
               <button class="qty-btn" data-pminus>−</button>

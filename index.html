@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Caroud – Premium Autodüfte, Duftsprays, Glasanhänger &amp; Duftanhänger</title>
-  <meta name="description" content="Caroud – Premium Autodüfte im edlen Design: Duftsprays, Glasanhänger mit 8 ml Duftöl und Duftanhänger. Fine Fragrance for the Drive. Immer versandkostenfrei.">
+  <meta name="description" content="Caroud – Premium Autodüfte im edlen Design: Duftsprays, Glasanhänger mit 8 ml Duftöl und Duftanhänger. Fine Fragrance for the Drive. Versandkostenfrei ab 40 €.">
   <meta name="theme-color" content="#1c1b19">
   <link rel="canonical" href="https://caroud.de/">
 
@@ -14,7 +14,7 @@
   <meta property="og:locale" content="de_DE">
   <meta property="og:url" content="https://caroud.de/">
   <meta property="og:title" content="Caroud – Premium Autodüfte">
-  <meta property="og:description" content="Duftsprays, Glasanhänger &amp; Duftanhänger im edlen Schwarz-Gold-Design. Fine Fragrance for the Drive – immer versandkostenfrei.">
+  <meta property="og:description" content="Duftsprays, Glasanhänger &amp; Duftanhänger im edlen Schwarz-Gold-Design. Fine Fragrance for the Drive – versandkostenfrei ab 40 €.">
   <meta property="og:image" content="https://caroud.de/img/og-image.png?v=4">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -23,14 +23,14 @@
   <!-- Twitter / X Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Caroud – Premium Autodüfte">
-  <meta name="twitter:description" content="Duftsprays, Glasanhänger &amp; Duftanhänger im edlen Schwarz-Gold-Design. Immer versandkostenfrei.">
+  <meta name="twitter:description" content="Duftsprays, Glasanhänger &amp; Duftanhänger im edlen Schwarz-Gold-Design. Versandkostenfrei ab 40 €.">
   <meta name="twitter:image" content="https://caroud.de/img/og-image.png?v=4">
 
   <link rel="icon" type="image/png" href="img/favicon.png?v=2">
   <!-- Überschriftenschrift vorladen, damit der Hero-Titel nicht erst in Georgia aufblitzt -->
   <link rel="preload" href="fonts/playfair-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/inter-400.woff" as="font" type="font/woff" crossorigin>
-  <link rel="stylesheet" href="css/style.css?v=68">
+  <link rel="stylesheet" href="css/style.css?v=69">
 
   <!-- Strukturierte Daten für Google. Produkt-Markup fehlt bewusst,
        solange keine echten Preise hinterlegt sind. -->
@@ -90,7 +90,7 @@
   <div class="top-sticky">
   <!-- Ankündigungsleiste: eine ruhige Botschaft -->
   <div class="announcement-bar">
-    <span class="announce-msg is-on">Versandkostenfrei&nbsp;· Abgefüllt in Deutschland&nbsp;· 14 Tage Rückgabe</span>
+    <span class="announce-msg is-on">Versandkostenfrei ab 40&nbsp;€&nbsp;· Abgefüllt in Deutschland&nbsp;· 14 Tage Rückgabe</span>
   </div>
 
   <!-- Header -->
@@ -162,7 +162,7 @@
 
     <div class="cart-upsell" id="upsellBox" hidden>
       <p class="upsell-head">Passt dazu</p>
-      <p class="upsell-sub">Günstiger als einzeln – der Versand ist schon bezahlt.</p>
+      <p class="upsell-sub">Günstiger als einzeln – nur hier im Warenkorb.</p>
       <div class="upsell-row" id="upsellRow"></div>
     </div>
 
@@ -171,7 +171,15 @@
         <span>Zwischensumme</span>
         <strong id="cartSubtotal">€0,00</strong>
       </div>
-      <p class="cart-hint">Versandkostenfrei – keine zusätzlichen Kosten im Checkout.</p>
+      <div class="cart-subtotal cart-line">
+        <span>Versand</span>
+        <span id="cartShipping">–</span>
+      </div>
+      <div class="cart-subtotal cart-total">
+        <span>Gesamt</span>
+        <strong id="cartTotal">€0,00</strong>
+      </div>
+      <p class="cart-hint">Inkl. MwSt. · Versand 3,90 € · ab 40 € versandkostenfrei</p>
       <button class="btn btn-dark btn-block" id="checkoutBtn">Zur Kasse</button>
     </div>
   </aside>
@@ -206,7 +214,7 @@
           <a href="#produkte" class="btn btn-gold">Düfte entdecken</a>
           <a href="#duefte" class="btn btn-outline">Die sieben Düfte</a>
         </div>
-        <p class="hero-note">Versandkostenfrei&nbsp;· Versand in&nbsp;24&nbsp;h&nbsp;· Abgefüllt in Deutschland</p>
+        <p class="hero-note">Versandkostenfrei ab 40&nbsp;€&nbsp;· Versand in&nbsp;24&nbsp;h&nbsp;· Abgefüllt in Deutschland</p>
       </div>
       <div class="hero-produkt" id="heroArt" aria-hidden="true"></div>
     </div>
@@ -347,8 +355,8 @@
         <!-- Paket -->
         <svg viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>
       </div>
-      <h3>Versandkostenfrei</h3>
-      <p>Immer und ohne Mindestbestellwert – auch bei einem einzelnen Duftanhänger.</p>
+      <h3>Versandkostenfrei ab 40 €</h3>
+      <p>Darunter pauschal 3,90 € – egal wie viel im Paket liegt.</p>
     </div>
     <div class="usp">
       <div class="usp-icon" aria-hidden="true">
@@ -504,7 +512,7 @@
   <!-- Toast -->
   <div class="toast" id="toast" hidden></div>
 
-  <script src="js/products.js?v=86"></script>
-  <script src="js/main.js?v=71"></script>
+  <script src="js/products.js?v=87"></script>
+  <script src="js/main.js?v=72"></script>
 </body>
 </html>
