@@ -2313,3 +2313,9 @@ body.pdp-aktiv .site-header {
   .hero-segmente { gap: 2.8rem; }
 }
 @media (min-width: 861px) and (max-width: 1100px) { .hero-nav { padding: 0 1.6rem; gap: 1.6rem; } .hero-segmente { gap: 1.6rem; } }
+
+/* ---- Empfehlungen (v110): gleiche Schrift wie die Shop-Karten ---- */
+.pdp-reco-name { font-size: 0.86rem; font-weight: 500; letter-spacing: 0.06em; line-height: 1.35; }
+.pdp-reco-price { font-size: 0.92rem; color: var(--black); }
+.pdp-reco-price .price-old { margin-right: 0; }
+@media (max-width: 860px) { .pdp-reco-name { font-size: 0.82rem; } .pdp-reco-price { font-size: 0.85rem; } }
