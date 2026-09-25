@@ -1386,6 +1386,8 @@ function duftreiseBlock(p) {
 function momentBlock(p) {
   const mo = p.moment;
   if (!mo) return "";
+  // Bei Duftsprays steht "Passt zu" schon in der Duftreise darunter
+  const hatDuftreise = typeof DUFTREISE !== "undefined" && p.linie === "spray" && !p.set && !!DUFTREISE[p.scent];
   return `
     <section class="pdp-moment" aria-label="Der Moment">
       <div class="pdp-moment-img"><img src="${mo.img}" alt="${p.label} – ${mo.titel}" loading="lazy"></div>
@@ -1393,10 +1395,10 @@ function momentBlock(p) {
         <p class="pdp-moment-kicker">Der Moment</p>
         <h2 class="pdp-moment-title">${mo.titel}</h2>
         <p class="pdp-moment-copy">${mo.text}</p>
-        <div class="pdp-moment-tags">
+        ${hatDuftreise ? "" : `<div class="pdp-moment-tags">
           <span class="pdp-moment-tags-label">Passt zu</span>
           ${mo.tags.map((t) => `<span class="note-chip">${t}</span>`).join("")}
-        </div>
+        </div>`}
       </div>
     </section>`;
 }
