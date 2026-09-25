@@ -2566,3 +2566,106 @@ body.aktion-halloween { --accent: #b4561e; --accent-dark: #8e4216; --kuerbis: ur
     background: var(--kuerbis) left 4% top 3% / 48px no-repeat, var(--kuerbis) right 5% top 2% / 60px no-repeat; }
   .aktion-halloween .hero-slide-bf::before { background: var(--kuerbis) right 4% top 4% / 48px no-repeat; }
 }
+
+/* ---- Weihnachten (v132): Tannengrün, warmes Licht, leiser Schnee, Tannenzweige ---- */
+body.aktion-xmas { --accent: #1f4a37; --accent-dark: #163829; --zweig: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none' stroke='%239fc3ad' stroke-width='1.1' stroke-linecap='round'%3E%3Cpath d='M6 58 C22 44 38 26 58 6 M11.2 52.8 l-1.3 -6.7 M11.2 52.8 l6.7 1.3 M16.4 47.6 l-1.3 -6.4 M16.4 47.6 l6.4 1.3 M21.6 42.4 l-1.2 -6.1 M21.6 42.4 l6.1 1.2 M26.8 37.2 l-1.2 -5.8 M26.8 37.2 l5.8 1.2 M32.0 32.0 l-1.1 -5.5 M32.0 32.0 l5.5 1.1 M37.2 26.8 l-1.0 -5.2 M37.2 26.8 l5.2 1.0 M42.4 21.6 l-1.0 -4.9 M42.4 21.6 l4.9 1.0 M47.6 16.4 l-0.9 -4.6 M47.6 16.4 l4.6 0.9 M52.8 11.2 l-0.9 -4.3 M52.8 11.2 l4.3 0.9'/%3E%3C/svg%3E"); --stern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none' stroke='%23f1e7d6' stroke-width='1.2' stroke-linejoin='round'%3E%3Cpolygon points='32.0,18.0 35.5,27.1 45.3,27.7 37.7,33.9 40.2,43.3 32.0,38.0 23.8,43.3 26.3,33.9 18.7,27.7 28.5,27.1'/%3E%3C/svg%3E");
+  --xm-schnee: radial-gradient(1.6px 1.6px at 20% 30%, rgba(255,255,255,0.75), transparent 60%),
+    radial-gradient(1.2px 1.2px at 70% 10%, rgba(255,255,255,0.6), transparent 60%),
+    radial-gradient(2px 2px at 40% 80%, rgba(255,255,255,0.55), transparent 60%),
+    radial-gradient(1.4px 1.4px at 85% 55%, rgba(255,255,255,0.65), transparent 60%),
+    radial-gradient(1px 1px at 55% 45%, rgba(255,255,255,0.5), transparent 60%),
+    radial-gradient(1.8px 1.8px at 8% 70%, rgba(255,255,255,0.6), transparent 60%); }
+.aktion-xmas .announcement-bar { background: #10241b; }
+@keyframes xm-schnee { from { background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0; }
+  to { background-position: 30px 420px, -20px 380px, 15px 460px, -25px 400px, 10px 440px, 20px 390px; } }
+/* Band */
+.xm-band { position: relative; overflow: hidden; color: #f4efe6; padding: 4.5rem 1.25rem 4.5rem;
+  background: radial-gradient(ellipse at 50% -10%, rgba(255, 221, 170, 0.14), transparent 55%),
+    radial-gradient(ellipse at 90% 40%, rgba(255, 221, 170, 0.06), transparent 45%),
+    linear-gradient(180deg, #0f1f18 0%, #0a140f 100%); }
+.xm-band::before { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0.7;
+  background-image: var(--xm-schnee); background-size: 260px 420px, 200px 380px, 300px 460px, 240px 400px, 180px 440px, 280px 390px;
+  animation: xm-schnee 26s linear infinite; }
+.xm-band::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0.35;
+  background: var(--zweig) left -18px top -10px / 150px no-repeat, var(--zweig) right -24px top 30px / 120px no-repeat,
+    var(--stern) left 12% top 9% / 26px no-repeat, var(--stern) right 16% top 18% / 18px no-repeat, var(--stern) right 8% top 42% / 22px no-repeat; }
+.xm-inner { position: relative; z-index: 1; max-width: 1180px; margin: 0 auto; }
+.xm-kopf { text-align: center; margin: 0 auto 2.4rem; max-width: 40rem; }
+.xm-kicker { font-size: 0.7rem; letter-spacing: 0.32em; text-transform: uppercase; color: #a9ccb6; margin: 0 0 0.9rem; }
+.xm-titel { font-family: var(--serif); font-weight: 400; font-size: clamp(2.1rem, 5vw, 3.4rem); line-height: 1.05; margin: 0 0 0.8rem; }
+.xm-copy { color: rgba(244, 239, 230, 0.72); font-size: 0.95rem; line-height: 1.6; margin: 0 auto 1.5rem; }
+.xm-frist { display: inline-flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap; justify-content: center; padding: 0.7rem 1.1rem;
+  border: 1px solid rgba(169, 204, 182, 0.35); border-radius: 999px; background: rgba(255, 255, 255, 0.04); font-size: 0.85rem; }
+.xm-frist strong { font-family: var(--serif); font-weight: 400; font-size: 1.15rem; color: #fff; }
+.xm-frist span { color: rgba(244, 239, 230, 0.75); }
+.xm-boxen { grid-template-columns: minmax(0, 1fr); max-width: 980px; margin: 0 auto; }
+.xm-karte { background: #13241c; border-color: rgba(169, 204, 182, 0.18); }
+.xm-karte:hover { border-color: rgba(255, 221, 170, 0.5); }
+.xm-karte .bf-bild { background: #0f1c16; }
+.aktion-xmas .bf-tag { background: #f4efe6; color: #10241b; }
+.xm-tag { background: #1f4a37 !important; color: #f4efe6 !important; }
+/* Heutiges Türchen */
+.xm-advent { margin-top: 5.5rem; scroll-margin-top: 90px; }
+.xm-heute { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.4rem; align-items: center; max-width: 860px; margin: 0 auto 2.2rem;
+  padding: 1.1rem; border-radius: 16px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 221, 170, 0.35);
+  box-shadow: 0 0 60px -10px rgba(255, 214, 150, 0.25); }
+.xm-heute.super { border-color: rgba(255, 221, 170, 0.8); box-shadow: 0 0 80px -6px rgba(255, 214, 150, 0.45); }
+.xm-heute-bild img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 12px; display: block; }
+.xm-heute-text h3 { font-family: var(--serif); font-weight: 400; font-size: 1.6rem; line-height: 1.2; margin: 0.2rem 0 0.6rem; }
+.xm-heute-text p { color: rgba(244, 239, 230, 0.8); }
+.xm-heute-preis { font-size: 1.2rem; margin: 0 0 1rem; }
+.xm-heute-preis .price-now { color: #fff; }
+.xm-heute-preis .price-old { color: rgba(244, 239, 230, 0.5); margin-right: 0.4rem; font-size: 0.95rem; }
+.xm-prozent { display: inline-block; margin-left: 0.5rem; padding: 0.15rem 0.5rem; border-radius: 4px; background: #f4efe6; color: #10241b; font-size: 0.8rem; font-weight: 600; }
+.xm-heute-extra { font-size: 0.85rem; margin: -0.4rem 0 1rem; }
+.xm-heute-text-only { text-align: center; }
+.xm-heute .btn-gold { background: #f4efe6; color: #10241b; border-color: #f4efe6; }
+/* Kalender */
+.xm-kalender { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.55rem; max-width: 860px; margin: 0 auto; }
+.xm-tuer { position: relative; aspect-ratio: 1 / 1; border-radius: 10px; overflow: hidden; cursor: pointer; font: inherit; color: #f4efe6;
+  background: linear-gradient(160deg, #173226, #102219); border: 1px solid rgba(169, 204, 182, 0.2);
+  display: grid; place-items: center; transition: transform 0.25s ease, border-color 0.25s ease; }
+.xm-tuer.zu::before, .xm-tuer.zu::after { content: ""; position: absolute; background: rgba(169, 204, 182, 0.14); }
+.xm-tuer.zu::before { left: 50%; top: 0; bottom: 0; width: 5px; transform: translateX(-50%); }
+.xm-tuer.zu::after { top: 50%; left: 0; right: 0; height: 5px; transform: translateY(-50%); }
+.xm-tuer:hover { transform: translateY(-2px); border-color: rgba(255, 221, 170, 0.5); }
+.xm-nr { position: relative; z-index: 1; font-family: var(--serif); font-size: 1.5rem; line-height: 1; text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); }
+.xm-tuer.vorbei { opacity: 0.38; }
+.xm-haken { position: absolute; right: 0.4rem; bottom: 0.3rem; font-size: 0.75rem; color: #a9ccb6; }
+.xm-tuer.heute { border: 1px solid rgba(255, 221, 170, 0.9); box-shadow: 0 0 0 3px rgba(255, 221, 170, 0.18), 0 0 30px rgba(255, 214, 150, 0.35); }
+.xm-tuer.heute img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.xm-nr-klein { position: absolute; left: 0.4rem; top: 0.35rem; font-size: 0.95rem; background: rgba(16, 36, 27, 0.8); padding: 0.1rem 0.4rem; border-radius: 4px; }
+.xm-symbol { position: absolute; bottom: 0.4rem; font-size: 0.85rem; color: #ffe2b0; }
+.xm-stern { position: absolute; top: 0.3rem; right: 0.45rem; z-index: 1; color: #ffe2b0; font-size: 0.85rem; }
+.xm-tuer.super.zu { border-color: rgba(255, 221, 170, 0.55); }
+@keyframes xm-wackel { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-3deg); } 75% { transform: rotate(3deg); } }
+.xm-tuer.wackel { animation: xm-wackel 0.35s ease; }
+.xm-hinweis { text-align: center; min-height: 1.4em; margin: 1rem 0 0; color: rgba(244, 239, 230, 0.75); font-size: 0.88rem; }
+/* Geschenkfinder */
+.xm-finder { margin-top: 5.5rem; }
+.xm-fragen { display: grid; gap: 1.1rem; max-width: 760px; margin: 0 auto 1.8rem; }
+.xm-frage { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; justify-content: center; }
+.xm-frage-titel { width: 100%; text-align: center; font-size: 0.68rem; letter-spacing: 0.24em; text-transform: uppercase; color: #a9ccb6; margin-bottom: 0.2rem; }
+.xm-chip { font: inherit; font-size: 0.85rem; color: #f4efe6; background: transparent; border: 1px solid rgba(244, 239, 230, 0.3); border-radius: 999px;
+  padding: 0.55rem 1rem; cursor: pointer; transition: background 0.2s ease, color 0.2s ease; }
+.xm-chip:hover { border-color: #f4efe6; }
+.xm-chip.an { background: #f4efe6; color: #10241b; border-color: #f4efe6; }
+.xm-ergebnis { max-width: 980px; margin: 0 auto; }
+/* Shop, Produktseite, Hero */
+.xm-badge { background: #1f4a37; color: #f4efe6; }
+.xm-frist-hinweis { margin: 0.5rem 0 0; font-size: 0.82rem; color: #1f4a37; background: #eef4ef; border: 1px solid #d5e5da; padding: 0.5rem 0.7rem; border-radius: 6px; }
+.hero-slide-xmas { position: relative; }
+.hero-slide-xmas::before { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0.6;
+  background-image: var(--xm-schnee); background-size: 260px 420px, 200px 380px, 300px 460px, 240px 400px, 180px 440px, 280px 390px;
+  animation: xm-schnee 30s linear infinite; }
+.hero-slide-xmas .hero-kicker { color: #a9ccb6; }
+.hero-slide-xmas .hero-bf-tag { background: #f4efe6; color: #10241b; }
+.hero-slide-xmas .hero-bf-karte { box-shadow: 0 0 50px -8px rgba(255, 214, 150, 0.35); }
+@media (min-width: 600px) {
+  .xm-boxen { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .xm-kalender { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0.7rem; }
+  .xm-nr { font-size: 1.9rem; }
+  .xm-heute { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); padding: 1.4rem; gap: 2rem; }
+}
+@media (min-width: 900px) { .xm-band { padding: 6rem 2rem 6rem; } }
+@media (prefers-reduced-motion: reduce) { .xm-band::before, .hero-slide-xmas::before { animation: none; } .xm-tuer.wackel { animation: none; } }

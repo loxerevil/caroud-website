@@ -378,6 +378,170 @@ function bfMaxProzent() {
   setInterval(tick, 30000);
 })();
 
+// ---------- Weihnachten: Geschenkboxen, Adventskalender, Geschenkfinder ----------
+(function weihnachten() {
+  const sek = document.getElementById("weihnachten");
+  if (!sek || !XMAS_AKTIV) return;
+  sek.hidden = false;
+  document.body.classList.add(WEIHNACHTEN.theme);
+  const heute = XMAS.tag;
+  const frist = WEIHNACHTEN.fristText;
+  const restTage = 20 - heute;
+  const fristBox = heute <= 20
+    ? `<div class="xm-frist"><strong>${restTage === 0 ? "Heute" : `Noch ${restTage} ${restTage === 1 ? "Tag" : "Tage"}`}</strong>
+        <span>${restTage === 0 ? "ist der letzte Bestelltag" : "bis zur Bestellfrist"} – bis ${frist} bestellt, vor Heiligabend da.</span></div>`
+    : `<div class="xm-frist xm-frist-vorbei"><strong>Bestellfrist vorbei</strong><span>Bestellungen ab jetzt kommen nach den Feiertagen an.</span></div>`;
+  const boxen = ["xmas-kleine-freude", "xmas-signature", "xmas-kollektion"].map(byId).filter(Boolean);
+  const karte = (p, extra = "") => `
+    <article class="bf-karte xm-karte">
+      <a class="bf-bild" href="#p/${p.id}">
+        ${p.photo ? `<img src="${p.photo}" alt="${p.name}" loading="lazy">` : artFor(p)}
+        ${p.bfDeal ? `<span class="bf-tag">${p.dealBadge}</span>` : extra}
+      </a>
+      <div class="bf-info">
+        <a class="bf-name" href="#p/${p.id}">${p.name}</a>
+        <div class="bf-preise">${preisHtml(p)}</div>
+        <button type="button" class="bf-add" data-xm-add="${p.id}">${p.wahl ? "Düfte wählen" : "In den Warenkorb"}</button>
+      </div>
+    </article>`;
+
+  // Adventskalender: Türchen in fester, gemischter Reihenfolge
+  const REIHE = [7, 15, 1, 22, 10, 4, 18, 12, 24, 3, 9, 20, 14, 6, 17, 2, 21, 11, 5, 23, 8, 16, 13, 19];
+  const tuer = (tag) => WEIHNACHTEN.tueren.find((t) => t.tag === tag);
+  const tuerHtml = (tag) => {
+    const t = tuer(tag);
+    const zustand = tag < heute ? "vorbei" : tag === heute ? "heute" : "zu";
+    const p = t && t.id ? byId(t.id) : null;
+    let innen = `<span class="xm-nr">${tag}</span>`;
+    if (zustand === "heute") {
+      innen = p && p.photo
+        ? `<img src="${p.photo}" alt="" loading="lazy"><span class="xm-nr xm-nr-klein">${tag}</span>`
+        : `<span class="xm-nr">${tag}</span><span class="xm-symbol" aria-hidden="true">${t && t.typ === "versand" ? "✦" : "★"}</span>`;
+    }
+    if (zustand === "vorbei") innen += `<span class="xm-haken" aria-hidden="true">✓</span>`;
+    const sup = t && t.super ? " super" : "";
+    return `<button type="button" class="xm-tuer ${zustand}${sup}" data-tag="${tag}" aria-label="Türchen ${tag}${zustand === "heute" ? " – heute offen" : ""}">${innen}${t && t.super && zustand === "zu" ? `<span class="xm-stern" aria-hidden="true">★</span>` : ""}</button>`;
+  };
+  const heuteT = tuer(heute);
+  const heuteP = heuteT && heuteT.id ? byId(heuteT.id) : null;
+  let heutePanel = "";
+  if (heute <= 24 && heuteT) {
+    if (heuteP) {
+      const prozent = Math.floor((heuteP.bfNormal - heuteP.price) / heuteP.bfNormal * 100);
+      heutePanel = `
+        <div class="xm-heute${heuteT.super ? " super" : ""}">
+          <a class="xm-heute-bild" href="#p/${heuteP.id}"><img src="${heuteP.photo || ""}" alt="${heuteP.name}" loading="lazy"></a>
+          <div class="xm-heute-text">
+            <p class="xm-kicker">${heuteT.super ? "Das Super-Türchen" : `Türchen ${heute}`} · nur heute</p>
+            <h3>${heuteP.name}</h3>
+            <p class="xm-heute-preis">${preisHtml(heuteP)} <span class="xm-prozent">−${prozent}&nbsp;%</span></p>
+            ${heuteT.versand ? `<p class="xm-heute-extra">Dazu heute versandkostenfrei – ohne Mindestbestellwert.</p>` : ""}
+            <button type="button" class="btn btn-gold" data-xm-add="${heuteP.id}">${heuteP.wahl ? "Düfte wählen" : "In den Warenkorb"}</button>
+          </div>
+        </div>`;
+    } else {
+      heutePanel = `
+        <div class="xm-heute xm-heute-text-only">
+          <div class="xm-heute-text">
+            <p class="xm-kicker">Türchen ${heute}${heuteT.titel ? " · " + heuteT.titel : ""}</p>
+            <h3>${heuteT.typ === "gruss" ? heuteT.titel : "Versandkostenfrei"}</h3>
+            <p>${heuteT.text}</p>
+            ${heuteT.typ === "versand" ? `<a href="#produkte" class="btn btn-gold">Jetzt stöbern</a>` : ""}
+          </div>
+        </div>`;
+    }
+  }
+
+  sek.innerHTML = `
+    <div class="xm-inner">
+      <div class="xm-kopf">
+        <p class="xm-kicker">Weihnachten bei Caroud</p>
+        <h2 class="xm-titel">Ein Geschenk, das mitfährt.</h2>
+        <p class="xm-copy">Drei Weihnachtsboxen in der schwarzen Geschenkbox mit Karte für deine Widmung. Düfte frei wählbar – oder alle sieben zum Ausprobieren.</p>
+        ${fristBox}
+      </div>
+      <div class="bf-grid xm-boxen">${boxen.map((p) => karte(p, `<span class="bf-tag xm-tag">Weihnachtsbox</span>`)).join("")}</div>
+
+      <div class="xm-advent" id="advent">
+        <div class="xm-kopf">
+          <p class="xm-kicker">1.–24. Dezember</p>
+          <h2 class="xm-titel">Der Adventskalender.</h2>
+          <p class="xm-copy">Jeden Tag öffnet sich ein Türchen – mit einem Angebot, das nur an diesem Tag gilt. Am 20. Dezember wartet das Super-Türchen.</p>
+        </div>
+        ${heutePanel}
+        <div class="xm-kalender">${REIHE.map(tuerHtml).join("")}</div>
+        <p class="xm-hinweis" data-xm-hinweis aria-live="polite"></p>
+      </div>
+
+      <div class="xm-finder" id="geschenkfinder">
+        <div class="xm-kopf">
+          <p class="xm-kicker">Geschenkfinder</p>
+          <h2 class="xm-titel">Für wen suchst du?</h2>
+        </div>
+        <div class="xm-fragen">
+          <div class="xm-frage" data-frage="wer">
+            <span class="xm-frage-titel">Für wen?</span>
+            ${[["kollege", "Wichteln & Kollegen"], ["partner", "Partner:in"], ["papa", "Papa & Opa"], ["autofan", "Autofan"]].map(([k, t]) => `<button type="button" class="xm-chip" data-wert="${k}">${t}</button>`).join("")}
+          </div>
+          <div class="xm-frage" data-frage="budget">
+            <span class="xm-frage-titel">Budget?</span>
+            ${[["20", "bis 20 €"], ["50", "bis 50 €"], ["mehr", "darf mehr sein"]].map(([k, t]) => `<button type="button" class="xm-chip" data-wert="${k}">${t}</button>`).join("")}
+          </div>
+          <div class="xm-frage" data-frage="duft">
+            <span class="xm-frage-titel">Lieblingsduft bekannt?</span>
+            ${[["ja", "Ja"], ["nein", "Nein"]].map(([k, t]) => `<button type="button" class="xm-chip" data-wert="${k}">${t}</button>`).join("")}
+          </div>
+        </div>
+        <div class="bf-grid xm-ergebnis" data-xm-ergebnis></div>
+      </div>
+    </div>`;
+
+  // Warenkorb-Buttons
+  const verbinde = (root) => root.querySelectorAll("[data-xm-add]").forEach((b) => b.addEventListener("click", () => {
+    const p = byId(b.dataset.xmAdd);
+    if (p.wahl) { location.hash = "p/" + p.id; return; }
+    addToCart(p.id, 1);
+    openCart();
+  }));
+  verbinde(sek);
+
+  // Türchen anklicken
+  const hinweis = sek.querySelector("[data-xm-hinweis]");
+  sek.querySelectorAll(".xm-tuer").forEach((b) => b.addEventListener("click", () => {
+    const tag = +b.dataset.tag;
+    if (tag === heute) {
+      const ziel = heuteP ? "#p/" + heuteP.id : null;
+      if (ziel) location.hash = ziel.slice(1);
+      return;
+    }
+    b.classList.remove("wackel"); void b.offsetWidth; b.classList.add("wackel");
+    hinweis.textContent = tag > heute
+      ? `Türchen ${tag} öffnet sich am ${tag}. Dezember${tuer(tag)?.super ? " – das Super-Türchen lohnt sich." : "."}`
+      : `Türchen ${tag} war am ${tag}. Dezember offen. Morgen gibt es ein neues.`;
+  }));
+
+  // Geschenkfinder
+  const wahl = {};
+  const ergebnis = sek.querySelector("[data-xm-ergebnis]");
+  const empfehlen = () => {
+    if (!wahl.wer || !wahl.budget || !wahl.duft) return;
+    let ids;
+    if (wahl.budget === "20") ids = ["xmas-kleine-freude", "set-haenger-5", wahl.duft === "nein" ? "probierset-3" : "glas-pacific-cruise"];
+    else if (wahl.budget === "50") ids = wahl.duft === "nein" ? ["xmas-kollektion", "probierset-7", "xmas-kleine-freude"]
+      : wahl.wer === "autofan" ? ["xmas-signature", "box-pit-stop", "set-spray-2"] : ["xmas-signature", "set-spray-2", "xmas-kollektion"];
+    else ids = wahl.wer === "autofan" || wahl.wer === "papa" ? ["box-full-detail", "xmas-signature", "set-spray-3"]
+      : wahl.duft === "nein" ? ["xmas-kollektion", "xmas-signature", "box-full-detail"] : ["xmas-signature", "bundle-signature", "set-spray-3"];
+    if (wahl.wer === "kollege" && wahl.budget !== "20") ids = ["xmas-kleine-freude", ...ids.filter((i) => i !== "xmas-kleine-freude")].slice(0, 3);
+    ergebnis.innerHTML = ids.map(byId).filter(Boolean).map((p) => karte(p)).join("");
+    verbinde(ergebnis);
+  };
+  sek.querySelectorAll(".xm-frage").forEach((f) => f.querySelectorAll(".xm-chip").forEach((c) => c.addEventListener("click", () => {
+    f.querySelectorAll(".xm-chip").forEach((x) => x.classList.toggle("an", x === c));
+    wahl[f.dataset.frage] = c.dataset.wert;
+    empfehlen();
+  })));
+})();
+
 // ---------- Hero-Slider ----------
 // Der Hero wechselt automatisch alle 9 Sekunden zwischen mehreren Info-Folien.
 // Während der Black Week kommt vorne eine Angebots-Folie dazu.
@@ -493,6 +657,43 @@ function heroSlider() {
     cdTick(); setInterval(cdTick, 30000);
     folien.splice(1, 0, { el: bf, name: AKTION.name, bf: true });
   }
+  // Weihnachts-Folie (1.–26. Dezember)
+  if (XMAS_AKTIV) {
+    const boxen = ["xmas-signature", "xmas-kollektion", "xmas-kleine-freude"].map(byId).filter(Boolean);
+    const xm = document.createElement("div");
+    xm.className = "hero-inner hero-slide hero-slide-bf hero-slide-xmas";
+    const tuer = XMAS_TUER;
+    const tuerText = !tuer ? "" : tuer.typ === "gruss" ? tuer.titel
+      : tuer.id ? `Heute hinter Türchen ${tuer.tag}: ${byId(tuer.id)?.name}` : `Türchen ${tuer.tag}: ${tuer.text}`;
+    xm.innerHTML = `
+      <div class="hero-text">
+        <p class="hero-kicker">Weihnachten bei Caroud</p>
+        <h2 class="hero-title">Ein Geschenk,<br>das mitfährt.</h2>
+        <p class="hero-sub">Drei Weihnachtsboxen in schwarzer Geschenkbox mit Karte – und jeden Tag ein neues Türchen im Adventskalender.</p>
+        <div class="hero-cta">
+          <a href="#weihnachten" class="btn btn-gold" data-zu-xm="weihnachten">Geschenkboxen ansehen</a>
+          <a href="#advent" class="btn btn-outline" data-zu-xm="advent">Zum Adventskalender</a>
+        </div>
+        <p class="hero-note">${tuerText}</p>
+      </div>
+      <div class="hero-bf-karten" aria-hidden="true">
+        ${boxen.map((p, i) => `
+          <a class="hero-bf-karte k${i}" href="#p/${p.id}" tabindex="-1">
+            <img src="${p.photo}" alt="" loading="lazy">
+            <span class="hero-bf-tag">${euro(p.price)}</span>
+            <span class="hero-bf-name">${p.label}</span>
+          </a>`).join("")}
+      </div>`;
+    wrap.appendChild(xm);
+    xm.querySelectorAll("[data-zu-xm]").forEach((a) => a.addEventListener("click", (e) => {
+      e.preventDefault();
+      const kopf = document.querySelector(".top-sticky") || document.getElementById("siteHeader");
+      const versatz = kopf ? kopf.getBoundingClientRect().height : 0;
+      const ziel = document.getElementById(a.dataset.zuXm);
+      if (ziel) gleiteZu(ziel.getBoundingClientRect().top + window.scrollY - versatz, 900);
+    }));
+    folien.splice(1, 0, { el: xm, name: "Weihnachten", bf: true });
+  }
   if (folien.length < 2) return;
 
   // Anzeige: Zähler + je Folie ein Balken, der sich über die Laufzeit füllt
@@ -565,7 +766,7 @@ function heroSlider() {
   }, { passive: true });
 
   // Während der Black Week mit der Angebotsfolie starten, sonst mit der Startfolie
-  zeige(BF_AKTIV ? 1 : 0);
+  zeige(BF_AKTIV || XMAS_AKTIV ? 1 : 0);
   raf = requestAnimationFrame(schritt);
 }
 heroSlider();
@@ -714,7 +915,7 @@ function renderProducts() {
     card.innerHTML = `
       <div class="product-media">
         ${mediaFor(p)}
-        ${p.bfDeal ? `<span class="bf-badge">${AKTION.badge}</span>` : ""}
+        ${p.bfDeal ? `<span class="bf-badge">${p.dealBadge || ""}</span>` : (XMAS_AKTIV && (p.geschenk || p.linie === "glas" || p.set) ? `<span class="bf-badge xm-badge">Geschenkidee</span>` : "")}
         <button class="quick-add">+ In den Warenkorb</button>
       </div>
       <div class="product-name">${p.name}</div>
@@ -759,6 +960,8 @@ const UPSELL = [
   { id: "pflege-abzieher",  price: 8.90, name: "Wasserabzieher" },
   { id: "pflege-trockentuch", price: 11.90, name: "Trockentuch" },
 ];
+
+if (XMAS_AKTIV) UPSELL.unshift({ id: "geschenkverpackung", price: 2.90, name: "Geschenkverpackung" });
 
 function upsellPriceFor(id) {
   const linie = byId(id)?.linie;
@@ -881,7 +1084,7 @@ function renderUpsell() {
 
 // Versand: 3,90 € pauschal, ab 40 € Warenwert versandkostenfrei.
 const VERSAND_PREIS = 3.90;
-const VERSANDFREI_AB = 40;
+const VERSANDFREI_AB = XMAS_VERSANDFREI ? 0 : 40;  // an Versandfrei-Türchen ohne Mindestbestellwert
 
 function versandStatus() {
   const sub = cartSubtotal();
@@ -1508,7 +1711,8 @@ function renderProduktseite(p) {
           <p class="modal-category">${p.category}</p>
           <h1>${p.name}</h1>
           <div class="modal-prices">${preisHtml(p)}</div>
-          ${p.bfDeal ? `<p class="bf-hinweis">${AKTION.hinweis}</p>` : ""}
+          ${p.bfDeal ? `<p class="bf-hinweis">${p.dealHinweis || ""}</p>` : ""}
+          ${XMAS_AKTIV && XMAS.tag <= 20 ? `<p class="xm-frist-hinweis">Bestellst du bis ${WEIHNACHTEN.fristText}, kommt es vor Heiligabend an.${XMAS_VERSANDFREI ? " Heute versandkostenfrei – ohne Mindestbestellwert." : ""}</p>` : ""}
           <p class="pdp-tax">inkl. MwSt., zzgl. <a href="widerruf.html">Versand</a> – versandkostenfrei ab 40 €</p>
           <ul class="pdp-usps">
             <li>Versandkostenfrei ab 40 €</li>
@@ -1979,7 +2183,15 @@ scrollReihenPruefen();
   const msg = bar && bar.querySelector(".announce-msg");
   if (!bar || !msg) return;
   const standard = ["Versandkostenfrei ab 40&nbsp;€", "Versand in 24&nbsp;h", "Abgefüllt in Deutschland", "Gratis-Duftanhänger zu jedem Spray", "14 Tage Rückgabe"];
-  const eintraege = document.body.classList.contains("bf-aktiv") ? [msg.innerHTML, ...standard] : standard;
+  let eintraege = document.body.classList.contains("bf-aktiv") ? [msg.innerHTML, ...standard] : standard;
+  if (XMAS_AKTIV) {
+    const t = XMAS_TUER;
+    const tuerMsg = !t ? null : t.typ === "gruss" ? "Frohe Weihnachten von Caroud"
+      : t.id ? `${t.super ? "Super-Türchen" : `Türchen ${t.tag}`}: ${byId(t.id)?.name} nur heute günstiger` : `Türchen ${t.tag}: heute versandkostenfrei`;
+    const fristMsg = XMAS.tag <= 20 ? `Bis ${WEIHNACHTEN.fristText} bestellt – vor Heiligabend da` : null;
+    const basis = XMAS_VERSANDFREI ? standard.filter((x) => !x.startsWith("Versandkostenfrei ab")) : standard;
+    eintraege = [tuerMsg, fristMsg, "Weihnachtsboxen ab 19,90&nbsp;€", ...basis].filter(Boolean);
+  }
   const reihe = eintraege.map((t) => `<span class="lb-item">${t}</span><span class="lb-trenner" aria-hidden="true">·</span>`).join("");
   bar.innerHTML = `<span class="sr-only">${eintraege.join(" · ")}</span>
     <div class="lb-spur" aria-hidden="true"><div class="lb-inhalt">${reihe}</div><div class="lb-inhalt">${reihe}</div></div>`;

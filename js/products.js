@@ -469,6 +469,50 @@ const OTHER_PRODUCTS = [
     // Auf der Produktseite: kurze Liste der sieben Proben mit Duftnoten
     probenListe: true,
   },
+  // Weihnachtsboxen – nur im Weihnachts-Modus sichtbar (saison: "weihnachten"). Düfte auf der Produktseite wählbar.
+  // Fotos: vorerst Platzhalter aus vorhandenen Bildern, eigene Box-Fotos bis 1. November nachreichen.
+  {
+    id: "xmas-kleine-freude",
+    name: "Weihnachtsbox „Kleine Freude“",
+    type: "bundle", category: "Sets & Boxen", set: true, saison: "weihnachten", geschenk: true,
+    color: "#1f4a37", label: "Kleine Freude",
+    price: 19.90, priceOld: 20.70, bestseller: false, // 12,90 + 2 × 3,90 · Gewinn ~9,50 €
+    desc: "Das Wichtel- und Nikolausgeschenk: ein Glasanhänger und zwei Duftanhänger in Düften deiner Wahl – in der schwarzen Geschenkbox mit Karte für deine Widmung.",
+    notes: ["1× Glasanhänger 8 ml", "2× Duftanhänger", "Geschenkbox + Karte", "Düfte frei wählbar"],
+    photo: "img/fotos/set-glas-2.webp?v=" + ASSET_V,
+    wahl: [{ anzahl: 1, linie: "glas", titel: "Dein Glasanhänger", doppelt: true }, { anzahl: 2, linie: "haenger", titel: "Deine 2 Duftanhänger", doppelt: true }],
+  },
+  {
+    id: "xmas-signature",
+    name: "Weihnachtsbox „Signature“",
+    type: "bundle", category: "Sets & Boxen", set: true, saison: "weihnachten", geschenk: true,
+    color: "#1f4a37", label: "Signature",
+    price: 44.90, priceOld: 47.60, bestseller: false, // 26,90 + 12,90 + 2 × 3,90 · Gewinn ~29 €
+    desc: "Das Geschenk, das mitfährt: ein Duftspray, ein Glasanhänger und zwei Duftanhänger – alles in Düften deiner Wahl, in der schwarzen Geschenkbox mit Karte. Versandkostenfrei.",
+    notes: ["1× Duftspray 150 ml", "1× Glasanhänger 8 ml", "2× Duftanhänger", "Geschenkbox + Karte", "Versandkostenfrei"],
+    photo: "img/fotos/bundle-signature-2.webp?v=" + ASSET_V,
+    wahl: [{ anzahl: 1, linie: "spray", titel: "Dein Duftspray", doppelt: true }, { anzahl: 1, linie: "glas", titel: "Dein Glasanhänger", doppelt: true }, { anzahl: 2, linie: "haenger", titel: "Deine 2 Duftanhänger", doppelt: true }],
+  },
+  {
+    id: "xmas-kollektion",
+    name: "Weihnachtsbox „Die ganze Kollektion“",
+    type: "bundle", category: "Sets & Boxen", set: true, saison: "weihnachten", geschenk: true,
+    color: "#1f4a37", label: "Kollektion",
+    price: 39.90, priceOld: 51.70, bestseller: false, // 34,90 + 12,90 + 3,90 · Gewinn ~24,50 €
+    desc: "Für alle, deren Lieblingsduft du nicht kennst: alle sieben Düfte als 30-ml-Proben, dazu ein Glasanhänger und ein Duftanhänger – in der Geschenkbox mit Karte. Versandkostenfrei.",
+    notes: ["7× Duftprobe 30 ml", "1× Glasanhänger 8 ml", "1× Duftanhänger", "Geschenkbox + Karte", "Versandkostenfrei"],
+    photo: "img/fotos/probierset-7.webp?v=" + ASSET_V,
+    wahl: [{ anzahl: 1, linie: "glas", titel: "Dein Glasanhänger", doppelt: true }, { anzahl: 1, linie: "haenger", titel: "Dein Duftanhänger", doppelt: true }],
+  },
+  {
+    id: "geschenkverpackung",
+    name: "Geschenkverpackung mit Karte",
+    type: "bundle", category: "Sets & Boxen", hidden: true, upsellOnly: true, saison: "weihnachten",
+    color: "#1f4a37", label: "Geschenk",
+    price: 2.90, priceOld: null, bestseller: false,
+    desc: "Schwarze Geschenkbox mit Seidenpapier und Karte für deine Widmung.",
+    notes: ["Geschenkbox", "Karte mit Widmung"],
+  },
   // Mystery Box
   {
     id: "mystery-box",
@@ -584,7 +628,86 @@ if (AKTION) {
     p.priceOld = p.price;
     p.price = d.preis;
     p.bfDeal = true;
+    p.dealBadge = AKTION.badge;
+    p.dealHinweis = AKTION.hinweis;
   });
+}
+
+// ---- Weihnachten 2026: Geschenkboxen, Adventskalender, Bestellfrist ----
+// Läuft automatisch 1.–26. Dezember. Vorschau: caroud.de/?aktion=weihnachten&tag=7 (tag = simulierter Dezembertag).
+// Adventskalender: jeden Tag ein Türchen – entweder ein Artikel 20 % günstiger (nur an diesem Tag) oder ein
+// Versandkostenfrei-Tag ohne Mindestbestellwert. Türchen-Artikel überschneiden sich NICHT mit der Black Week
+// (23.–30.11.), weil sonst der Black-Week-Preis als „niedrigster Preis der letzten 30 Tage“ gelten müsste.
+// Die Halloween-Artikel sind am 1.12. schon länger als 30 Tage vorbei und dürfen wieder rein.
+const WEIHNACHTEN = {
+  key: "weihnachten",
+  theme: "aktion-xmas",
+  start: "2026-12-01T00:00:00+01:00",
+  ende: "2026-12-27T00:00:00+01:00",
+  bestellfrist: "2026-12-20T23:59:00+01:00",   // an die DHL-Weihnachtstermine anpassen, sobald bekannt
+  fristText: "20. Dezember",
+  countdownAb: 10,                              // ab diesem Dezembertag Countdown zur Bestellfrist
+  rabatt: 20,                                   // Türchen-Rabatt in Prozent
+  tueren: [
+    { tag: 1,  id: "spray-driveination" },
+    { tag: 2,  id: "glas-pacific-cruise" },
+    { tag: 3,  id: "set-glas-2" },
+    { tag: 4,  id: "pflege-trockentuch" },
+    { tag: 5,  id: "probierset-3" },
+    { tag: 6,  typ: "versand", titel: "Nikolaus", text: "Heute versandkostenfrei – ohne Mindestbestellwert." },
+    { tag: 7,  id: "spray-erba-carbon" },
+    { tag: 8,  id: "glas-naxnos-asphalt" },
+    { tag: 9,  id: "bundle-starter" },
+    { tag: 10, id: "box-pit-stop" },
+    { tag: 11, id: "spray-naxnos-asphalt" },
+    { tag: 12, id: "glas-driveination" },
+    { tag: 13, id: "set-spray-3" },
+    { tag: 14, id: "pflege-handschuh" },
+    { tag: 15, id: "spray-erba-tuned" },
+    { tag: 16, id: "glas-erba-carbon" },
+    { tag: 17, id: "probierset-7" },
+    { tag: 18, id: "box-full-detail" },
+    { tag: 19, id: "glas-fast-cherry" },
+    // Das Super-Türchen: letzter sicherer Bestelltag vor Heiligabend – großer Rabatt + versandkostenfrei
+    { tag: 20, id: "xmas-signature", preis: 32.90, super: true, versand: true, titel: "Das Super-Türchen" },  // statt 44,90 · Gewinn ~7 €
+    { tag: 21, id: "set-haenger-3" },
+    { tag: 22, id: "glas-ombre-apex" },
+    { tag: 23, id: "pflege-abzieher" },
+    { tag: 24, typ: "gruss", titel: "Frohe Weihnachten", text: "Danke, dass ihr Caroud in eure Autos holt. Schöne Feiertage und gute Fahrt." },
+  ],
+};
+// Heutiger Dezembertag in deutscher Zeit (oder simuliert per ?tag=)
+function xmasHeute() {
+  let tag = null;
+  try {
+    const q = new URLSearchParams(location.search);
+    if (q.get("aktion") === "weihnachten") tag = parseInt(q.get("tag") || "1", 10);
+  } catch (_) {}
+  if (tag) return { aktiv: true, tag: Math.min(26, Math.max(1, tag)), vorschau: true };
+  const jetzt = Date.now();
+  if (jetzt < Date.parse(WEIHNACHTEN.start) || jetzt >= Date.parse(WEIHNACHTEN.ende)) return { aktiv: false, tag: 0 };
+  const d = new Intl.DateTimeFormat("de-DE", { timeZone: "Europe/Berlin", day: "numeric" }).format(new Date());
+  return { aktiv: true, tag: parseInt(d, 10), vorschau: false };
+}
+const XMAS = xmasHeute();
+const XMAS_AKTIV = XMAS.aktiv && !AKTION;
+const XMAS_TUER = XMAS_AKTIV ? WEIHNACHTEN.tueren.find((t) => t.tag === XMAS.tag) || null : null;
+const XMAS_VERSANDFREI = !!(XMAS_TUER && (XMAS_TUER.typ === "versand" || XMAS_TUER.versand));
+// Weihnachtsboxen nur in der Saison zeigen
+PRODUCTS.forEach((p) => { if (p.saison === "weihnachten" && !p.upsellOnly) p.hidden = !XMAS_AKTIV; });
+// Preis eines Türchens (eigener Preis beim Super-Türchen, sonst 20 % Rabatt)
+function tuerPreis(t, p) { return t.preis || Math.round(p.price * (100 - WEIHNACHTEN.rabatt) / 10) / 10; }
+// Tagesangebot des Türchens anwenden (nur heute)
+if (XMAS_TUER && XMAS_TUER.id) {
+  const p = PRODUCTS.find((x) => x.id === XMAS_TUER.id);
+  if (p) {
+    p.bfNormal = p.price;
+    p.priceOld = p.price;
+    p.price = tuerPreis(XMAS_TUER, p);
+    p.bfDeal = true;
+    p.dealBadge = XMAS_TUER.super ? "Super-Türchen" : `Türchen ${XMAS_TUER.tag}`;
+    p.dealHinweis = `Adventskalender – nur heute ${Math.floor((p.bfNormal - p.price) / p.bfNormal * 100)} % günstiger`;
+  }
 }
 
 // ---- Duftreise: Geschichte der Duftnoten + Duftprofil, je Duftspray ----
