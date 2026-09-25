@@ -1697,7 +1697,42 @@ function randVerlauf(el) {
 
 function scrollReihenPruefen() {
   document.querySelectorAll(".filter-chips, .finder-chips, .review-grid, .upsell-row").forEach(randVerlauf);
+  document.querySelectorAll("[data-wisch]").forEach(wischPfeileSetzen);
 }
+
+// Dezente Pfeile links/rechts an wischbaren Reihen: zeigen nur, wenn es in die
+// Richtung noch etwas zu sehen gibt, und schieben beim Antippen eine Karte weiter.
+function wischPfeileSetzen(el) {
+  const wrap = el.parentElement;
+  if (!wrap || !wrap.classList.contains("wisch-wrap")) return;
+  const rest = el.scrollWidth - el.clientWidth;
+  const aktiv = rest > 4;
+  wrap.querySelector(".wisch-pfeil.l").classList.toggle("sichtbar", aktiv && el.scrollLeft > 4);
+  wrap.querySelector(".wisch-pfeil.r").classList.toggle("sichtbar", aktiv && el.scrollLeft < rest - 4);
+}
+function wischPfeile(el, ton) {
+  if (!el || el.dataset.wisch) return;
+  el.dataset.wisch = "1";
+  const wrap = document.createElement("div");
+  wrap.className = "wisch-wrap wisch-" + ton;
+  el.parentNode.insertBefore(wrap, el);
+  wrap.appendChild(el);
+  const pfeil = (seite, d) => `<button type="button" class="wisch-pfeil ${seite}" aria-label="${seite === "l" ? "Zurück" : "Weiter"}" tabindex="-1">
+    <svg viewBox="0 0 24 24" width="16" height="16"><path d="${d}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;
+  wrap.insertAdjacentHTML("beforeend", pfeil("l", "M15 5l-7 7 7 7") + pfeil("r", "M9 5l7 7-7 7"));
+  const schritt = () => {
+    const karte = el.firstElementChild;
+    return karte ? karte.getBoundingClientRect().width + 10 : el.clientWidth * 0.8;
+  };
+  wrap.querySelector(".wisch-pfeil.l").addEventListener("click", () => el.scrollBy({ left: -schritt(), behavior: "smooth" }));
+  wrap.querySelector(".wisch-pfeil.r").addEventListener("click", () => el.scrollBy({ left: schritt(), behavior: "smooth" }));
+  el.addEventListener("scroll", () => wischPfeileSetzen(el), { passive: true });
+  if ("ResizeObserver" in window) new ResizeObserver(() => wischPfeileSetzen(el)).observe(el);
+  wischPfeileSetzen(el);
+}
+wischPfeile(document.getElementById("scentGrid"), "dunkel");
+document.querySelectorAll(".review-grid").forEach((el) => wischPfeile(el, "hell"));
+wischPfeile(document.getElementById("filterChips"), "hell");
 
 document.querySelectorAll(".filter-chips, .finder-chips, .review-grid, .upsell-row").forEach((el) => {
   el.addEventListener("scroll", () => randVerlauf(el), { passive: true });
