@@ -2474,3 +2474,15 @@ html, body { overflow-x: clip; }
 .duftwahl-fuss { display: flex; align-items: baseline; justify-content: space-between; gap: 0.8rem; }
 .duftwahl-leeren { background: none; border: 0; padding: 0; font-size: 0.78rem; color: #777; text-decoration: underline; cursor: pointer; white-space: nowrap; }
 .duftwahl-leeren:hover { color: var(--black); }
+
+/* ---- Probierset 7: Liste der Proben (v121) ---- */
+.proben-liste { list-style: none; margin: 0 0 1.4rem; padding: 0; border-top: 1px solid var(--line); }
+.proben-liste li { border-bottom: 1px solid var(--line); }
+.proben-zeile { width: 100%; display: grid; grid-template-columns: 44px 1fr auto; align-items: center; gap: 0.9rem; padding: 0.55rem 0;
+  background: none; border: 0; cursor: pointer; text-align: left; font: inherit; color: inherit; }
+.proben-zeile img { width: 44px; height: 44px; border-radius: 6px; object-fit: cover; }
+.proben-text { display: flex; flex-direction: column; gap: 0.1rem; min-width: 0; }
+.proben-name { font-family: var(--serif); font-size: 1rem; }
+.proben-noten { font-size: 0.8rem; color: #777; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.proben-ml { font-size: 0.75rem; color: #999; letter-spacing: 0.08em; }
+.proben-zeile:hover .proben-name { text-decoration: underline; text-underline-offset: 3px; }

@@ -429,6 +429,10 @@ const OTHER_PRODUCTS = [
     price: 34.90, priceOld: 41.30, bestseller: true,
     desc: "Die komplette Caroud-Kollektion als 30-ml-Sprays: alle sieben Düfte in einer Box. Finde deinen Favoriten – oder verschenke die ganze Reihe.",
     notes: ["7 × 30 ml", "Alle 7 Düfte", "Geschenk-Box"],
+    photo: "img/fotos/probierset-7.webp?v=" + ASSET_V,
+    galerie: SCENTS.map((s) => ({ src: "img/fotos/probe-" + s.key + ".webp?v=" + ASSET_V, scent: s.key, label: s.name })),
+    // Auf der Produktseite: kurze Liste der sieben Proben mit Duftnoten
+    probenListe: true,
   },
   // Mystery Box
   {

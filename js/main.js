@@ -1332,6 +1332,26 @@ function pyrFarben(key) {
   const f = typeof PYRAMIDEN_FARBEN !== "undefined" && PYRAMIDEN_FARBEN[key];
   return f ? `--p1:${f.hell};--p2:${f.mitte};--p3:${f.dunkel};` : "";
 }
+// Probierset mit allen Düften: kurze Liste, was drin ist
+function probenListeHtml(p) {
+  if (!p.probenListe) return "";
+  return `
+    <p class="notes-label">Die ${SCENTS.length} Proben im Set</p>
+    <ul class="proben-liste">
+      ${SCENTS.map((s) => `
+        <li>
+          <button type="button" class="proben-zeile" data-proben-duft="${s.key}">
+            <img src="img/fotos/probe-${s.key}.webp?v=${ASSET_V}" alt="" loading="lazy">
+            <span class="proben-text">
+              <span class="proben-name">${s.name}</span>
+              <span class="proben-noten">${s.notes.slice(0, 3).join(" · ")}</span>
+            </span>
+            <span class="proben-ml">30 ml</span>
+          </button>
+        </li>`).join("")}
+    </ul>`;
+}
+
 // Duftreise: Pyramide als Grafik, Geschichte in drei Phasen, Duftprofil
 function duftreiseBlock(p) {
   const d = typeof DUFTREISE !== "undefined" && p.linie === "spray" && !p.set ? DUFTREISE[p.scent] : null;
@@ -1483,6 +1503,7 @@ function renderProduktseite(p) {
               <dl class="fakten">
                 ${fakten.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")}
               </dl>` : ""}
+            ${probenListeHtml(p)}
             ${sicherheitHtml(p)}
           </div>
           ${geschwister.length ? `
@@ -1606,6 +1627,10 @@ function renderProduktseite(p) {
       }
     });
   });
+  produktPage.querySelectorAll("[data-proben-duft]").forEach((b) => b.addEventListener("click", () => {
+    const thumb = produktPage.querySelector(`[data-thumb][data-scent="${b.dataset.probenDuft}"]`);
+    if (thumb) { thumb.click(); produktPage.querySelector("[data-stage]")?.scrollIntoView({ behavior: "smooth", block: "center" }); }
+  }));
   // Duftwahl: je Gruppe Düfte antippen (bis zur Anzahl), bei "doppelt" auch mehrmals denselben
   const gruppen = wahlGruppen(p);
   const auswahl = gruppen.map(() => []);
