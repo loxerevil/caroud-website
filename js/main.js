@@ -1731,6 +1731,58 @@ function wischPfeile(el, ton) {
   wischPfeileSetzen(el);
 }
 wischPfeile(document.getElementById("scentGrid"), "dunkel");
+
+// Duft-Reihe am Handy: immer ein Duft in der Mitte im Fokus.
+// Pfeile und Antippen einer Nachbarkarte holen den naechsten Duft genau in die Mitte.
+(function duftFokus() {
+  const el = document.getElementById("scentGrid");
+  if (!el) return;
+  const aktiv = () => window.matchMedia("(max-width: 640px)").matches;
+  const karten = () => [...el.querySelectorAll(".scent-card")];
+  const mitteVon = (k) => k.offsetLeft + k.offsetWidth / 2;
+  const fokusIndex = () => {
+    const m = el.scrollLeft + el.clientWidth / 2;
+    let best = 0, dist = Infinity;
+    karten().forEach((k, i) => { const d = Math.abs(mitteVon(k) - m); if (d < dist) { dist = d; best = i; } });
+    return best;
+  };
+  const zentriere = (i) => {
+    const k = karten()[i];
+    if (k) el.scrollTo({ left: mitteVon(k) - el.clientWidth / 2, behavior: "smooth" });
+  };
+  let raf = 0;
+  const markiere = () => {
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(() => {
+      const f = aktiv() ? fokusIndex() : -1;
+      karten().forEach((k, i) => k.classList.toggle("im-fokus", i === f));
+    });
+  };
+  el.addEventListener("scroll", markiere, { passive: true });
+  window.addEventListener("resize", markiere);
+  // Pfeile: statt fester Schrittweite genau zum Nachbar-Duft springen
+  const wrap = el.parentElement;
+  if (wrap && wrap.classList.contains("wisch-wrap")) {
+    ["l", "r"].forEach((seite) => {
+      const alt = wrap.querySelector(".wisch-pfeil." + seite);
+      const neu = alt.cloneNode(true);
+      alt.replaceWith(neu);
+      neu.addEventListener("click", () => {
+        if (!aktiv()) { el.scrollBy({ left: (seite === "l" ? -1 : 1) * el.clientWidth * 0.8, behavior: "smooth" }); return; }
+        zentriere(Math.max(0, Math.min(karten().length - 1, fokusIndex() + (seite === "l" ? -1 : 1))));
+      });
+    });
+  }
+  // Antippen einer Nachbarkarte: erst in die Mitte holen, erst die Fokus-Karte oeffnet das Produkt
+  el.addEventListener("click", (e) => {
+    const k = e.target.closest(".scent-card");
+    if (!k || !aktiv() || k.classList.contains("im-fokus")) return;
+    e.stopPropagation(); e.preventDefault();
+    zentriere(karten().indexOf(k));
+  }, true);
+  markiere();
+  window.addEventListener("load", markiere);
+})();
 document.querySelectorAll(".review-grid").forEach((el) => wischPfeile(el, "hell"));
 wischPfeile(document.getElementById("filterChips"), "hell");
 

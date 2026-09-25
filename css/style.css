@@ -2366,3 +2366,13 @@ input, select, textarea { font-family: inherit; }
 .wisch-wrap:has(> #filterChips) .wisch-pfeil.l { left: -0.4rem; }
 .wisch-wrap:has(> #filterChips) .wisch-pfeil.r { right: -0.4rem; }
 @media (prefers-reduced-motion: reduce) { .wisch-pfeil.r.sichtbar { animation: none; } }
+
+/* ---- Duft-Reihe am Handy (v116): ein Duft immer mittig im Fokus ---- */
+@media (max-width: 640px) {
+  .scent-grid { position: relative; gap: 0.5rem; padding-left: 19%; padding-right: 19%; scroll-snap-type: x mandatory; scroll-padding-left: 0; }
+  .scent-card { flex: 0 0 62%; scroll-snap-align: center; transform: scale(0.88); opacity: 0.45;
+    transition: transform 0.35s cubic-bezier(0.22, 0.7, 0.3, 1), opacity 0.35s ease, border-color 0.35s ease; }
+  .scent-card.im-fokus { transform: scale(1); opacity: 1; border-color: rgba(255, 255, 255, 0.35); }
+  .scent-card:hover { transform: scale(0.88); }
+  .scent-card.im-fokus:hover { transform: scale(1); }
+}
