@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /lager.html
+Disallow: /panel.html
+
+Sitemap: https://caroud.de/sitemap.xml

@@ -1726,7 +1726,7 @@ function sicherheitHtml(p) {
   const sdb = SDB[p.scent] && SDB[p.scent][art];
   return `
     <details class="pdp-sicherheit">
-      <summary>Sicherheit &amp; Inhaltsstoffe${SICHERHEIT_VORLAEUFIG ? ` <span class="sich-badge">vorläufig</span>` : ""}</summary>
+      <summary>Sicherheit &amp; Inhaltsstoffe</summary>
       <div class="sich-body">
         <p class="sich-label">Inhaltsstoffe</p>
         <p>${s.inhalt}</p>
