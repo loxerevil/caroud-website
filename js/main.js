@@ -927,7 +927,7 @@ function renderCart() {
       <div class="cart-item-art">${thumbFor(p)}</div>
       <div class="cart-item-info">
         <div class="cart-item-name">${p.name}${item.up ? ` <span class="upsell-tag">Mitnahme</span>` : ""}</div>
-        ${item.wahl && item.wahl.length ? `<div class="cart-item-wahl">${item.wahl.map((k) => SCENTS.find((s) => s.key === k)?.name || k).join(" · ")}</div>` : ""}
+        ${item.wahl && item.wahl.length ? `<div class="cart-item-wahl">${wahlText(item.wahl)}</div>` : ""}
         <div class="cart-item-price">${preis < p.price ? `<span class="price-old">${euro(p.price)}</span> ` : ""}${euro(preis)}</div>
         <div class="qty-row">
           <button class="qty-btn" data-minus>−</button>
@@ -1606,49 +1606,78 @@ function renderProduktseite(p) {
       }
     });
   });
-  // Duftwahl: Düfte antippen (bis zur Anzahl des Sets), gewählte Probe erscheint groß
-  const gewaehlt = [];
-  const wahlBox = produktPage.querySelector("[data-wahl]");
+  // Duftwahl: je Gruppe Düfte antippen (bis zur Anzahl), bei "doppelt" auch mehrmals denselben
+  const gruppen = wahlGruppen(p);
+  const auswahl = gruppen.map(() => []);
   const addBtn = produktPage.querySelector("#pdpAdd");
+  const boxen = [...produktPage.querySelectorAll("[data-wahl]")];
+  const fehlt = () => gruppen.reduce((n, g, gi) => n + (g.anzahl - auswahl[gi].length), 0);
+  const nameVon = (k) => SCENTS.find((s) => s.key === k).name;
   const wahlUpdate = () => {
-    if (!wahlBox) return;
-    const n = p.wahl.anzahl;
-    wahlBox.querySelectorAll("[data-wahl-duft]").forEach((b) => {
-      const idx = gewaehlt.indexOf(b.dataset.wahlDuft);
-      b.classList.toggle("aktiv", idx >= 0);
-      b.setAttribute("aria-pressed", idx >= 0 ? "true" : "false");
-      b.querySelector(".duftwahl-nr").textContent = idx >= 0 ? idx + 1 : "";
+    boxen.forEach((box, gi) => {
+      const g = gruppen[gi], wahl = auswahl[gi];
+      box.querySelectorAll("[data-wahl-duft]").forEach((b) => {
+        const k = b.dataset.wahlDuft;
+        const anzahl = wahl.filter((x) => x === k).length;
+        b.classList.toggle("aktiv", anzahl > 0);
+        b.setAttribute("aria-pressed", anzahl > 0 ? "true" : "false");
+        // Nummer der Reihenfolge; bei mehrfach gewähltem Duft "2×"
+        b.querySelector(".duftwahl-nr").textContent = anzahl > 1 ? anzahl + "×" : anzahl === 1 ? (g.doppelt ? "✓" : wahl.indexOf(k) + 1) : "";
+      });
+      box.querySelector("[data-wahl-count]").textContent = `${wahl.length} von ${g.anzahl} gewählt`;
+      box.classList.toggle("komplett", wahl.length === g.anzahl);
+      const zaehl = {};
+      wahl.forEach((k) => { zaehl[k] = (zaehl[k] || 0) + 1; });
+      box.querySelector("[data-wahl-liste]").textContent = wahl.length
+        ? Object.entries(zaehl).map(([k, n]) => (n > 1 ? n + "× " : "") + nameVon(k)).join(" · ")
+        : g.doppelt && g.anzahl > 1 ? "Tippe auf deine Wunsch-Düfte – auch mehrmals denselben." : "Tippe auf deinen Wunsch-Duft.";
+      const leeren = box.querySelector("[data-wahl-leeren]");
+      if (leeren) leeren.hidden = !wahl.length;
     });
-    wahlBox.querySelector("[data-wahl-count]").textContent = `${gewaehlt.length} von ${n} gewählt`;
-    const liste = wahlBox.querySelector("[data-wahl-liste]");
-    liste.textContent = gewaehlt.length ? gewaehlt.map((k) => SCENTS.find((s) => s.key === k).name).join(" · ") : "Tippe auf deine Wunsch-Düfte.";
-    addBtn.classList.toggle("wartet", gewaehlt.length < n);
-    addBtn.textContent = gewaehlt.length < n ? `Noch ${n - gewaehlt.length} ${n - gewaehlt.length === 1 ? "Duft" : "Düfte"} wählen` : "In den Warenkorb legen";
+    if (!gruppen.length) return;
+    const n = fehlt();
+    addBtn.classList.toggle("wartet", n > 0);
+    addBtn.textContent = n > 0 ? `Noch ${n} ${n === 1 ? "Duft" : "Düfte"} wählen` : "In den Warenkorb legen";
   };
-  if (wahlBox) {
-    wahlBox.querySelectorAll("[data-wahl-duft]").forEach((b) => {
+  boxen.forEach((box, gi) => {
+    const g = gruppen[gi], wahl = auswahl[gi];
+    box.querySelectorAll("[data-wahl-duft]").forEach((b) => {
       b.addEventListener("click", () => {
         const k = b.dataset.wahlDuft;
-        const idx = gewaehlt.indexOf(k);
-        if (idx >= 0) gewaehlt.splice(idx, 1);
-        else if (gewaehlt.length < p.wahl.anzahl) gewaehlt.push(k);
-        else if (p.wahl.anzahl === 1) gewaehlt.splice(0, 1, k);
-        else { showToast(`Du hast schon ${p.wahl.anzahl} Düfte gewählt – tippe einen an, um ihn zu tauschen.`); return; }
-        // Die gewählte Probe gross zeigen
+        const drin = wahl.includes(k);
+        if (g.anzahl === 1) { wahl.splice(0, 1); if (!drin) wahl.push(k); }
+        else if (g.doppelt) {
+          if (wahl.length < g.anzahl) wahl.push(k);
+          else if (drin) wahl.splice(wahl.lastIndexOf(k), 1);
+          else { showToast(`Schon ${g.anzahl} gewählt – tippe einen gewählten Duft an, um ihn zu entfernen.`); return; }
+        } else {
+          if (drin) wahl.splice(wahl.indexOf(k), 1);
+          else if (wahl.length < g.anzahl) wahl.push(k);
+          else { showToast(`Du hast schon ${g.anzahl} Düfte gewählt – tippe einen an, um ihn zu tauschen.`); return; }
+        }
+        // Die gewählte Probe gross zeigen (Probiersets)
         const thumb = produktPage.querySelector(`[data-thumb][data-scent="${k}"]`);
-        if (thumb && idx < 0) thumb.click();
+        if (thumb && !drin) thumb.click();
         wahlUpdate();
       });
     });
-    wahlUpdate();
-  }
+    const leeren = box.querySelector("[data-wahl-leeren]");
+    if (leeren) leeren.addEventListener("click", () => { wahl.length = 0; wahlUpdate(); });
+  });
+  wahlUpdate();
   addBtn.addEventListener("click", () => {
-    if (p.wahl && gewaehlt.length < p.wahl.anzahl) {
-      showToast(`Bitte wähle noch ${p.wahl.anzahl - gewaehlt.length} ${p.wahl.anzahl - gewaehlt.length === 1 ? "Duft" : "Düfte"}.`);
-      wahlBox?.scrollIntoView({ behavior: "smooth", block: "center" });
+    const n = fehlt();
+    if (gruppen.length && n > 0) {
+      showToast(`Bitte wähle noch ${n} ${n === 1 ? "Duft" : "Düfte"}.`);
+      const offen = boxen.find((b, gi) => auswahl[gi].length < gruppen[gi].anzahl);
+      offen?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
-    addToCart(p.id, pdpQty, false, p.wahl ? gewaehlt.slice() : null);
+    // Eine Gruppe (Probierset): nur die Düfte; mehrere Linien: "linie:duft"
+    const wahl = !gruppen.length ? null
+      : Array.isArray(p.wahl) ? gruppen.flatMap((g, gi) => auswahl[gi].map((k) => g.linie + ":" + k))
+      : auswahl[0].slice();
+    addToCart(p.id, pdpQty, false, wahl);
     openCart();
   });
 }
@@ -1688,25 +1717,45 @@ function sicherheitHtml(p) {
     </details>`;
 }
 
+// Duftauswahl: ein Set kann mehrere Gruppen haben (z. B. 1 Spray + 2 Anhänger).
+// p.wahl ist entweder eine Gruppe { anzahl, linie } oder eine Liste davon.
+function wahlGruppen(p) {
+  if (!p.wahl) return [];
+  return Array.isArray(p.wahl) ? p.wahl : [p.wahl];
+}
+const LINIE_KURZ = { spray: "Spray", haenger: "Anhänger", glas: "Glasanhänger", probe: "Probe" };
+// Text der Auswahl fuer den Warenkorb: "Spray: Fast Cherry · Anhänger: Fast Cherry, Erba Tuned"
+function wahlText(wahl) {
+  const name = (k) => SCENTS.find((s) => s.key === k)?.name || k;
+  if (!wahl.some((x) => x.includes(":"))) return wahl.map(name).join(" · ");
+  const gruppen = {};
+  wahl.forEach((x) => { const [l, k] = x.split(":"); gruppen[l] = gruppen[l] || {}; gruppen[l][k] = (gruppen[l][k] || 0) + 1; });
+  return Object.entries(gruppen).map(([l, d]) =>
+    `${LINIE_KURZ[l] || l}: ${Object.entries(d).map(([k, n]) => (n > 1 ? n + "× " : "") + name(k)).join(", ")}`).join(" · ");
+}
+
 // Leiste zur Duftauswahl bei Sets mit frei wählbaren Düften
 function duftwahlHtml(p) {
-  const bild = (s) => p.wahl.linie === "probe" ? "img/fotos/probe-" + s.key + ".webp?v=" + ASSET_V
-    : byId(p.wahl.linie + "-" + s.key)?.photo || "";
-  return `
-    <div class="duftwahl" data-wahl>
+  const bild = (g, s) => g.linie === "probe" ? "img/fotos/probe-" + s.key + ".webp?v=" + ASSET_V
+    : byId(g.linie + "-" + s.key)?.photo || "";
+  return wahlGruppen(p).map((g, gi) => `
+    <div class="duftwahl" data-wahl data-gruppe="${gi}">
       <div class="duftwahl-kopf">
-        <p class="duftwahl-titel">${p.wahl.anzahl === 1 ? "Dein Duft" : `Deine ${p.wahl.anzahl} Düfte`}</p>
+        <p class="duftwahl-titel">${g.titel || (g.anzahl === 1 ? "Dein Duft" : `Deine ${g.anzahl} Düfte`)}</p>
         <span class="duftwahl-count" data-wahl-count></span>
       </div>
       <div class="duftwahl-row">
         ${SCENTS.map((s) => `
           <button type="button" class="duftwahl-item" data-wahl-duft="${s.key}" aria-pressed="false">
-            <span class="duftwahl-bild"><img src="${bild(s)}" alt="" loading="lazy"><span class="duftwahl-nr"></span></span>
+            <span class="duftwahl-bild"><img src="${bild(g, s)}" alt="" loading="lazy"><span class="duftwahl-nr"></span></span>
             <span class="duftwahl-name">${s.name}</span>
           </button>`).join("")}
       </div>
-      <p class="duftwahl-liste" data-wahl-liste></p>
-    </div>`;
+      <div class="duftwahl-fuss">
+        <p class="duftwahl-liste" data-wahl-liste></p>
+        ${g.doppelt && g.anzahl > 1 ? `<button type="button" class="duftwahl-leeren" data-wahl-leeren hidden>Auswahl leeren</button>` : ""}
+      </div>
+    </div>`).join("");
 }
 
 const shopSektionen = Array.from(document.querySelectorAll("body > section")).filter((el) => el.id !== "produktPage");

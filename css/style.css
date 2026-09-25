@@ -2467,3 +2467,10 @@ html, body { overflow-x: clip; }
   .hero-seite-pfeil:active { background: rgba(255, 255, 255, 0.9); color: #000; }
 }
 @media (max-width: 860px) { .hero-seite-pfeil { top: 70%; } }
+
+/* ---- Duftauswahl mit mehreren Gruppen (v120) ---- */
+.duftwahl + .duftwahl { margin-top: 0.9rem; }
+.duftwahl.komplett { border-color: var(--black); }
+.duftwahl-fuss { display: flex; align-items: baseline; justify-content: space-between; gap: 0.8rem; }
+.duftwahl-leeren { background: none; border: 0; padding: 0; font-size: 0.78rem; color: #777; text-decoration: underline; cursor: pointer; white-space: nowrap; }
+.duftwahl-leeren:hover { color: var(--black); }

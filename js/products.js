@@ -312,10 +312,11 @@ const OTHER_PRODUCTS = [
     type: "bundle", category: "Sets & Boxen",
     color: "#111111", label: "Starter",
     price: 29.90, priceOld: 34.70, bestseller: true, // 26,90 + 2 × 3,90
-    desc: "Der perfekte Einstieg: 1 Duftspray deiner Wahl + 2 Duftanhänger. Spare gegenüber dem Einzelkauf.",
+    desc: "Der perfekte Einstieg: 1 Duftspray + 2 Duftanhänger, alle Düfte frei wählbar. Spare gegenüber dem Einzelkauf.",
     notes: ["1× Spray", "2× Anhänger"],
     photo: "img/fotos/bundle-starter.webp?v=" + ASSET_V,
     photo2: "img/fotos/bundle-starter-2.webp?v=" + ASSET_V,
+    wahl: [{ anzahl: 1, linie: "spray", titel: "Dein Duftspray", doppelt: true }, { anzahl: 2, linie: "haenger", titel: "Deine 2 Duftanhänger", doppelt: true }],
   },
   {
     id: "bundle-signature",
@@ -323,21 +324,21 @@ const OTHER_PRODUCTS = [
     type: "bundle", category: "Sets & Boxen",
     color: "#a8323e", label: "Signature",
     price: 56.90, priceOld: 65.50, bestseller: false, // 2 × 26,90 + 3 × 3,90
-    desc: "Für Sammler: 2 Duftsprays + 3 Duftanhänger – frei kombinierbar aus allen Düften.",
+    desc: "Für Sammler: 2 Duftsprays + 3 Duftanhänger – frei kombinierbar aus allen sieben Düften, direkt hier auswählen.",
     notes: ["2× Spray", "3× Anhänger"],
     photo: "img/fotos/bundle-signature.webp?v=" + ASSET_V,
+    wahl: [{ anzahl: 2, linie: "spray", titel: "Deine 2 Duftsprays", doppelt: true }, { anzahl: 3, linie: "haenger", titel: "Deine 3 Duftanhänger", doppelt: true }],
   },
-  // Pflege-Boxen: Duft + Waschzubehör. Duft wird auf der Produktseite gewählt,
-  // die Anhänger kommen im selben Duft wie das Spray.
+  // Pflege-Boxen: Duft + Waschzubehör. Spray- und Anhänger-Düfte werden auf der Produktseite gewählt.
   {
     id: "box-pit-stop",
     name: "Pit Stop Box",
     type: "bundle", category: "Sets & Boxen",
     color: "#111111", label: "Pit Stop",
     price: 42.90, priceOld: 53.50, bestseller: false, // 26,90 + 2 × 3,90 + 11,90 + 6,90
-    desc: "Kurz rein, sauber raus: 1 Duftspray und 2 Duftanhänger im Duft deiner Wahl, dazu das Mikrofasertuch-Set und ein Innenraum-Tuch. Alles, damit dein Auto sauber aussieht und gut riecht – in einer Box.",
+    desc: "Kurz rein, sauber raus: 1 Duftspray und 2 Duftanhänger in Düften deiner Wahl, dazu das Mikrofasertuch-Set und ein Innenraum-Tuch. Alles, damit dein Auto sauber aussieht und gut riecht – in einer Box.",
     notes: ["1× Duftspray 150 ml", "2× Duftanhänger", "Mikrofasertücher 3er-Set", "Innenraum-Tuch", "Versandkostenfrei"],
-    wahl: { anzahl: 1, linie: "spray" },
+    wahl: [{ anzahl: 1, linie: "spray", titel: "Dein Duftspray", doppelt: true }, { anzahl: 2, linie: "haenger", titel: "Deine 2 Duftanhänger", doppelt: true }],
   },
   {
     id: "box-full-detail",
@@ -345,20 +346,21 @@ const OTHER_PRODUCTS = [
     type: "bundle", category: "Sets & Boxen",
     color: "#a8323e", label: "Full Detail",
     price: 79.90, priceOld: 107.20, bestseller: false, // 2 × 26,90 + 2 × 3,90 + 14,90 + 11,90 + 11,90 + 6,90
-    desc: "Die komplette Aufbereitung für zu Hause: 2 Duftsprays in deinen Wunsch-Düften, je Duft ein passender Duftanhänger, dazu Trockentuch, Wasserabzieher, Mikrofasertuch-Set und Innenraum-Tuch. Von der Wäsche bis zum letzten Sprühstoß.",
+    desc: "Die komplette Aufbereitung für zu Hause: 2 Duftsprays und 2 Duftanhänger in deinen Wunsch-Düften, dazu Trockentuch, Wasserabzieher, Mikrofasertuch-Set und Innenraum-Tuch. Von der Wäsche bis zum letzten Sprühstoß.",
     notes: ["2× Duftspray 150 ml", "2× Duftanhänger", "Trockentuch 60 × 90", "Wasserabzieher", "Mikrofasertücher 3er-Set", "Innenraum-Tuch", "Versandkostenfrei"],
-    wahl: { anzahl: 2, linie: "spray" },
+    wahl: [{ anzahl: 2, linie: "spray", titel: "Deine 2 Duftsprays", doppelt: true }, { anzahl: 2, linie: "haenger", titel: "Deine 2 Duftanhänger", doppelt: true }],
   },
-  // Sets – gleiche Produkte, bessere Staffelpreise. Düfte frei wählbar (Angabe im Checkout).
+  // Sets – gleiche Produkte, bessere Staffelpreise. Düfte frei wählbar direkt auf der Produktseite.
   {
     id: "set-spray-2",
     name: "Duftspray 2er-Set",
     type: "spray", category: "Duftsprays", set: true,
     color: "#111111", label: "2er-Set",
     price: 47.90, priceOld: 53.80, bestseller: false,
-    desc: "Zwei Duftsprays à 150 ml, frei kombinierbar aus allen sieben Düften – einer fürs Auto, einer als Reserve oder zum Verschenken. Deine Wunsch-Düfte gibst du im Checkout an.",
+    desc: "Zwei Duftsprays à 150 ml, frei kombinierbar aus allen sieben Düften – einer fürs Auto, einer als Reserve oder zum Verschenken. Wähle deine Düfte direkt hier aus.",
     notes: ["2 × 150 ml", "Düfte frei wählbar"],
     photo: "img/fotos/set-spray-2.webp?v=" + ASSET_V,
+    wahl: [{ anzahl: 2, linie: "spray", titel: "Deine 2 Duftsprays", doppelt: true }],
   },
   {
     id: "set-spray-3",
@@ -366,9 +368,10 @@ const OTHER_PRODUCTS = [
     type: "spray", category: "Duftsprays", set: true,
     color: "#2a2a2a", label: "3er-Set",
     price: 66.90, priceOld: 80.70, bestseller: false,
-    desc: "Drei Duftsprays à 150 ml, frei kombinierbar aus allen sieben Düften – der günstigste Weg zur großen Flasche. Deine Wunsch-Düfte gibst du im Checkout an.",
+    desc: "Drei Duftsprays à 150 ml, frei kombinierbar aus allen sieben Düften – der günstigste Weg zur großen Flasche. Wähle deine Düfte direkt hier aus.",
     notes: ["3 × 150 ml", "Düfte frei wählbar"],
     photo: "img/fotos/set-spray-3.webp?v=" + ASSET_V,
+    wahl: [{ anzahl: 3, linie: "spray", titel: "Deine 3 Duftsprays", doppelt: true }],
   },
   {
     id: "set-haenger-3",
@@ -376,9 +379,10 @@ const OTHER_PRODUCTS = [
     type: "haenger", category: "Duftanhänger Premium", set: true,
     color: "#111111", label: "3er-Set",
     price: 9.90, priceOld: 11.70, bestseller: true,
-    desc: "Drei Premium-Duftanhänger in der eigenen Caroud-Form, frei kombinierbar aus allen sieben Düften. Deine Wunsch-Düfte gibst du im Checkout an.",
+    desc: "Drei Premium-Duftanhänger in der eigenen Caroud-Form, frei kombinierbar aus allen sieben Düften. Wähle deine Düfte direkt hier aus.",
     notes: ["3 Anhänger", "Düfte frei wählbar"],
     photo: "img/fotos/set-haenger-3.webp?v=" + ASSET_V,
+    wahl: [{ anzahl: 3, linie: "haenger", titel: "Deine 3 Duftanhänger", doppelt: true }],
   },
   {
     id: "set-haenger-5",
@@ -386,9 +390,10 @@ const OTHER_PRODUCTS = [
     type: "haenger", category: "Duftanhänger Premium", set: true,
     color: "#2a2a2a", label: "5er-Set",
     price: 14.90, priceOld: 19.50, bestseller: false,
-    desc: "Fünf Premium-Duftanhänger, frei kombinierbar aus allen sieben Düften – unser Sparpreis für den Duftwechsel. Deine Wunsch-Düfte gibst du im Checkout an.",
+    desc: "Fünf Premium-Duftanhänger, frei kombinierbar aus allen sieben Düften – unser Sparpreis für den Duftwechsel. Wähle deine Düfte direkt hier aus.",
     notes: ["5 Anhänger", "Düfte frei wählbar"],
     photo: "img/fotos/set-haenger-5.webp?v=" + ASSET_V,
+    wahl: [{ anzahl: 5, linie: "haenger", titel: "Deine 5 Duftanhänger", doppelt: true }],
   },
   {
     id: "set-glas-2",
@@ -396,9 +401,10 @@ const OTHER_PRODUCTS = [
     type: "glas", category: "Glasanhänger", set: true,
     color: "#1a1a1a", label: "2er-Set",
     price: 22.90, priceOld: 25.80, bestseller: false,
-    desc: "Zwei Glasanhänger mit je 8 ml Duftöl, frei kombinierbar aus allen sieben Düften – einer für dich, einer zum Verschenken. Deine Wunsch-Düfte gibst du im Checkout an.",
+    desc: "Zwei Glasanhänger mit je 8 ml Duftöl, frei kombinierbar aus allen sieben Düften – einer für dich, einer zum Verschenken. Wähle deine Düfte direkt hier aus.",
     notes: ["2 × 8 ml", "Düfte frei wählbar"],
     photo: "img/fotos/set-glas-2.webp?v=" + ASSET_V,
+    wahl: [{ anzahl: 2, linie: "glas", titel: "Deine 2 Glasanhänger", doppelt: true }],
   },
   // Probiersets – 30-ml-Sprühfläschchen zum Kennenlernen
   {
