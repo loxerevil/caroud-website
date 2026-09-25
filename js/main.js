@@ -1353,6 +1353,41 @@ function probenListeHtml(p) {
 }
 
 // Duftreise: Pyramide als Grafik, Geschichte in drei Phasen, Duftprofil
+// „Warum Caroud?“ – Vergleich mit herkömmlichen Produkten (Pflege)
+function vergleichBlock(p) {
+  const v = p.vergleich;
+  if (!v) return "";
+  const haken = `<svg class="vg-icon vg-ja" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10"/><path d="M5.6 10.3l2.9 2.9 5.9-6.1" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  const kreuz = `<svg class="vg-icon vg-nein" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10"/><path d="M6.8 6.8l6.4 6.4M13.2 6.8l-6.4 6.4" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>`;
+  return `
+    <section class="pvg" aria-label="Warum Caroud?">
+      <div class="pvg-kopf">
+        <p class="pdp-moment-kicker">Der Unterschied</p>
+        <h2 class="pvg-titel">Warum Caroud?</h2>
+      </div>
+      <div class="pvg-tabelle" style="--zeilen:${v.zeilen.length + 1}">
+        <div class="vg-spalte vg-unser">
+          <div class="vg-kopf">
+            <span class="vg-marke">CAROUD</span>
+            <img src="${v.bild}" alt="${v.unser}" loading="lazy">
+            <strong>${v.unser}</strong>
+            <span class="vg-art">${v.unserArt}</span>
+          </div>
+          ${v.zeilen.map(([ja]) => `<div class="vg-zelle">${haken}<span>${ja}</span></div>`).join("")}
+        </div>
+        <div class="vg-spalte vg-andere">
+          <div class="vg-kopf">
+            <span class="vg-leer" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14" stroke="#8d9097" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+            <span class="vg-marke">ANDERE</span>
+            <strong>${v.andere}</strong>
+            <span class="vg-art">${v.andereArt}</span>
+          </div>
+          ${v.zeilen.map(([, nein]) => `<div class="vg-zelle">${kreuz}<span>${nein}</span></div>`).join("")}
+        </div>
+      </div>
+    </section>`;
+}
+
 function duftreiseBlock(p) {
   const d = typeof DUFTREISE !== "undefined" && p.linie === "spray" && !p.set ? DUFTREISE[p.scent] : null;
   const s = d && SCENTS.find((x) => x.key === p.scent);
@@ -1519,6 +1554,7 @@ function renderProduktseite(p) {
       </div>
       ${momentBlock(p)}
       ${duftreiseBlock(p)}
+      ${vergleichBlock(p)}
       ${recoKarten(p)}
     </div>`;
   // Galerie: Foto, Foto 2, Etikett, Video umschalten

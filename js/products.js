@@ -286,6 +286,24 @@ const OTHER_PRODUCTS = [
     price: 14.90, priceOld: null, bestseller: false,
     desc: "Extra saugstarkes Trockentuch für den Lack nach der Wäsche – trocknet große Flächen in einem Zug, streifenfrei und ohne Wasserflecken.",
     notes: ["Extra saugstark", "Streifenfrei", "60 × 90 cm"],
+    photo: "img/fotos/pflege-trockentuch.webp?v=" + ASSET_V,
+    photo2: "img/fotos/pflege-trockentuch-2.webp?v=" + ASSET_V,
+    photo3: "img/fotos/pflege-trockentuch-3.webp?v=" + ASSET_V,
+    // Abschnitt „Warum Caroud?“ auf der Produktseite
+    vergleich: {
+      bild: "img/fotos/pflege-trockentuch-2.webp?v=" + ASSET_V,
+      unser: "Caroud Trockentuch",
+      unserArt: "Twisted-Loop-Mikrofaser",
+      andere: "Herkömmliches Tuch",
+      andereArt: "Einfaches Polyester oder Baumwolle",
+      zeilen: [
+        ["Extrem saugstark – trocknet große Flächen in einem Zug", "Saugt wenig, muss ständig ausgewrungen werden"],
+        ["Gedrehte Schlaufen – fusselt nicht", "Fusselt, Fasern bleiben am Lack hängen"],
+        ["Weich und schonend zum Lack", "Raue Fasern können feine Kratzer begünstigen"],
+        ["Streifenfrei, ohne Wasserflecken", "Hinterlässt Schlieren und Wasserflecken"],
+        ["60 × 90 cm – die ganze Motorhaube auf einmal", "Klein, viele Durchgänge nötig"],
+      ],
+    },
   },
   {
     id: "pflege-mikrofaser",
@@ -307,6 +325,20 @@ const OTHER_PRODUCTS = [
     photo: "img/fotos/pflege-abzieher.webp?v=" + ASSET_V,
     photo2: "img/fotos/pflege-abzieher-2.webp?v=" + ASSET_V,
     photo3: "img/fotos/pflege-abzieher-3.webp?v=" + ASSET_V,
+    vergleich: {
+      bild: "img/fotos/pflege-abzieher-2.webp?v=" + ASSET_V,
+      unser: "Caroud Wasserabzieher",
+      unserArt: "Flexible Silikonlippe",
+      andere: "Herkömmlicher Abzieher",
+      andereArt: "Harte Gummikante",
+      zeilen: [
+        ["Flexible Silikonlippe passt sich jeder Wölbung an", "Harte Kante liegt nicht überall an"],
+        ["Weich und schonend zu Lack und Glas", "Harter Gummi – eher für Glas als für Lack"],
+        ["Zieht Wasser in einem Zug ab – streifenfrei", "Hinterlässt oft Streifen und Restwasser"],
+        ["Ergonomischer Griff, liegt sicher in der Hand", "Einfacher Griff, unhandlich bei großen Flächen"],
+        ["Silikon bleibt lange flexibel", "Gummi wird mit der Zeit hart und rissig"],
+      ],
+    },
   },
   // Bundles
   {

@@ -2486,3 +2486,44 @@ html, body { overflow-x: clip; }
 .proben-noten { font-size: 0.8rem; color: #777; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .proben-ml { font-size: 0.75rem; color: #999; letter-spacing: 0.08em; }
 .proben-zeile:hover .proben-name { text-decoration: underline; text-underline-offset: 3px; }
+
+/* ---- Warum Caroud? – Vergleich auf Pflege-Produktseiten (v128) ---- */
+.pvg { margin-top: 5rem; border-top: 1px solid #ececec; padding-top: 3.5rem; }
+.pvg-kopf { margin-bottom: 2rem; }
+.pvg-titel { font-family: var(--serif); font-weight: 400; font-size: 1.8rem; line-height: 1.2; margin: 0.2rem 0 0; }
+/* Zwei Spalten, die sich per Subgrid die Zeilenhöhen teilen – so liegen die Zeilen immer auf einer Linie */
+.pvg-tabelle { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: repeat(var(--zeilen), auto); max-width: 860px; }
+.vg-spalte { grid-row: 1 / -1; display: grid; grid-template-rows: subgrid; border-radius: 14px; overflow: hidden; }
+.vg-unser { background: var(--white); border: 1px solid var(--line); box-shadow: 0 18px 40px -24px rgba(17, 17, 17, 0.35); position: relative; z-index: 1; }
+.vg-andere { background: #2a2c31; color: #c9cbd0; border-radius: 0 14px 14px 0; }
+.vg-andere .vg-kopf { justify-content: center; gap: 0.5rem; }
+.vg-andere .vg-leer { width: 54px; height: 54px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.18); display: grid; place-items: center; margin-bottom: 0.4rem; }
+.vg-andere .vg-leer svg { width: 22px; height: 22px; }
+.vg-kopf { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0.35rem; padding: 1.2rem 1rem 1.3rem; }
+
+.vg-marke { font-size: 0.66rem; letter-spacing: 0.3em; font-weight: 600; color: var(--accent); }
+.vg-andere .vg-marke { color: #8d9097; }
+.vg-kopf img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 8px; margin: 0.4rem 0 0.5rem; }
+.vg-kopf strong { font-family: var(--serif); font-weight: 400; font-size: 1.05rem; line-height: 1.25; color: var(--black); }
+.vg-andere .vg-kopf strong { color: #e6e7ea; }
+.vg-art { font-size: 0.75rem; color: #777; }
+.vg-andere .vg-art { color: #9a9da4; }
+.vg-zelle { display: flex; align-items: center; gap: 0.7rem; padding: 0.9rem 1rem; font-size: 0.85rem; line-height: 1.4; border-top: 1px solid var(--line); }
+.vg-andere .vg-zelle { border-top-color: rgba(255, 255, 255, 0.07); }
+.vg-unser .vg-zelle:nth-child(odd) { background: #f4f5f7; }
+.vg-andere .vg-zelle:nth-child(odd) { background: rgba(255, 255, 255, 0.03); }
+.vg-icon { flex: 0 0 20px; width: 20px; height: 20px; }
+.vg-ja circle { fill: var(--accent); }
+.vg-nein circle { fill: #8e3b3b; }
+@media (max-width: 599px) {
+  .pvg-titel { font-size: 1.55rem; }
+  .vg-kopf { padding: 0.9rem 0.6rem 1rem; }
+  .vg-kopf strong { font-size: 0.92rem; }
+  .vg-zelle { padding: 0.7rem 0.65rem; gap: 0.5rem; font-size: 0.74rem; }
+  .vg-icon { flex-basis: 17px; width: 17px; height: 17px; }
+}
+@media (min-width: 900px) {
+  .pvg-titel { font-size: 2.1rem; }
+  .vg-zelle { font-size: 0.9rem; padding: 0.95rem 1.4rem; }
+  .vg-kopf img { aspect-ratio: 2 / 1; }
+}
