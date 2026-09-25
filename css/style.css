@@ -2376,3 +2376,63 @@ input, select, textarea { font-family: inherit; }
   .scent-card:hover { transform: scale(0.88); }
   .scent-card.im-fokus:hover { transform: scale(1); }
 }
+
+/* ---- Duftreise (v117, Vorschau): Duftnoten erzählt + Grafik ---- */
+.duftreise { margin-top: 5rem; border-top: 1px solid #ececec; padding-top: 3.5rem; }
+.duftreise-kopf { max-width: 620px; margin-bottom: 2.4rem; }
+.duftreise-titel { font-family: var(--serif); font-weight: 400; font-size: 1.8rem; line-height: 1.2; margin: 0.2rem 0 0.7rem; }
+.duftreise-intro { color: #555; line-height: 1.65; }
+.duftreise-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2.4rem; align-items: center; }
+/* Pyramide: drei Stufen, oben schmal, unten breit, in der Duftfarbe */
+.duftreise-pyramide { display: flex; flex-direction: column; align-items: center; gap: 6px; width: min(100%, 400px); margin: 0 auto; }
+.dr-stufe { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+  color: #fff; padding: 0 12%; clip-path: polygon(var(--e) 0, calc(100% - var(--e)) 0, 100% 100%, 0 100%); }
+.dr-stufe::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--black); }
+.dr-stufe::after { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--duft); }
+.dr-stufe { isolation: isolate; }
+.dr-s0 { width: 52%; height: 108px; --e: 34%; padding-top: 28px; }
+.dr-s0::after { opacity: 0.95; }
+.dr-s1 { width: 76%; height: 92px; --e: 12%; }
+.dr-s1::after { opacity: 0.62; }
+.dr-s2 { width: 100%; height: 92px; --e: 9%; }
+.dr-s2::after { opacity: 0.32; }
+.dr-stufe-name { font-size: 0.66rem; letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.85; }
+.dr-stufe-noten { font-family: var(--serif); font-size: 0.95rem; line-height: 1.3; margin-top: 0.25rem; }
+.dr-s0 .dr-stufe-noten { font-size: 0.82rem; }
+/* Phasen */
+.duftreise-phasen { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.5rem; }
+.duftreise-phasen li { display: grid; grid-template-columns: 34px 1fr; gap: 1rem; align-items: start; }
+.dr-nr { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-family: var(--serif); font-size: 1rem;
+  border: 1px solid var(--duft); color: var(--black); background: color-mix(in srgb, var(--duft) 14%, transparent); }
+.dr-phase-kopf { display: flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap; margin: 0.25rem 0 0.35rem; }
+.dr-phase-kopf strong { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; }
+.dr-phase-kopf span { font-family: var(--serif); font-size: 1.05rem; color: #333; }
+.dr-phase-text { color: #555; line-height: 1.65; margin: 0; }
+/* Profil */
+.duftreise-profil { margin-top: 2.8rem; padding: 1.8rem; border: 1px solid var(--line); border-radius: 12px; background: #fff;
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 2rem; }
+.dr-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: #777; margin: 0 0 0.9rem; }
+.dr-zeile { display: grid; grid-template-columns: 84px 1fr; align-items: center; gap: 0.9rem; margin-bottom: 0.65rem; font-size: 0.9rem; }
+.dr-bahn { height: 6px; border-radius: 6px; background: #eeeeec; overflow: hidden; }
+.dr-bahn i { display: block; height: 100%; border-radius: 6px; background: var(--duft); }
+.dr-fakten { display: grid; gap: 1.6rem; align-content: start; }
+.dr-punkte { display: flex; align-items: center; gap: 6px; margin: 0; }
+.dr-punkte i { width: 12px; height: 12px; border-radius: 50%; border: 1px solid var(--duft); }
+.dr-punkte i.an { background: var(--duft); }
+.dr-punkte span { margin-left: 0.6rem; font-size: 0.9rem; color: #444; }
+@media (min-width: 900px) {
+  .duftreise-grid { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 4.5rem; }
+  .duftreise-profil { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 3.5rem; padding: 2.2rem 2.4rem; }
+  .duftreise-titel { font-size: 2.1rem; }
+}
+/* Pyramide in den Farben des Produktfotos: oben das Leuchten, unten der dunkle Grund */
+.duftreise { --p1: var(--duft); --p2: var(--duft); --p3: var(--black); }
+.dr-stufe::before { background: var(--p3); }
+.dr-s0::after { opacity: 1; background: radial-gradient(120% 140% at 50% 100%, var(--p1) 0%, var(--p2) 100%); }
+.dr-s1::after { opacity: 1; background: linear-gradient(180deg, var(--p2) 0%, color-mix(in srgb, var(--p2) 70%, var(--p3)) 100%); }
+.dr-s2::after { opacity: 1; background: linear-gradient(180deg, color-mix(in srgb, var(--p2) 45%, var(--p3)) 0%, var(--p3) 100%); }
+.dr-stufe { text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35); }
+.dr-bahn i { background: linear-gradient(90deg, var(--p2), var(--p1)); }
+.dr-punkte i { border-color: var(--p1); }
+.dr-punkte i.an { background: var(--p1); }
+.dr-nr { border-color: var(--p1); background: color-mix(in srgb, var(--p1) 12%, transparent); }

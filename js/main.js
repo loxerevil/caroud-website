@@ -1323,6 +1323,61 @@ function recoAuswahl(p) {
   return gewaehlt;
 }
 
+function pyrFarben(key) {
+  const f = typeof PYRAMIDEN_FARBEN !== "undefined" && PYRAMIDEN_FARBEN[key];
+  return f ? `--p1:${f.hell};--p2:${f.mitte};--p3:${f.dunkel};` : "";
+}
+// Duftreise: Pyramide als Grafik, Geschichte in drei Phasen, Duftprofil
+function duftreiseBlock(p) {
+  const d = typeof DUFTREISE !== "undefined" && p.linie === "spray" && !p.set ? DUFTREISE[p.scent] : null;
+  const s = d && SCENTS.find((x) => x.key === p.scent);
+  if (!d || !s) return "";
+  const stufen = [["Kopfnote", s.pyramide.kopf], ["Herznote", s.pyramide.herz], ["Basisnote", s.pyramide.basis]];
+  // In der Grafik ohne Herkunftsangaben, damit die Namen in die Stufen passen
+  const ohneHerkunft = (x) => x.trim().replace(/^(Sizilianische|Kalabrische|Brasilianische|Türkische|Weißer)\s+/, "").replace(/^(Amalfi|Madagaskar|Ceylon)-/, "");
+  const kurz = (t, n) => t.split(",").slice(0, n).map(ohneHerkunft).join(" · ");
+  return `
+    <section class="duftreise" style="--duft:${s.color};${pyrFarben(s.key)}" aria-label="Die Duftreise">
+      <div class="duftreise-kopf">
+        <p class="pdp-moment-kicker">Die Duftreise</p>
+        <h2 class="duftreise-titel">${d.titel}</h2>
+        <p class="duftreise-intro">${d.intro}</p>
+      </div>
+      <div class="duftreise-grid">
+        <div class="duftreise-pyramide" aria-hidden="true">
+          ${stufen.map(([n, t], i) => `
+            <div class="dr-stufe dr-s${i}">
+              <span class="dr-stufe-name">${n}</span>
+              <span class="dr-stufe-noten">${kurz(t, i === 0 ? 2 : 3)}</span>
+            </div>`).join("")}
+        </div>
+        <ol class="duftreise-phasen">
+          ${d.phasen.map((ph, i) => `
+            <li>
+              <span class="dr-nr">${i + 1}</span>
+              <div>
+                <p class="dr-phase-kopf"><strong>${stufen[i][0]}</strong><span>${ph.zeit}</span></p>
+                <p class="dr-phase-text">${ph.text}</p>
+              </div>
+            </li>`).join("")}
+        </ol>
+      </div>
+      <div class="duftreise-profil">
+        <div class="dr-balken">
+          <p class="dr-label">Duftprofil</p>
+          ${d.profil.map(([n, w]) => `
+            <div class="dr-zeile"><span>${n}</span><span class="dr-bahn"><i style="width:${w}%"></i></span></div>`).join("")}
+        </div>
+        <div class="dr-fakten">
+          <div><p class="dr-label">Intensität</p>
+            <p class="dr-punkte">${[1, 2, 3, 4, 5].map((k) => `<i class="${k <= d.intensitaet ? "an" : ""}"></i>`).join("")}<span>${["", "Sehr dezent", "Dezent", "Ausgewogen", "Kräftig", "Sehr kräftig"][d.intensitaet]}</span></p></div>
+          <div><p class="dr-label">Passt zu</p>
+            <div class="pdp-moment-tags">${d.passt.map((t) => `<span class="note-chip">${t}</span>`).join("")}</div></div>
+        </div>
+      </div>
+    </section>`;
+}
+
 function momentBlock(p) {
   const mo = p.moment;
   if (!mo) return "";
@@ -1435,6 +1490,7 @@ function renderProduktseite(p) {
         </div>
       </div>
       ${momentBlock(p)}
+      ${duftreiseBlock(p)}
       ${recoKarten(p)}
     </div>`;
   // Galerie: Foto, Foto 2, Etikett, Video umschalten

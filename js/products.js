@@ -492,3 +492,102 @@ if (BF_AKTIV) {
     p.bfDeal = true;
   });
 }
+
+// ---- Duftreise: Geschichte der Duftnoten + Duftprofil, je Duftspray ----
+const DUFTREISE = {
+  "pacific-cruise": {
+    titel: "Wie Pacific Cruise sich entfaltet.",
+    intro: "Ein Duft bleibt im Auto nicht gleich. Erst kommt der frische Auftakt, dann das Herz – und am Ende die Basis, die noch Stunden später da ist.",
+    phasen: [
+      { zeit: "Die ersten Minuten", text: "Zitronatzitrone, Orange und kühle Minze – spritzig und sofort wach. Schwarze Johannisbeere macht den Frische-Kick rund." },
+      { zeit: "Nach einer Weile", text: "Basilikum und Aprikose übernehmen, begleitet von Mairose. Grün, leicht fruchtig – wie Küstenluft durchs offene Fenster." },
+      { zeit: "Was im Auto bleibt", text: "Feige, Dattel und Ambrette legen sich weich in den Innenraum. Ein sanfter, leicht süßer Nachklang." },
+    ],
+    profil: [["Frisch", 95], ["Zitrisch", 85], ["Fruchtig", 60], ["Grün", 55], ["Süß", 25], ["Holzig", 15]],
+    intensitaet: 3,
+    passt: ["Sommer", "Lange Fahrten", "Offenes Fenster"],
+  },
+  "erba-carbon": {
+    titel: "Wie Erba Carbon sich entfaltet.",
+    intro: "Strahlend im ersten Moment, weich im Abgang: Erba Carbon startet mit saftigen Zitrusfrüchten und legt sich dann warm und sauber in den Innenraum.",
+    phasen: [
+      { zeit: "Die ersten Minuten", text: "Sizilianische Orange, Zitrone und kalabrische Bergamotte – saftig, hell und sofort gute Laune." },
+      { zeit: "Nach einer Weile", text: "Reife mediterrane Früchte runden die Frische ab. Weniger spritzig, dafür voller und fruchtiger." },
+      { zeit: "Was im Auto bleibt", text: "Weißer Moschus, Vanille und Amber – ein sauberer, weicher Duft, der an frische Wäsche erinnert." },
+    ],
+    profil: [["Frisch", 80], ["Zitrisch", 90], ["Fruchtig", 70], ["Süß", 35], ["Pudrig", 45], ["Holzig", 15]],
+    intensitaet: 3,
+    passt: ["Alltag", "Ganzjährig", "Frisch geputztes Auto"],
+  },
+  "fast-cherry": {
+    titel: "Wie Fast Cherry sich entfaltet.",
+    intro: "Süß, tiefrot und alles andere als dezent. Fast Cherry beginnt mit dunkler Kirsche und wird mit der Zeit immer wärmer.",
+    phasen: [
+      { zeit: "Die ersten Minuten", text: "Schwarze Kirsche und Kirschlikör, geschärft von Bittermandel. Saftig, süß und sofort unverwechselbar." },
+      { zeit: "Nach einer Weile", text: "Sauerkirsche und Pflaume treffen auf Rose und Jasmin. Der Duft wird runder, blumiger, fast samtig." },
+      { zeit: "Was im Auto bleibt", text: "Tonkabohne, Vanille und Sandelholz mit einem Hauch Zimt – warm, cremig und lange spürbar." },
+    ],
+    profil: [["Süß", 95], ["Fruchtig", 90], ["Blumig", 40], ["Würzig", 45], ["Holzig", 35], ["Frisch", 10]],
+    intensitaet: 5,
+    passt: ["Abends", "Herbst & Winter", "Auffallen"],
+  },
+  "driveination": {
+    titel: "Wie Driveination sich entfaltet.",
+    intro: "Klar, elegant und ein bisschen geheimnisvoll: Driveination verbindet frische Zitrusnoten mit Tee und edlen Hölzern.",
+    phasen: [
+      { zeit: "Die ersten Minuten", text: "Zitronatzitrone, Bergamotte und Orange – hell, klar und sauber wie ein frischer Morgen." },
+      { zeit: "Nach einer Weile", text: "Neroli, Ingwer und ein Hauch Ceylon-Zimt geben dem Duft Wärme und eine leichte Schärfe." },
+      { zeit: "Was im Auto bleibt", text: "Schwarzer Tee, Ambroxan, Guajakholz und Weihrauch – ruhig, edel und angenehm zurückhaltend." },
+    ],
+    profil: [["Frisch", 75], ["Zitrisch", 80], ["Würzig", 50], ["Holzig", 55], ["Süß", 15], ["Rauchig", 30]],
+    intensitaet: 3,
+    passt: ["Business", "Pendeln", "Ganzjährig"],
+  },
+  "naxnos-asphalt": {
+    titel: "Wie Naxnos Asphalt sich entfaltet.",
+    intro: "Warm, gemütlich und mit Charakter. Naxnos Asphalt öffnet sich mit Lavendel und wird zu einer Mischung aus Honig, Tabak und Vanille.",
+    phasen: [
+      { zeit: "Die ersten Minuten", text: "Lavendel, Bergamotte und Zitrone – kurz frisch und aromatisch, bevor der Duft wärmer wird." },
+      { zeit: "Nach einer Weile", text: "Honig und Zimt übernehmen, dazu Cashmeran und Jasmin. Süß, weich und wie eine warme Decke." },
+      { zeit: "Was im Auto bleibt", text: "Tabakblatt, Vanille und Tonkabohne – tief, rund und mit einem Hauch Ledersitz-Gefühl." },
+    ],
+    profil: [["Süß", 80], ["Würzig", 60], ["Warm", 90], ["Aromatisch", 50], ["Holzig", 45], ["Frisch", 20]],
+    intensitaet: 4,
+    passt: ["Herbst & Winter", "Nachtfahrten", "Gemütlich"],
+  },
+  "ombre-apex": {
+    titel: "Wie Ombre Apex sich entfaltet.",
+    intro: "Dunkel, edel und orientalisch. Ombre Apex ist der intensivste Duft der Kollektion – mit Oud, Rose und Weihrauch.",
+    phasen: [
+      { zeit: "Die ersten Minuten", text: "Himbeere und Safran – ein fruchtig-würziger Auftakt, der sofort neugierig macht." },
+      { zeit: "Nach einer Weile", text: "Rose, Oud und Weihrauch zeigen sich. Rauchig, blumig und luxuriös – wie ein Abend in einer Hotelbar." },
+      { zeit: "Was im Auto bleibt", text: "Amberholz, Benzoe und Birke – warm, harzig und leicht rauchig. Hält lange und bleibt im Gedächtnis." },
+    ],
+    profil: [["Holzig", 90], ["Rauchig", 70], ["Würzig", 65], ["Blumig", 45], ["Süß", 40], ["Frisch", 5]],
+    intensitaet: 5,
+    passt: ["Abends", "Besondere Anlässe", "Winter"],
+  },
+  "erba-tuned": {
+    titel: "Wie Erba Tuned sich entfaltet.",
+    intro: "Spritzig, grün und gut gelaunt: Erba Tuned mischt Zitrus mit knackigem Apfel und reifer Birne – und wird am Ende warm und weich.",
+    phasen: [
+      { zeit: "Die ersten Minuten", text: "Amalfi-Zitrone, Bergamotte und Orange mit einem Hauch Ingwer – frisch und voller Energie." },
+      { zeit: "Nach einer Weile", text: "Grüner Apfel, Melone und Birne bringen Saft, Kardamom und Zimt eine feine Würze." },
+      { zeit: "Was im Auto bleibt", text: "Moschus, Amber, Vanille und Hölzer – ein sanfter, warmer Nachklang unter der Frische." },
+    ],
+    profil: [["Frisch", 85], ["Fruchtig", 90], ["Zitrisch", 70], ["Grün", 60], ["Würzig", 35], ["Süß", 40]],
+    intensitaet: 3,
+    passt: ["Sommer", "Roadtrips", "Gute Laune"],
+  },
+};
+
+// Farben der Duftpyramide, aus dem Leuchten der Produktfotos abgeleitet (hell = Kopf, dunkel = Basis)
+const PYRAMIDEN_FARBEN = {
+  "pacific-cruise": { hell: "#1f86d6", mitte: "#024c81", dunkel: "#012341" },
+  "erba-carbon": { hell: "#46748f", mitte: "#27435d", dunkel: "#12212f" },
+  "fast-cherry": { hell: "#d60024", mitte: "#840013", dunkel: "#40010b" },
+  "driveination": { hell: "#537382", mitte: "#2c4558", dunkel: "#13212f" },
+  "naxnos-asphalt": { hell: "#c35f12", mitte: "#7a350a", dunkel: "#371b0a" },
+  "ombre-apex": { hell: "#a6562f", mitte: "#6d3417", dunkel: "#361a0b" },
+  "erba-tuned": { hell: "#e6c332", mitte: "#75530e", dunkel: "#32250f" },
+};
