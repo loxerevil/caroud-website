@@ -270,13 +270,13 @@ LINES.forEach((line) => {
 const OTHER_PRODUCTS = [
   // Pflege (Upsell / Waschzubehör)
   {
-    id: "pflege-innenraum",
-    name: "Innenraum-Tuch",
+    id: "pflege-handschuh",
+    name: "Waschhandschuh",
     type: "tuch", category: "Pflege",
-    color: "#4a4a4a", label: "Innenraum",
-    price: 6.90, priceOld: null, bestseller: false,
-    desc: "Weiches Mikrofasertuch für Cockpit, Armaturen und Display – nimmt Staub auf, statt ihn zu verteilen. Fusselfrei und schonend zu empfindlichen Oberflächen.",
-    notes: ["Mikrofaser", "Fusselfrei", "40 × 40 cm"],
+    color: "#4a4a4a", label: "Handschuh",
+    price: 8.90, priceOld: null, bestseller: false,
+    desc: "Weicher Waschhandschuh aus Mikrofaser-Chenille für die Handwäsche: Die dicken Fasern nehmen viel Shampoo und Wasser auf und lösen Schmutz schonend vom Lack. Einfach reinschlüpfen, waschen, auswaschen.",
+    notes: ["Mikrofaser-Chenille", "Schonend zum Lack", "Waschbar"],
   },
   {
     id: "pflege-trockentuch",
@@ -370,9 +370,9 @@ const OTHER_PRODUCTS = [
     name: "Pit Stop Box",
     type: "bundle", category: "Sets & Boxen",
     color: "#111111", label: "Pit Stop",
-    price: 42.90, priceOld: 53.50, bestseller: false, // 26,90 + 2 × 3,90 + 11,90 + 6,90
-    desc: "Kurz rein, sauber raus: 1 Duftspray und 2 Duftanhänger in Düften deiner Wahl, dazu das Mikrofasertuch-Set und ein Innenraum-Tuch. Alles, damit dein Auto sauber aussieht und gut riecht – in einer Box.",
-    notes: ["1× Duftspray 150 ml", "2× Duftanhänger", "Mikrofasertücher 3er-Set", "Innenraum-Tuch", "Versandkostenfrei"],
+    price: 42.90, priceOld: 55.50, bestseller: false, // 26,90 + 2 × 3,90 + 11,90 + 8,90
+    desc: "Kurz rein, sauber raus: 1 Duftspray und 2 Duftanhänger in Düften deiner Wahl, dazu das Mikrofasertuch-Set und ein Waschhandschuh. Alles, damit dein Auto sauber aussieht und gut riecht – in einer Box.",
+    notes: ["1× Duftspray 150 ml", "2× Duftanhänger", "Mikrofasertücher 3er-Set", "Waschhandschuh", "Versandkostenfrei"],
     wahl: [{ anzahl: 1, linie: "spray", titel: "Dein Duftspray", doppelt: true }, { anzahl: 2, linie: "haenger", titel: "Deine 2 Duftanhänger", doppelt: true }],
   },
   {
@@ -380,9 +380,9 @@ const OTHER_PRODUCTS = [
     name: "Full Detail Box",
     type: "bundle", category: "Sets & Boxen",
     color: "#a8323e", label: "Full Detail",
-    price: 79.90, priceOld: 107.20, bestseller: false, // 2 × 26,90 + 2 × 3,90 + 14,90 + 11,90 + 11,90 + 6,90
-    desc: "Die komplette Aufbereitung für zu Hause: 2 Duftsprays und 2 Duftanhänger in deinen Wunsch-Düften, dazu Trockentuch, Wasserabzieher, Mikrofasertuch-Set und Innenraum-Tuch. Von der Wäsche bis zum letzten Sprühstoß.",
-    notes: ["2× Duftspray 150 ml", "2× Duftanhänger", "Trockentuch 60 × 90", "Wasserabzieher", "Mikrofasertücher 3er-Set", "Innenraum-Tuch", "Versandkostenfrei"],
+    price: 79.90, priceOld: 109.20, bestseller: false, // 2 × 26,90 + 2 × 3,90 + 14,90 + 11,90 + 11,90 + 8,90
+    desc: "Die komplette Aufbereitung für zu Hause: 2 Duftsprays und 2 Duftanhänger in deinen Wunsch-Düften, dazu Waschhandschuh, Trockentuch, Wasserabzieher und Mikrofasertuch-Set. Von der Wäsche bis zum letzten Sprühstoß.",
+    notes: ["2× Duftspray 150 ml", "2× Duftanhänger", "Waschhandschuh", "Trockentuch 60 × 90", "Wasserabzieher", "Mikrofasertücher 3er-Set", "Versandkostenfrei"],
     wahl: [{ anzahl: 2, linie: "spray", titel: "Deine 2 Duftsprays", doppelt: true }, { anzahl: 2, linie: "haenger", titel: "Deine 2 Duftanhänger", doppelt: true }],
   },
   // Sets – gleiche Produkte, bessere Staffelpreise. Düfte frei wählbar direkt auf der Produktseite.

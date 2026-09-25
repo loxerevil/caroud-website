@@ -749,7 +749,7 @@ const shippingFillEl = document.getElementById("shippingFill");
 const UPSELL = [
   { id: "haenger-pacific-cruise", price: 2.90, name: "Duftanhänger", scentChoice: "haenger" },
   { id: "probe-pacific-cruise",   price: 4.90, name: "Duftprobe 30 ml", scentChoice: "probe" },
-  { id: "pflege-innenraum", price: 4.90, name: "Innenraum-Tuch" },
+  { id: "pflege-handschuh", price: 6.90, name: "Waschhandschuh" },
   { id: "glas-pacific-cruise",    price: 9.90, name: "Glasanhänger", scentChoice: "glas" },
   { id: "pflege-mikrofaser", price: 8.90, name: "Mikrofaser 3er-Set" },
   { id: "pflege-abzieher",  price: 8.90, name: "Wasserabzieher" },
