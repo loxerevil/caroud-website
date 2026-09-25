@@ -542,6 +542,11 @@ function heroSlider() {
 
   segs.forEach((b, k) => b.addEventListener("click", () => { zeige(k); }));
   nav.querySelectorAll("[data-hp]").forEach((b) => b.addEventListener("click", () => zeige(aktiv + Number(b.dataset.hp))));
+  // Handy: schlichte Pfeile links und rechts am Rand des Heros
+  const seitenPfeil = (hp, d, label) => `<button type="button" class="hero-seite-pfeil ${hp < 0 ? "l" : "r"}" data-hp="${hp}" aria-label="${label}">
+    <svg viewBox="0 0 24 24" width="16" height="16"><path d="${d}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;
+  hero.insertAdjacentHTML("beforeend", seitenPfeil(-1, "M15 5l-7 7 7 7", "Vorherige Folie") + seitenPfeil(1, "M9 5l7 7-7 7", "Nächste Folie"));
+  hero.querySelectorAll(".hero-seite-pfeil").forEach((b) => b.addEventListener("click", () => zeige(aktiv + Number(b.dataset.hp))));
   // Pause, solange die Maus auf dem Text/Bild liegt oder der Tab im Hintergrund ist
   wrap.addEventListener("mouseenter", pause);
   wrap.addEventListener("mouseleave", weiter);
@@ -1849,3 +1854,18 @@ window.addEventListener("resize", () => { kopfhoeheSetzen(); scrollReihenPruefen
 window.addEventListener("load", () => { kopfhoeheSetzen(); scrollReihenPruefen(); });
 kopfhoeheSetzen();
 scrollReihenPruefen();
+
+// ---------- Ankündigungsleiste als Laufband ----------
+// Die Meldungen laufen langsam von rechts nach links durch. Der Inhalt steht
+// zweimal hintereinander, damit die Schleife ohne Sprung weiterläuft.
+(function laufband() {
+  const bar = document.querySelector(".announcement-bar");
+  const msg = bar && bar.querySelector(".announce-msg");
+  if (!bar || !msg) return;
+  const standard = ["Versandkostenfrei ab 40&nbsp;€", "Versand in 24&nbsp;h", "Abgefüllt in Deutschland", "Gratis-Duftanhänger zu jedem Spray", "14 Tage Rückgabe"];
+  const eintraege = document.body.classList.contains("bf-aktiv") ? [msg.innerHTML, ...standard] : standard;
+  const reihe = eintraege.map((t) => `<span class="lb-item">${t}</span><span class="lb-trenner" aria-hidden="true">·</span>`).join("");
+  bar.innerHTML = `<span class="sr-only">${eintraege.join(" · ")}</span>
+    <div class="lb-spur" aria-hidden="true"><div class="lb-inhalt">${reihe}</div><div class="lb-inhalt">${reihe}</div></div>`;
+  bar.classList.add("ist-laufband");
+})();
