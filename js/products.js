@@ -326,7 +326,7 @@ const OTHER_PRODUCTS = [
     price: 56.90, priceOld: 65.50, bestseller: false, // 2 × 26,90 + 3 × 3,90
     desc: "Für Sammler: 2 Duftsprays + 3 Duftanhänger – frei kombinierbar aus allen sieben Düften, direkt hier auswählen.",
     notes: ["2× Spray", "3× Anhänger"],
-    photo: "img/fotos/bundle-signature.webp?v=" + ASSET_V,
+    photo: "img/fotos/bundle-signature-2.webp?v=" + ASSET_V,
     wahl: [{ anzahl: 2, linie: "spray", titel: "Deine 2 Duftsprays", doppelt: true }, { anzahl: 3, linie: "haenger", titel: "Deine 3 Duftanhänger", doppelt: true }],
   },
   // Pflege-Boxen: Duft + Waschzubehör. Spray- und Anhänger-Düfte werden auf der Produktseite gewählt.
