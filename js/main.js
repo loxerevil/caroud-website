@@ -324,19 +324,22 @@ function zuDenProdukten(filter) {
 // Black-Friday-Rabatt in Prozent (abgerundet, damit nie mehr versprochen wird als drin ist)
 function bfProzent(p) { return Math.floor(((p.bfNormal - p.price) / p.bfNormal) * 100); }
 function bfMaxProzent() {
-  return Math.max(0, ...BLACK_FRIDAY.deals.map((d) => { const p = byId(d.id); return p && p.bfDeal ? bfProzent(p) : 0; }));
+  return Math.max(0, ...AKTION.deals.map((d) => { const p = byId(d.id); return p && p.bfDeal ? bfProzent(p) : 0; }));
 }
 
 (function blackFriday() {
-  const sek = document.getElementById("blackfriday");
+  const sek = document.getElementById("angebote");
   if (!sek || !BF_AKTIV) return;
   sek.hidden = false;
-  document.body.classList.add("bf-aktiv");
+  document.body.classList.add("bf-aktiv", AKTION.theme);
+  sek.querySelector(".bf-kicker").textContent = AKTION.kicker;
+  sek.querySelector(".bf-title").textContent = AKTION.titel;
+  sek.querySelector(".bf-copy").textContent = AKTION.copy;
   // Ankündigungsleiste
   const leiste = document.querySelector(".announce-msg");
-  if (leiste) leiste.innerHTML = `Black Week: bis zu ${bfMaxProzent()}&nbsp;% Rabatt auf Düfte &amp; Sets`;
+  if (leiste) leiste.innerHTML = AKTION.leiste(bfMaxProzent());
   const grid = sek.querySelector("[data-bf-grid]");
-  const deals = BLACK_FRIDAY.deals.map((d) => byId(d.id)).filter((p) => p && p.bfDeal);
+  const deals = AKTION.deals.map((d) => byId(d.id)).filter((p) => p && p.bfDeal);
   grid.innerHTML = deals.map((p) => {
     const spar = p.bfNormal - p.price;
     return `
@@ -362,7 +365,7 @@ function bfMaxProzent() {
   });
   // Countdown bis Aktionsende
   const cd = sek.querySelector("[data-bf-countdown]");
-  const ende = Date.parse(BLACK_FRIDAY.ende);
+  const ende = Date.parse(AKTION.ende);
   const tick = () => {
     let rest = Math.max(0, ende - Date.now());
     const t = Math.floor(rest / 864e5); rest -= t * 864e5;
@@ -449,18 +452,19 @@ function heroSlider() {
 
   // Black-Week-Folie (nur im Aktionszeitraum), direkt nach der Startfolie
   if (typeof BF_AKTIV !== "undefined" && BF_AKTIV) {
-    const bfSprays = ["spray-pacific-cruise", "spray-fast-cherry", "spray-ombre-apex"].map(byId).filter((p) => p && p.bfDeal);
+    // Drei Angebote mit Foto für die Karten rechts (Sprays und Glasanhänger zuerst)
+    const bfSprays = AKTION.deals.map((d) => byId(d.id)).filter((p) => p && p.bfDeal && p.photo)
+      .sort((a, b) => ({ spray: 0, glas: 1 }[a.linie] ?? 2) - ({ spray: 0, glas: 1 }[b.linie] ?? 2)).slice(0, 3);
     const bf = document.createElement("div");
     bf.className = "hero-inner hero-slide hero-slide-bf";
     bf.innerHTML = `
       <div class="hero-text">
-        <p class="hero-kicker">Black Week · nur bis 30. November</p>
-        <h2 class="hero-title">Black Friday.<br>Bis zu ${bfMaxProzent()}&nbsp;% sparen.</h2>
-        <p class="hero-sub">Drei Düfte, zwei Sets, die Mystery Box und mehr – acht Angebote, eine Woche.
-          Ab 40&nbsp;€ versandkostenfrei.</p>
+        <p class="hero-kicker">${AKTION.heroKicker}</p>
+        <h2 class="hero-title">${AKTION.heroTitel(bfMaxProzent())}</h2>
+        <p class="hero-sub">${AKTION.heroSub}</p>
         <div class="hero-cta">
-          <a href="#blackfriday" class="btn btn-gold" data-zu-bf>Zu den Angeboten</a>
-          <a href="#p/mystery-box" class="btn btn-outline">Mystery Box</a>
+          <a href="#angebote" class="btn btn-gold" data-zu-bf>Zu den Angeboten</a>
+          <a href="${AKTION.heroZweit[0]}" class="btn btn-outline">${AKTION.heroZweit[1]}</a>
         </div>
         <p class="hero-note" data-hero-cd></p>
       </div>
@@ -477,17 +481,17 @@ function heroSlider() {
       e.preventDefault();
       const kopf = document.querySelector(".top-sticky") || document.getElementById("siteHeader");
       const versatz = kopf ? kopf.getBoundingClientRect().height : 0;
-      gleiteZu(document.getElementById("blackfriday").getBoundingClientRect().top + window.scrollY - versatz, 900);
+      gleiteZu(document.getElementById("angebote").getBoundingClientRect().top + window.scrollY - versatz, 900);
     });
     const cd = bf.querySelector("[data-hero-cd]");
-    const ende = Date.parse(BLACK_FRIDAY.ende);
+    const ende = Date.parse(AKTION.ende);
     const cdTick = () => {
       const r = Math.max(0, ende - Date.now());
       const t = Math.floor(r / 864e5), s = Math.floor((r % 864e5) / 36e5), mi = Math.floor((r % 36e5) / 6e4);
       cd.textContent = `Endet in ${t} Tagen, ${s} Std, ${mi} Min`;
     };
     cdTick(); setInterval(cdTick, 30000);
-    folien.splice(1, 0, { el: bf, name: "Black Week", bf: true });
+    folien.splice(1, 0, { el: bf, name: AKTION.name, bf: true });
   }
   if (folien.length < 2) return;
 
@@ -710,7 +714,7 @@ function renderProducts() {
     card.innerHTML = `
       <div class="product-media">
         ${mediaFor(p)}
-        ${p.bfDeal ? `<span class="bf-badge">Black Friday</span>` : ""}
+        ${p.bfDeal ? `<span class="bf-badge">${AKTION.badge}</span>` : ""}
         <button class="quick-add">+ In den Warenkorb</button>
       </div>
       <div class="product-name">${p.name}</div>
@@ -1504,7 +1508,7 @@ function renderProduktseite(p) {
           <p class="modal-category">${p.category}</p>
           <h1>${p.name}</h1>
           <div class="modal-prices">${preisHtml(p)}</div>
-          ${p.bfDeal ? `<p class="bf-hinweis">Black-Week-Angebot – nur bis 30. November</p>` : ""}
+          ${p.bfDeal ? `<p class="bf-hinweis">${AKTION.hinweis}</p>` : ""}
           <p class="pdp-tax">inkl. MwSt., zzgl. <a href="widerruf.html">Versand</a> – versandkostenfrei ab 40 €</p>
           <ul class="pdp-usps">
             <li>Versandkostenfrei ab 40 €</li>

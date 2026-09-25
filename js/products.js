@@ -502,14 +502,56 @@ const PROBE_PRODUCTS = SCENTS.map((s) => ({
 
 const PRODUCTS = SCENT_PRODUCTS.concat(OTHER_PRODUCTS, PROBE_PRODUCTS);
 
-// ---- Black Friday / Black Week ----
-// Läuft automatisch im Zeitraum start–ende (deutsche Zeit). Zum Ansehen vorab: caroud.de/?blackfriday=vorschau
-// Während der Aktion gilt der Aktionspreis überall (Shop, Produktseite, Warenkorb); durchgestrichen steht
+// ---- Aktionen: Halloween Week und Black Week ----
+// Laufen automatisch im Zeitraum start–ende (deutsche Zeit). Vorschau vorab:
+//   caroud.de/?aktion=halloween   bzw.   caroud.de/?aktion=blackfriday  (alt: ?blackfriday=vorschau)
+// Während einer Aktion gilt der Aktionspreis überall (Shop, Produktseite, Warenkorb); durchgestrichen steht
 // der normale Preis der letzten 30 Tage (Preisangabenverordnung § 11).
+// WICHTIG: Halloween und Black Week liegen weniger als 30 Tage auseinander. Deshalb dürfen sich die
+// Artikel NICHT überschneiden – sonst wäre der Halloween-Preis in der Black Week der „niedrigste Preis
+// der letzten 30 Tage“ und der Streichpreis falsch.
 // Gewinn je Angebot (ungünstigster Fall, allein bestellt) steht jeweils im Kommentar.
+const HALLOWEEN = {
+  key: "halloween",
+  theme: "aktion-halloween",
+  start: "2026-10-25T00:00:00+02:00",
+  ende: "2026-11-01T00:00:00+01:00",
+  name: "Halloween Week",
+  kicker: "Halloween Week · 25.–31. Oktober",
+  titel: "Süßes oder Saures.",
+  copy: "Sieben Tage, sechs Angebote – für alle, die es dunkel mögen. Nur bis Halloween und ab 40 € versandkostenfrei.",
+  heroKicker: "Halloween Week · nur bis 31. Oktober",
+  heroTitel: (max) => `Dunkle Düfte.<br>Bis zu ${max}&nbsp;% sparen.`,
+  heroSub: "Naxnos Asphalt, Ombre Apex und Fast Cherry – dazu Sets und das Probierset. Sechs Angebote, sieben Tage. Ab 40&nbsp;€ versandkostenfrei.",
+  heroZweit: ["#p/probierset-7", "Alle 7 Düfte testen"],
+  leiste: (max) => `Halloween Week: bis zu ${max}&nbsp;% auf dunkle Düfte`,
+  badge: "Halloween",
+  hinweis: "Halloween-Angebot – nur bis 31. Oktober",
+  deals: [
+    { id: "spray-naxnos-asphalt", preis: 22.90 },  // statt 26,90 · Gewinn ~10,20 €
+    { id: "glas-ombre-apex",      preis: 10.90 },  // statt 12,90 · Gewinn ~7 €
+    { id: "glas-fast-cherry",     preis: 10.90 },  // statt 12,90 · Gewinn ~7 €
+    { id: "set-spray-3",          preis: 59.90 },  // statt 66,90 · Gewinn ~16 € (versandkostenfrei)
+    { id: "bundle-starter",       preis: 25.90 },  // statt 29,90 · Gewinn ~11 €
+    { id: "probierset-7",         preis: 29.90 },  // statt 34,90 · Gewinn ~13 €
+  ],
+};
 const BLACK_FRIDAY = {
+  key: "blackfriday",
+  theme: "aktion-blackweek",
   start: "2026-11-23T00:00:00+01:00",
   ende: "2026-12-01T00:00:00+01:00",
+  name: "Black Week",
+  kicker: "Black Week · 23.–30. November",
+  titel: "Black Friday bei Caroud.",
+  copy: "Acht Angebote, eine Woche. Nur solange der Vorrat reicht – und ab 40 € versandkostenfrei.",
+  heroKicker: "Black Week · nur bis 30. November",
+  heroTitel: (max) => `Black Friday.<br>Bis zu ${max}&nbsp;% sparen.`,
+  heroSub: "Drei Düfte, zwei Sets, die Mystery Box und mehr – acht Angebote, eine Woche. Ab 40&nbsp;€ versandkostenfrei.",
+  heroZweit: ["#p/mystery-box", "Mystery Box"],
+  leiste: (max) => `Black Week: bis zu ${max}&nbsp;% Rabatt auf Düfte &amp; Sets`,
+  badge: "Black Friday",
+  hinweis: "Black-Week-Angebot – nur bis 30. November",
   deals: [
     { id: "spray-pacific-cruise", preis: 21.90 },  // statt 26,90 · Gewinn ~9,30 €
     { id: "spray-fast-cherry",    preis: 21.90 },  // statt 26,90 · Gewinn ~9,30 €
@@ -521,14 +563,21 @@ const BLACK_FRIDAY = {
     { id: "set-haenger-5",        preis: 11.90 },  // statt 14,90 · Gewinn ~8 €
   ],
 };
-function blackFridayAktiv() {
-  try { if (new URLSearchParams(location.search).get("blackfriday") === "vorschau") return true; } catch (_) {}
+const AKTIONEN = [HALLOWEEN, BLACK_FRIDAY];
+function aktiveAktion() {
+  try {
+    const q = new URLSearchParams(location.search);
+    const v = q.get("aktion") || (q.get("blackfriday") === "vorschau" ? "blackfriday" : null);
+    const a = AKTIONEN.find((x) => x.key === v);
+    if (a) return a;
+  } catch (_) {}
   const jetzt = Date.now();
-  return jetzt >= Date.parse(BLACK_FRIDAY.start) && jetzt < Date.parse(BLACK_FRIDAY.ende);
+  return AKTIONEN.find((a) => jetzt >= Date.parse(a.start) && jetzt < Date.parse(a.ende)) || null;
 }
-const BF_AKTIV = blackFridayAktiv();
-if (BF_AKTIV) {
-  BLACK_FRIDAY.deals.forEach((d) => {
+const AKTION = aktiveAktion();
+const BF_AKTIV = !!AKTION;  // alter Name: „eine Aktion läuft gerade“
+if (AKTION) {
+  AKTION.deals.forEach((d) => {
     const p = PRODUCTS.find((x) => x.id === d.id);
     if (!p || d.preis >= p.price) return;
     p.bfNormal = p.price;

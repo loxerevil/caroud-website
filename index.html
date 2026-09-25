@@ -31,7 +31,7 @@
   <!-- Überschriftenschrift vorladen, damit der Hero-Titel nicht erst in Georgia aufblitzt -->
   <link rel="preload" href="fonts/playfair-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/inter-400.woff" as="font" type="font/woff" crossorigin>
-  <link rel="stylesheet" href="css/style.css?v=92">
+  <link rel="stylesheet" href="css/style.css?v=93">
 
   <!-- Strukturierte Daten für Google. Produkt-Markup fehlt bewusst,
        solange keine echten Preise hinterlegt sind. -->
@@ -221,8 +221,8 @@
     </div>
   </section>
 
-  <!-- Black Friday / Black Week: erscheint nur im Aktionszeitraum (siehe BLACK_FRIDAY in products.js) -->
-  <section class="bf-band" id="blackfriday" hidden>
+  <!-- Aktionen (Halloween Week, Black Week): erscheint nur im Aktionszeitraum (siehe AKTIONEN in products.js) -->
+  <section class="bf-band" id="angebote" hidden>
     <div class="bf-inner">
       <div class="bf-kopf">
         <p class="bf-kicker">Black Week · 23.–30. November</p>
@@ -554,7 +554,7 @@
   <!-- Toast -->
   <div class="toast" id="toast" hidden></div>
 
-  <script src="js/products.js?v=100"></script>
-  <script src="js/main.js?v=95"></script>
+  <script src="js/products.js?v=101"></script>
+  <script src="js/main.js?v=96"></script>
 </body>
 </html>
