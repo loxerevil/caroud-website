@@ -443,7 +443,7 @@ const OTHER_PRODUCTS = [
     price: 34.90, priceOld: null, bestseller: true,
     desc: "Wir packen, du wirst überrascht: mindestens 1 Duftspray, 3 Duftanhänger und 1 Glasanhänger – Warenwert über 50 €. Welche Düfte drin sind, verraten wir nicht.",
     notes: ["Warenwert über 50 €", "Mind. 1 Spray + 3 Anhänger + 1 Glasanhänger", "Überraschungs-Düfte"],
-    photo: "img/fotos/mystery-box.webp?v=" + ASSET_V,
+    photo: "img/fotos/mystery-box-2.webp?v=" + ASSET_V,
   },
 ];
 
