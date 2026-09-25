@@ -305,6 +305,8 @@ const OTHER_PRODUCTS = [
     desc: "Flexibler Wasserabzieher mit weicher Silikonlippe – zieht Scheiben und Lack in Sekunden trocken, ohne Kratzer und ohne Streifen.",
     notes: ["Silikonlippe", "Kratzfrei", "Streifenfrei"],
     photo: "img/fotos/pflege-abzieher.webp?v=" + ASSET_V,
+    photo2: "img/fotos/pflege-abzieher-2.webp?v=" + ASSET_V,
+    photo3: "img/fotos/pflege-abzieher-3.webp?v=" + ASSET_V,
   },
   // Bundles
   {
