@@ -381,7 +381,7 @@ const OTHER_PRODUCTS = [
     desc: "Kurz rein, sauber raus: 1 Duftspray und 2 Duftanhänger in Düften deiner Wahl, dazu das Mikrofasertuch-Set und ein Waschhandschuh. Alles, damit dein Auto sauber aussieht und gut riecht – in einer Box.",
     notes: ["1× Duftspray 150 ml", "2× Duftanhänger", "Mikrofasertücher 3er-Set", "Waschhandschuh", "Versandkostenfrei"],
     photo: "img/fotos/box-pit-stop.webp?v=" + ASSET_V,
-    photo2: "img/fotos/box-pit-stop-2.webp?v=" + ASSET_V,
+    photo2: "img/fotos/box-pit-stop-2.webp?v=" + ASSET_V + "b",
     wahl: [{ anzahl: 1, linie: "spray", titel: "Dein Duftspray", doppelt: true }, { anzahl: 2, linie: "haenger", titel: "Deine 2 Duftanhänger", doppelt: true }],
   },
   {
