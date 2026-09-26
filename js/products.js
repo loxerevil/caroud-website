@@ -58,7 +58,7 @@ const SCENTS = [
   },
   {
     key: "fast-cherry", name: "Fast Cherry", color: "#a8122e", familie: "suess",
-    pyramide: { kopf: "Schwarze Kirsche, Kirschlikör, Bittermandel", herz: "Sauerkirsche, Pflaume, Türkische Rose, Jasmin Sambac", basis: "Tonkabohne, Vanille, Perubalsam, Sandelholz, Zimt, Nelke, Benzoe, Zeder, Patchouli, Vetiver" },
+    pyramide: { kopf: "Schwarze Kirsche, Kirschlikör, Bittermandel", herz: "Sauerkirsche, Pflaume, Türkische Rose, Sambac-Jasmin", basis: "Tonkabohne, Vanille, Perubalsam, Sandelholz, Zimt, Nelke, Benzoe, Zeder, Patchouli, Vetiver" },
     notes: ["Schwarze Kirsche", "Kirschlikör", "Bittermandel", "Tonkabohne"],
     short: "Verführerisch süß: schwarze Kirsche, Kirschlikör und ein Hauch Bittermandel.",
     spray: "Tiefrot und verführerisch: schwarze Kirsche und Kirschlikör, geschärft von Bittermandel. Im Herzen Pflaume und Rose, getragen von Tonkabohne, Vanille und warmem Sandelholz. Intensiv, süß, unvergesslich.",
@@ -74,7 +74,7 @@ const SCENTS = [
   },
   {
     key: "naxnos-asphalt", name: "Naxnos Asphalt", color: "#b8731c", familie: "suess",
-    pyramide: { kopf: "Lavendel, Bergamotte, Zitrone", herz: "Honig, Zimt, Cashmeran, Jasmin Sambac", basis: "Tabakblatt, Vanille, Tonkabohne" },
+    pyramide: { kopf: "Lavendel, Bergamotte, Zitrone", herz: "Honig, Zimt, Cashmeran, Sambac-Jasmin", basis: "Tabakblatt, Vanille, Tonkabohne" },
     notes: ["Honig", "Tabak", "Vanille", "Lavendel"],
     short: "Warm und weich: goldener Honig, Tabakblatt und Vanille, aufgehellt von Lavendel.",
     spray: "Warm wie Asphalt nach einem Sommertag: goldener Honig, Tabakblatt und Vanille, aufgehellt von Lavendel, Bergamotte und Zitrone. Zimt und Tonkabohne machen ihn rund – ein Duft, der den Innenraum wie eine Lounge wirken lässt.",
@@ -93,10 +93,21 @@ const SCENTS = [
     pyramide: { kopf: "Amalfi-Zitrone, Kalabrische Bergamotte, Brasilianische Orange, Ingwer", herz: "Grüner Apfel, Melone, Birne, Nelke, Kardamom, Zimt", basis: "Moschus, Amber, Madagaskar-Vanille, Hölzer" },
     notes: ["Zitrone", "Ingwer", "Birne", "Melone"],
     short: "Hell und saftig: Amalfi-Zitrone, ein Kick Ingwer, reife Birne und Melone.",
-    spray: "Hell, saftig, goldig: Amalfi-Zitrone, Orange und Bergamotte mit einem Kick Ingwer, dazu grüner Apfel, Birne und Melone, gewürzt mit Kardamom und Zimt. Amber, Vanille und Moschus runden ihn warm ab.",
+    spray: "Hell, saftig, golden: Amalfi-Zitrone, Orange und Bergamotte mit einem Kick Ingwer, dazu grüner Apfel, Birne und Melone, gewürzt mit Kardamom und Zimt. Amber, Vanille und Moschus runden ihn warm ab.",
     bestseller: { spray: false, haenger: false, glas: true, baum: false },
   },
 ];
+
+// Eigener Satz je Duft für die Duftanhänger-Seiten (statt siebenmal derselbe Text)
+const HAENGER_SATZ = {
+  "pacific-cruise": "Frisch und klar, sobald du einsteigst – der leichteste Weg zu Pacific Cruise.",
+  "erba-carbon": "Bringt die mediterrane Frische an den Spiegel – hell, sauber und nie aufdringlich.",
+  "fast-cherry": "Ein Hauch dunkler Kirsche bei jeder Fahrt – süß, aber mit Haltung.",
+  "driveination": "Zitrus, Ingwer und schwarzer Tee – wach und klar, genau richtig für lange Strecken.",
+  "naxnos-asphalt": "Honig und Tabak für den Innenraum – warm wie eine Lounge, auch an kalten Tagen.",
+  "ombre-apex": "Oud und Weihrauch in feiner Dosis – dunkel und edel, ohne den Innenraum zu überladen.",
+  "erba-tuned": "Saftig, hell und frech – ein Sommertag am Spiegel, das ganze Jahr.",
+};
 
 // ---- Linien aus den Düften erzeugen ----
 const LINES = [
@@ -105,10 +116,10 @@ const LINES = [
     text: (s) => s.spray },
   { type: "haenger", category: "Duftanhänger Premium", suffix: "Duftanhänger",
     price: 3.90, priceOld: null,
-    text: (s) => s.short + " Als Premium-Anhänger in der eigenen Caroud-Form: beidseitig bedruckt, mit schwarzer Kordel – unser Aushängeschild für den Rückspiegel." },
+    text: (s) => s.short + " Als Premium-Anhänger in der eigenen Caroud-Form, beidseitig bedruckt und mit schwarzer Kordel. " + (HAENGER_SATZ[s.key] || "") },
   { type: "glas",    category: "Glasanhänger",  suffix: "Glasanhänger",
     price: 12.90, priceOld: null,
-    text: (s) => s.short + " Im 8-ml-Glasflakon für den Rückspiegel: das Duftöl verdunstet langsam über den Verschluss – ergiebiger und langlebiger als ein Anhänger aus Papier." },
+    text: (s) => s.short + " Im 8-ml-Glasflakon für den Rückspiegel: Das Duftöl verdunstet langsam über den Verschluss und duftet mehrere Monate lang – wie intensiv, bestimmst du selbst." },
 ];
 
 // Linien, fuer die es echte Produktfotos gibt (img/fotos/<linie>-<duft>.webp)
@@ -129,7 +140,7 @@ const DUFT_FOTOS = ["pacific-cruise", "erba-carbon", "fast-cherry", "driveinatio
 const MOMENTE = {
   "pacific-cruise": {
     titel: "Küstenstraße, Fenster runter.",
-    text: "Sonntagmorgen, die Straße folgt dem Meer, die Sonne steht noch tief. Zitrone und Minze kommen wie der erste Fahrtwind herein, schwarze Johannisbeere gibt Tiefe, Feige und Dattel bleiben, wenn die Fahrt längst vorbei ist. Für alle, die im Auto lieber unterwegs sind als anzukommen.",
+    text: "Sonntagmorgen, die Straße folgt dem Meer, die Sonne steht noch tief. Zitrone und Minze kommen wie der erste Fahrtwind herein, schwarze Johannisbeere gibt Tiefe, Feige und Dattel bleiben, wenn die Fahrt längst vorbei ist. Für alle, die im Auto lieber unterwegs sind, als anzukommen.",
     tags: ["Roadtrip", "Cabrio-Wetter", "Sommerpendeln"],
   },
   "erba-carbon": {
@@ -149,8 +160,8 @@ const MOMENTE = {
   },
   "naxnos-asphalt": {
     titel: "Landstraße im Abendlicht.",
-    text: "Goldene Stunde, der Asphalt noch warm vom Tag, kein Ziel außer der Straße selbst. Honig, Tabakblatt und Vanille legen sich weich über Leder, ein wenig Lavendel hält alles in der Schwebe. Der gemütlichste Duft der Reihe – Wärme zum Mitnehmen.",
-    tags: ["Ledersitze", "Herbst & Winter", "Klassiker"],
+    text: "Goldene Stunde, der Asphalt noch warm vom Tag, kein Ziel außer der Straße selbst. Honig, Tabakblatt und Vanille legen sich weich über den Innenraum, ein wenig Lavendel hält alles in der Schwebe. Der gemütlichste Duft der Reihe – Wärme zum Mitnehmen.",
+    tags: ["Herbst & Winter", "Klassiker", "Lange Fahrten"],
   },
   "ombre-apex": {
     titel: "Die Terrasse über der Stadt.",
@@ -197,7 +208,7 @@ const MOMENTE_HAENGER = {
   },
   "erba-tuned": {
     titel: "Mittelmeer, Serpentinen, Sonne.",
-    text: "Zypressen am Straßenrand, türkisblaues Wasser in der Bucht, die Fenster weit offen. Amalfi-Zitrone, Ingwer und grüner Apfel, dazu Melone und Birne – frech, hell, nie zu süß. Erba Tuned ist der Duft für den Sommerabend am Treffen, wenn das Auto frisch geputzt in der Sonne steht. Als Anhänger in der Caroud-Form am Rückspiegel: beidseitig bedruckt, schwarze Kordel, vier bis acht Wochen Duft. Der Urlaub bleibt im Auto, auch wenn er längst vorbei ist.",
+    text: "Zypressen am Straßenrand, türkisblaues Wasser in der Bucht, die Fenster weit offen. Amalfi-Zitrone, Ingwer und grüner Apfel, dazu Melone und Birne – frech, hell, nie zu süß. Erba Tuned ist der Duft für den Sommerabend beim Autotreffen, wenn das Auto frisch geputzt in der Sonne steht. Als Anhänger in der Caroud-Form am Rückspiegel: beidseitig bedruckt, schwarze Kordel, vier bis acht Wochen Duft. Der Urlaub bleibt im Auto, auch wenn er längst vorbei ist.",
     tags: ["Rückspiegel", "Sommer & frisch", "4–8 Wochen"],
   },
 };
@@ -275,8 +286,8 @@ const OTHER_PRODUCTS = [
     type: "tuch", category: "Pflege",
     color: "#4a4a4a", label: "Handschuh",
     price: 8.90, priceOld: null, bestseller: false,
-    desc: "Weicher Waschhandschuh aus Mikrofaser-Chenille für die Handwäsche: Die dicken Fasern nehmen viel Shampoo und Wasser auf und lösen Schmutz schonend vom Lack. Einfach reinschlüpfen, waschen, auswaschen.",
-    notes: ["Mikrofaser-Chenille", "Schonend zum Lack", "Waschbar"],
+    desc: "Handwäsche, die deinen Lack schont: Die dicken Chenille-Fasern nehmen viel Shampoo und Wasser auf und ziehen den Schmutz in die Tiefe, statt ihn über den Lack zu reiben. Einfach reinschlüpfen, waschen, auswaschen – und der Glanz bleibt.",
+    notes: ["Schonende Handwäsche", "Nimmt viel Shampoo auf", "Waschbar & langlebig"],
     photo: "img/fotos/pflege-handschuh.webp?v=" + ASSET_V,
     photo2: "img/fotos/pflege-handschuh-2.webp?v=" + ASSET_V,
     photo3: "img/fotos/pflege-handschuh-3.webp?v=" + ASSET_V,
@@ -287,8 +298,8 @@ const OTHER_PRODUCTS = [
     type: "tuch", category: "Pflege",
     color: "#2b2b2b", label: "Trocken",
     price: 14.90, priceOld: null, bestseller: false,
-    desc: "Extra saugstarkes Trockentuch für den Lack nach der Wäsche – trocknet große Flächen in einem Zug, streifenfrei und ohne Wasserflecken.",
-    notes: ["Extra saugstark", "Streifenfrei", "60 × 90 cm"],
+    desc: "Nach der Wäsche in wenigen Zügen trocken: Das extra saugstarke Tuch nimmt das Wasser auf, bevor es Flecken hinterlässt – große Flächen in einem Zug, streifenfrei und ohne Nachwischen.",
+    notes: ["Große Flächen in einem Zug", "Keine Wasserflecken", "60 × 90 cm"],
     photo: "img/fotos/pflege-trockentuch.webp?v=" + ASSET_V,
     photo2: "img/fotos/pflege-trockentuch-2.webp?v=" + ASSET_V,
     photo3: "img/fotos/pflege-trockentuch-3.webp?v=" + ASSET_V,
@@ -314,8 +325,8 @@ const OTHER_PRODUCTS = [
     type: "tuch", category: "Pflege",
     color: "#5c5c5c", label: "Mikrofaser",
     price: 11.90, priceOld: null, bestseller: false,
-    desc: "Der Allrounder im Dreierpack: für Scheiben, Lack und Innenraum. Waschbar, langlebig und weich genug für jede Oberfläche.",
-    notes: ["3 Stück", "Allround", "Waschbar"],
+    desc: "Ein Tuch für alles: Scheiben, Lack und Innenraum werden in einem Durchgang streifenfrei sauber. Drei Stück im Set – eins fürs Handschuhfach, zwei für die Garage. Waschbar und weich genug für jede Oberfläche.",
+    notes: ["Streifenfrei in einem Durchgang", "Für Scheibe, Lack & Innenraum", "3 Stück, waschbar"],
     photo: "img/fotos/pflege-mikrofaser.webp?v=" + ASSET_V,
     photo2: "img/fotos/pflege-mikrofaser-2.webp?v=" + ASSET_V,
     photo3: "img/fotos/pflege-mikrofaser-3.webp?v=" + ASSET_V,
@@ -326,8 +337,8 @@ const OTHER_PRODUCTS = [
     type: "abzieher", category: "Pflege",
     color: "#333333", label: "Abzieher",
     price: 11.90, priceOld: null, bestseller: false,
-    desc: "Flexibler Wasserabzieher mit weicher Silikonlippe – zieht Scheiben und Lack in Sekunden trocken, ohne Kratzer und ohne Streifen.",
-    notes: ["Silikonlippe", "Kratzfrei", "Streifenfrei"],
+    desc: "Scheiben und Lack in Sekunden trocken: Die weiche, flexible Silikonlippe passt sich jeder Wölbung an und zieht das Wasser schonend ab – ohne Streifen, ohne Nachpolieren.",
+    notes: ["In Sekunden trocken", "Schonend zum Lack", "Streifenfrei"],
     photo: "img/fotos/pflege-abzieher.webp?v=" + ASSET_V,
     photo2: "img/fotos/pflege-abzieher-2.webp?v=" + ASSET_V,
     photo3: "img/fotos/pflege-abzieher-3.webp?v=" + ASSET_V,
@@ -391,7 +402,7 @@ const OTHER_PRODUCTS = [
     color: "#a8323e", label: "Full Detail",
     price: 79.90, priceOld: 113.20, bestseller: false, // Einzelpreise: 2 × 28,90 + 2 × 3,90 + 14,90 + 11,90 + 11,90 + 8,90
     desc: "Die komplette Aufbereitung für zu Hause: 2 Duftsprays und 2 Duftanhänger in deinen Wunsch-Düften, dazu Waschhandschuh, Trockentuch, Wasserabzieher und Mikrofasertuch-Set. Von der Wäsche bis zum letzten Sprühstoß.",
-    notes: ["2× Duftspray 150 ml", "2× Duftanhänger", "Waschhandschuh", "Trockentuch 60 × 90", "Wasserabzieher", "Mikrofasertücher 3er-Set", "Versandkostenfrei"],
+    notes: ["2× Duftspray 150 ml", "2× Duftanhänger", "Waschhandschuh", "Trockentuch 60 × 90 cm", "Wasserabzieher", "Mikrofasertücher 3er-Set", "Versandkostenfrei"],
     photo: "img/fotos/box-full-detail.webp?v=" + ASSET_V,
     photo2: "img/fotos/box-full-detail-2.webp?v=" + ASSET_V,
     wahl: [{ anzahl: 2, linie: "spray", titel: "Deine 2 Duftsprays", doppelt: true }, { anzahl: 2, linie: "haenger", titel: "Deine 2 Duftanhänger", doppelt: true }],
@@ -469,12 +480,12 @@ const OTHER_PRODUCTS = [
   },
   {
     id: "probierset-7",
-    name: "Probierset – Alle 7 Düfte",
+    name: "Probierset – alle 7 Düfte",
     type: "probier", category: "Sets & Boxen", set: true,
     color: "#b9a06a", label: "Alle 7",
     price: 34.90, priceOld: 41.30, bestseller: true,
     desc: "Die komplette Caroud-Kollektion als 30-ml-Sprays: alle sieben Düfte in einer Box. Finde deinen Favoriten – oder verschenke die ganze Reihe.",
-    notes: ["7 × 30 ml", "Alle 7 Düfte", "Geschenk-Box"],
+    notes: ["7 × 30 ml", "Alle 7 Düfte", "Geschenkbox"],
     photo: "img/fotos/probierset-7.webp?v=" + ASSET_V,
     galerie: SCENTS.map((s) => ({ src: "img/fotos/probe-" + s.key + ".webp?v=" + ASSET_V, scent: s.key, label: s.name })),
     // Auf der Produktseite: kurze Liste der sieben Proben mit Duftnoten
@@ -509,7 +520,7 @@ const OTHER_PRODUCTS = [
     name: "Weihnachtsbox „Die ganze Kollektion“",
     type: "bundle", category: "Sets & Boxen", set: true, saison: "weihnachten", geschenk: true,
     color: "#1f4a37", label: "Kollektion",
-    price: 39.90, priceOld: 51.70, bestseller: false, // 34,90 + 12,90 + 3,90 · Gewinn ~24,50 €
+    price: 39.90, priceOld: 58.10, bestseller: false, // Einzelwert 7 × 5,90 + 12,90 + 3,90 · Gewinn ~24,50 €
     desc: "Für alle, deren Lieblingsduft du nicht kennst: alle sieben Düfte als 30-ml-Proben, dazu ein Glasanhänger und ein Duftanhänger – in der Geschenkbox mit Karte. Versandkostenfrei.",
     notes: ["7× Duftprobe 30 ml", "1× Glasanhänger 8 ml", "1× Duftanhänger", "Geschenkbox + Karte", "Versandkostenfrei"],
     photo: "img/fotos/probierset-7.webp?v=" + ASSET_V,
@@ -522,7 +533,7 @@ const OTHER_PRODUCTS = [
     color: "#1f4a37", label: "Geschenk",
     price: 2.90, priceOld: null, bestseller: false,
     desc: "Schwarze Geschenkbox mit Seidenpapier und Karte für deine Widmung.",
-    notes: ["Geschenkbox", "Karte mit Widmung"],
+    notes: ["Geschenkbox", "Karte für deine Widmung"],
   },
   // Mystery Box
   {
@@ -531,8 +542,8 @@ const OTHER_PRODUCTS = [
     type: "mystery", category: "Sets & Boxen", set: true,
     color: "#111111", label: "Mystery",
     price: 34.90, priceOld: null, bestseller: true,
-    desc: "Wir packen, du wirst überrascht: mindestens 1 Duftspray, 3 Duftanhänger und 1 Glasanhänger – Warenwert über 50 €. Welche Düfte drin sind, verraten wir nicht.",
-    notes: ["Warenwert über 50 €", "Mind. 1 Spray + 3 Anhänger + 1 Glasanhänger", "Überraschungs-Düfte"],
+    desc: "Wir packen, du wirst überrascht: ein Duftspray, ein Glasanhänger, drei Duftanhänger und zwei Duftproben – sieben Teile mit einem Warenwert von über 50 €. Welche Düfte drin sind, verraten wir nicht.",
+    notes: ["Warenwert über 50 €", "1 Spray, 1 Glasanhänger, 3 Anhänger, 2 Proben", "Überraschungsdüfte"],
     photo: "img/fotos/mystery-box-2.webp?v=" + ASSET_V,
   },
 ];
@@ -544,13 +555,13 @@ const OTHER_PRODUCTS = [
 const PROBE_PRODUCTS = SCENTS.map((s) => ({
   id: "probe-" + s.key,
   name: s.name + " Duftprobe 30 ml",
-  type: "probier", category: "Sets & Boxen",
+  type: "probier", category: "Duftproben",
   hidden: true, upsellOnly: true, einzel: true,
   color: s.color, label: s.name,
   // Produktfoto der 30-ml-Probe (auch Kachel "gibt es auch als" und Warenkorb)
   photo: "img/fotos/probe-" + s.key + ".webp?v=" + ASSET_V,
   price: 5.90, priceOld: null, bestseller: false,
-  desc: s.short + " Als 30-ml-Spray zum Ausprobieren – nur als Mitnahmeartikel im Warenkorb.",
+  desc: s.short + " Als 30-ml-Spray zum Ausprobieren – ideal, bevor du dich für die große Flasche entscheidest.",
   notes: ["30 ml", s.name],
   scent: s.key, familie: s.familie, linie: "probe", linieName: "Duftprobe",
 }));
@@ -794,7 +805,7 @@ const DUFTREISE = {
   },
   "ombre-apex": {
     titel: "Wie Ombre Apex sich entfaltet.",
-    intro: "Dunkel, edel und orientalisch. Ombre Apex ist der intensivste Duft der Kollektion – mit Oud, Rose und Weihrauch.",
+    intro: "Dunkel, edel und orientalisch. Ombre Apex ist einer der intensivsten Düfte der Kollektion – mit Oud, Rose und Weihrauch.",
     phasen: [
       { zeit: "Die ersten Minuten", text: "Himbeere und Safran – ein fruchtig-würziger Auftakt, der sofort neugierig macht." },
       { zeit: "Nach einer Weile", text: "Rose, Oud und Weihrauch zeigen sich. Rauchig, blumig und luxuriös – wie ein Abend in einer Hotelbar." },

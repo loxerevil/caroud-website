@@ -2725,3 +2725,39 @@ body.aktion-xmas { --accent: #1f4a37; --accent-dark: #163829; --zweig: url("data
 .spar-pill { display: inline-block; vertical-align: middle; margin-left: 0.7rem; background: #111; color: #fff;
   font-family: var(--font); font-size: 0.62rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase;
   padding: 0.32rem 0.55rem; border-radius: 3px; position: relative; top: -2px; }
+
+/* ---------- Produktseite: einheitliche Abstände (v145) ---------- */
+/* „<Duft> gibt es auch als“ bekommt denselben Abstand nach oben wie die anderen Überschriften im Block */
+.pdp-info > .notes-label { margin-top: 2.5rem; }
+.pdp-info > .cross-row:last-child { margin-bottom: 0; }
+/* Handy: über und unter den Trennlinien der Abschnitte gleich viel Luft */
+@media (max-width: 899px) {
+  .pdp-moment, .duftreise, .pvg, .wsh, .pdp-reco { margin-top: 3.5rem; }
+}
+
+/* ---------- Warenkorb: Spray-Tipp + Gratis-Duftanhänger (v146) ---------- */
+.ship-spray { background: none; border: 0; padding: 0; font: inherit; color: var(--black); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+.cart-foot .cart-gratis span:first-child { color: var(--black); }
+/* Warenkorb auf kleinen Handys: der erste Artikel bleibt ganz sichtbar, der Rest scrollt mit */
+@media (max-height: 900px) {
+  #cartDrawer { overflow-y: auto; }
+  #cartDrawer .cart-items { flex: 0 0 auto; overflow: visible; }
+}
+
+/* ---------- Zahlungsarten-Icons (einfarbig) ---------- */
+.pay-icons { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.7rem; }
+.pay-label { font-size: 0.66rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--grey); }
+.pay-row { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.pay-icons svg { width: 40px; height: 25px; display: block; color: #3a3a3a; }
+.pay-icons svg rect { fill: #fff; stroke: #d6d6d2; }
+.pay-icons svg text { fill: currentColor; font-family: var(--font, system-ui), sans-serif; }
+.pay-icons svg .pay-fill { fill: #2b2b2b; }
+.pay-icons svg .pay-fill-2 { fill: #a8a8a8; opacity: .9; }
+.pdp-pay { margin-top: 0.9rem; }
+.cart-pay { margin-top: 0.8rem; justify-content: center; }
+.footer-pay { justify-content: center; margin: 1.6rem 0 1rem; }
+.pay-icons.footer-pay .pay-label { color: #8a8a8a; }
+.pay-icons.footer-pay svg { color: #d8d8d8; }
+.pay-icons.footer-pay svg rect { fill: transparent; stroke: #3a3a3a; }
+.pay-icons.footer-pay svg .pay-fill { fill: #e0e0e0; }
+.pay-icons.footer-pay svg .pay-fill-2 { fill: #7a7a7a; }

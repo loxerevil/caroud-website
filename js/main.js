@@ -241,9 +241,58 @@ function byId(id) {
 
 // Preis: durchgestrichener Streichpreis direkt vor dem aktuellen Preis
 // „Du sparst 3 €“ – wie viel ein reduzierter Artikel gegenüber dem Streichpreis spart
+// ---- Lieferdatum: bis 14 Uhr an Werktagen bestellt = Versand am selben Tag, Zustellung 1–2 Werktage danach ----
+const VERSAND_SCHLUSS = 14;
+function feiertage(jahr) {
+  // Bundesweite Feiertage (fest + Ostern-abhängig)
+  const a = jahr % 19, b = Math.floor(jahr / 100), c = jahr % 100, d = Math.floor(b / 4), e = b % 4;
+  const f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30;
+  const i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451);
+  const monat = Math.floor((h + l - 7 * m + 114) / 31), tag = ((h + l - 7 * m + 114) % 31) + 1;
+  const ostern = new Date(jahr, monat - 1, tag);
+  const plus = (n) => { const x = new Date(ostern); x.setDate(x.getDate() + n); return x; };
+  const liste = [new Date(jahr, 0, 1), new Date(jahr, 4, 1), new Date(jahr, 9, 3), new Date(jahr, 11, 25), new Date(jahr, 11, 26),
+    plus(-2), plus(1), plus(39), plus(50)];
+  return liste.map((x) => x.toDateString());
+}
+function istWerktag(d) { return d.getDay() !== 0 && d.getDay() !== 6 && !feiertage(d.getFullYear()).includes(d.toDateString()); }
+function naechsterWerktag(d) { const x = new Date(d); do { x.setDate(x.getDate() + 1); } while (!istWerktag(x)); return x; }
+function lieferText() {
+  const jetzt = new Date();
+  let versand = new Date(jetzt.getFullYear(), jetzt.getMonth(), jetzt.getDate());
+  if (!istWerktag(versand) || jetzt.getHours() >= VERSAND_SCHLUSS) versand = naechsterWerktag(versand);
+  const von = naechsterWerktag(versand), bis = naechsterWerktag(von);
+  const fmt = (d) => d.toLocaleDateString("de-DE", { weekday: "short", day: "2-digit", month: "2-digit" }).replace(",", "");
+  return `Lieferung ${fmt(von)} – ${fmt(bis)}`;
+}
+
+// Enthält ein Artikel Duftanhänger? (für den Rückgabe-Hinweis)
+function enthaeltHaenger(p) {
+  if (!p) return false;
+  if (p.type === "haenger" || p.id === "mystery-box") return true;
+  const wahl = Array.isArray(p.wahl) ? p.wahl : [];
+  return wahl.some((w) => w.linie === "haenger") || (p.notes || []).some((n) => /anhänger/i.test(n) && !/glasanhänger/i.test(n));
+}
+
+// ---- Zahlungsarten-Icons (einfarbig, passend zum Design) ----
+// Beim Umzug auf Shopify an die tatsächlich aktivierten Zahlungsarten anpassen.
+const ZAHLARTEN = ["paypal", "klarna", "applepay", "visa", "mastercard"];
+const ZAHL_SVG = {
+  paypal: `<svg viewBox="0 0 52 32" role="img" aria-label="PayPal"><rect x=".5" y=".5" width="51" height="31" rx="5"/><text x="26" y="20.5" text-anchor="middle" font-size="11" font-weight="700" font-style="italic">PayPal</text></svg>`,
+  klarna: `<svg viewBox="0 0 52 32" role="img" aria-label="Klarna"><rect x=".5" y=".5" width="51" height="31" rx="5"/><text x="26" y="20.5" text-anchor="middle" font-size="11" font-weight="700">Klarna.</text></svg>`,
+  applepay: `<svg viewBox="0 0 52 32" role="img" aria-label="Apple Pay"><rect x=".5" y=".5" width="51" height="31" rx="5"/><text x="26" y="20.5" text-anchor="middle" font-size="9.5" font-weight="600">Apple Pay</text></svg>`,
+  visa: `<svg viewBox="0 0 52 32" role="img" aria-label="Visa"><rect x=".5" y=".5" width="51" height="31" rx="5"/><text x="26" y="21" text-anchor="middle" font-size="12.5" font-weight="800" font-style="italic" letter-spacing=".5">VISA</text></svg>`,
+  mastercard: `<svg viewBox="0 0 52 32" role="img" aria-label="Mastercard"><rect x=".5" y=".5" width="51" height="31" rx="5"/><circle class="pay-fill" cx="21.5" cy="16" r="7.5"/><circle class="pay-fill pay-fill-2" cx="30.5" cy="16" r="7.5"/></svg>`,
+};
+function zahlIcons(cls) {
+  return `<div class="pay-icons ${cls || ""}"><span class="pay-label">Sicher bezahlen</span><span class="pay-row">${ZAHLARTEN.map((z) => ZAHL_SVG[z]).join("")}</span></div>`;
+}
+
+const SPAR_AB = 2;  // „Du sparst“ erst ab 2 € Ersparnis zeigen
 function sparText(p) {
   if (!p.priceOld || p.priceOld <= p.price) return "";
   const d = Math.round((p.priceOld - p.price) * 100) / 100;
+  if (d < SPAR_AB) return "";  // kleine Ersparnisse wirken im Premiumsegment billig
   return `Du sparst ${Number.isInteger(d) ? d : d.toFixed(2).replace(".", ",")}&nbsp;€`;
 }
 
@@ -566,7 +615,7 @@ function heroSlider() {
       name: "Mystery Box",
       kicker: "Mystery Box · Warenwert über 50&nbsp;€",
       titel: "Lass dich<br>überraschen.",
-      text: "Mindestens ein Duftspray, drei Duftanhänger und ein Glasanhänger – welche Düfte drin sind, erfährst du erst beim Auspacken.",
+      text: "Ein Duftspray, ein Glasanhänger, drei Duftanhänger und zwei Proben – welche Düfte drin sind, erfährst du erst beim Auspacken.",
       ctas: [["#p/mystery-box", "Box entdecken", "btn-gold"], ["#boxen", "Alle Boxen", "btn-outline"]],
       notiz: `Für ${preis("mystery-box")}&nbsp;· Versand in&nbsp;24&nbsp;h`,
       bild: foto("mystery-box"), link: "#p/mystery-box",
@@ -1126,7 +1175,7 @@ function renderCart() {
       : `<strong>Versandkostenfrei</strong> – dein Paket geht gratis raus`;
     shippingFillEl.style.width = "100%";
   } else {
-    shippingTextEl.innerHTML = `Noch <strong>${euro(status.fehlend)}</strong> bis zum kostenlosen Versand`;
+    shippingTextEl.innerHTML = `Noch <strong>${euro(status.fehlend)}</strong> bis zum kostenlosen Versand – <button type="button" class="ship-spray" data-spray-tipp>oder leg ein Duftspray dazu</button>, dann ist der Versand sofort gratis.`;
     shippingFillEl.style.width = Math.round(subtotal / VERSANDFREI_AB * 100) + "%";
   }
   const shipEl = document.getElementById("cartShipping");
@@ -1135,6 +1184,16 @@ function renderCart() {
   if (totalEl) totalEl.textContent = euro(subtotal + status.kosten);
   const checkoutBtn = document.getElementById("checkoutBtn");
   if (checkoutBtn) checkoutBtn.disabled = !cart.length;
+  // Gratis-Duftanhänger zu jeder Bestellung als eigene Zeile im Fuß
+  const foot = document.querySelector("#cartDrawer .cart-foot");
+  let gratis = foot && foot.querySelector(".cart-gratis");
+  if (foot && !gratis) {
+    gratis = document.createElement("div");
+    gratis.className = "cart-subtotal cart-line cart-gratis";
+    gratis.innerHTML = `<span>Gratis-Duftanhänger</span><span>0,00&nbsp;€</span>`;
+    foot.insertBefore(gratis, foot.querySelector(".cart-subtotal:not(:first-child)"));
+  }
+  if (gratis) gratis.hidden = !cart.length;
 
   cartItemsEl.innerHTML = "";
   if (!cart.length) {
@@ -1176,6 +1235,19 @@ document.getElementById("checkoutBtn").addEventListener("click", () => {
 normalizeCart(true);
 saveCart();
 renderCart();
+// „oder leg ein Duftspray dazu“ im Warenkorb: zu den Duftsprays springen
+shippingTextEl.addEventListener("click", (e) => {
+  if (!e.target.closest("[data-spray-tipp]")) return;
+  closeCart();
+  if (location.hash.startsWith("#p/")) history.pushState(null, "", "#produkte");
+  window.dispatchEvent(new HashChangeEvent("hashchange"));
+  if (typeof setFamily === "function") setFamily("alle");
+  if (typeof setFilter === "function") setFilter("Duftsprays");
+  setTimeout(() => document.getElementById("produkte")?.scrollIntoView({ behavior: "smooth" }), 60);
+});
+// Zahlungsarten unter „Zur Kasse“ und im Footer
+document.getElementById("checkoutBtn")?.insertAdjacentHTML("afterend", zahlIcons("cart-pay"));
+document.querySelector(".footer-copy")?.insertAdjacentHTML("beforebegin", zahlIcons("footer-pay"));
 
 // ---------- Produkt-Modal ----------
 
@@ -1189,8 +1261,8 @@ const FAKTEN = {
   ],
   haenger: [
     ["Wohin", "An den Rückspiegel"],
-    ["Form", "Eigene Caroud-Form, beidseitig bedruckt"],
-    ["Wie", "Aufhängen und liegen lassen"],
+    ["Form", "Eigene Caroud-Form, von beiden Seiten ein Hingucker"],
+    ["Wie", "Einfach aufhängen – der Duft entfaltet sich von selbst"],
     ["Hält", "4 bis 8 Wochen, je nach Belüftung"],
   ],
   glas: [
@@ -1585,7 +1657,7 @@ function wischBlock(p) {
   return `
     <section class="wsh" aria-label="Selbst ausprobieren">
       <div class="wsh-kopf">
-        <p class="pdp-moment-kicker">Probier's aus</p>
+        <p class="pdp-moment-kicker">Probier’s aus</p>
         <h2 class="pvg-titel">Einmal drüber. Trocken.</h2>
         <p class="wsh-copy">Zieh den Wasserabzieher mit der Maus oder dem Finger über die nasse Motorhaube.</p>
       </div>
@@ -1596,7 +1668,7 @@ function wischBlock(p) {
         <div class="wsh-tipp" aria-hidden="true"><span class="wsh-hand">⟷</span> Nach links und rechts ziehen</div>
         <div class="wsh-fertig" role="status" aria-live="polite">
           <strong>Streifenfrei trocken.</strong>
-          <button type="button" class="wsh-nochmal">Nochmal nass machen</button>
+          <button type="button" class="wsh-nochmal">Noch mal nass machen</button>
         </div>
       </div>
     </section>`;
@@ -1778,14 +1850,14 @@ function initWisch(feld) {
   }).observe(feld);
 }
 
-// Auffälliger Hinweis: Gratis-Duftanhänger zu jedem Duftspray
+// Auffälliger Hinweis: Gratis-Duftanhänger zu jeder Bestellung
 function geschenkHinweis(p) {
-  if (p.category !== "Duftsprays") return "";
-  const anz = p.set ? (p.id === "set-spray-3" ? 3 : 2) : 1;
-  const was = anz > 1 ? `${anz} Duftanhänger – einer pro Spray` : "1 Duftanhänger zu deinem Duftspray";
+  if (!p || p.id === "geschenkverpackung") return "";
+  const was = "1 Duftanhänger zu jeder Bestellung";
+  const sub = versandfreiArtikel(p) ? `im Wert von ${euro(3.9)} – und dein Paket geht versandkostenfrei raus` : `im Wert von ${euro(3.9)} – Duft passend zu deiner Bestellung`;
   return `<div class="gift-note">
       <svg class="gift-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 2h6v3.2c2.9.9 5 3.6 5 6.8v7a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-7c0-3.2 2.1-5.9 5-6.8V2z"/><circle cx="12" cy="4" r="1.1"/></svg>
-      <div><span class="gift-kicker">Gratis dazu</span><strong>${was}</strong><span class="gift-sub">im Wert von ${euro(3.9 * anz)} · plus versandkostenfrei</span></div>
+      <div><span class="gift-kicker">Gratis dazu</span><strong>${was}</strong><span class="gift-sub">${sub}</span></div>
     </div>`;
 }
 
@@ -1944,8 +2016,8 @@ function renderProduktseite(p) {
           <p class="pdp-tax">inkl. MwSt., ${versandfreiArtikel(p) ? `<a href="widerruf.html">versandkostenfrei</a>` : `zzgl. <a href="widerruf.html">Versand</a> – versandkostenfrei ab 40 €`}</p>
           <ul class="pdp-usps">
             <li>${versandfreiArtikel(p) ? "Versandkostenfrei" : "Versandkostenfrei ab 40 €"}</li>
-            <li>Versand in 24 h</li>
-            <li>30 Tage Rückgabe${p.type === "haenger" || (p.notes || []).some((n) => /Duftanhänger/.test(n)) ? " (Duftanhänger nur ungeöffnet)" : ""}</li>
+            <li>${lieferText()}</li>
+            <li>30 Tage Rückgabe${enthaeltHaenger(p) ? " (Duftanhänger nur ungeöffnet)" : ""}</li>
             <li>Auf Lager</li>
           </ul>
           ${geschenkHinweis(p)}
@@ -1959,6 +2031,7 @@ function renderProduktseite(p) {
             </div>
             <button class="btn btn-gold" id="pdpAdd">In den Warenkorb legen</button>
           </div>
+          ${zahlIcons("pdp-pay")}
           <div class="pdp-desc-block">
             <p class="pdp-desc-head">Beschreibung</p>
             <p class="modal-desc">${p.desc}</p>
@@ -2108,6 +2181,16 @@ function renderProduktseite(p) {
   // Duftwahl: je Gruppe Düfte antippen (bis zur Anzahl), bei "doppelt" auch mehrmals denselben
   const gruppen = wahlGruppen(p);
   const auswahl = gruppen.map(() => []);
+  // Vorauswahl: beliebteste Düfte vorbelegen, damit ein Tipp auf „In den Warenkorb“ reicht
+  {
+    const vorlieben = ["pacific-cruise", "driveination", "fast-cherry", "naxnos-asphalt", "erba-carbon", "ombre-apex", "erba-tuned"];
+    const boxenV = [...produktPage.querySelectorAll("[data-wahl]")];
+    gruppen.forEach((g, gi) => {
+      const da = boxenV[gi] ? [...boxenV[gi].querySelectorAll("[data-wahl-duft]")].map((b) => b.dataset.wahlDuft) : [];
+      const reihe = vorlieben.filter((k) => da.includes(k));
+      for (let i = 0; i < g.anzahl && reihe.length; i++) auswahl[gi].push(reihe[i % reihe.length]);
+    });
+  }
   const addBtn = produktPage.querySelector("#pdpAdd");
   const boxen = [...produktPage.querySelectorAll("[data-wahl]")];
   const fehlt = () => gruppen.reduce((n, g, gi) => n + (g.anzahl - auswahl[gi].length), 0);
@@ -2129,7 +2212,7 @@ function renderProduktseite(p) {
       wahl.forEach((k) => { zaehl[k] = (zaehl[k] || 0) + 1; });
       box.querySelector("[data-wahl-liste]").textContent = wahl.length
         ? Object.entries(zaehl).map(([k, n]) => (n > 1 ? n + "× " : "") + nameVon(k)).join(" · ")
-        : g.doppelt && g.anzahl > 1 ? "Tippe auf deine Wunsch-Düfte – auch mehrmals denselben." : "Tippe auf deinen Wunsch-Duft.";
+        : g.doppelt && g.anzahl > 1 ? "Wähle deine Düfte – gern auch mehrmals denselben." : g.anzahl > 1 ? "Wähle deine Düfte." : "Wähle deinen Duft.";
       const leeren = box.querySelector("[data-wahl-leeren]");
       if (leeren) leeren.hidden = !wahl.length;
     });
@@ -2148,11 +2231,11 @@ function renderProduktseite(p) {
         else if (g.doppelt) {
           if (wahl.length < g.anzahl) wahl.push(k);
           else if (drin) wahl.splice(wahl.lastIndexOf(k), 1);
-          else { showToast(`Schon ${g.anzahl} gewählt – tippe einen gewählten Duft an, um ihn zu entfernen.`); return; }
+          else { wahl.shift(); wahl.push(k); }  // voll: ältesten Duft gegen den neuen tauschen
         } else {
           if (drin) wahl.splice(wahl.indexOf(k), 1);
           else if (wahl.length < g.anzahl) wahl.push(k);
-          else { showToast(`Du hast schon ${g.anzahl} Düfte gewählt – tippe einen an, um ihn zu tauschen.`); return; }
+          else { wahl.shift(); wahl.push(k); }  // voll: ältesten Duft gegen den neuen tauschen
         }
         // Die gewählte Probe gross zeigen (Probiersets)
         const thumb = produktPage.querySelector(`[data-thumb][data-scent="${k}"]`);
@@ -2412,7 +2495,7 @@ scrollReihenPruefen();
   const bar = document.querySelector(".announcement-bar");
   const msg = bar && bar.querySelector(".announce-msg");
   if (!bar || !msg) return;
-  const standard = ["Duftsprays versandkostenfrei", "Alles andere ab 40&nbsp;€ versandkostenfrei", "Versand in 24&nbsp;h", "Abgefüllt in Deutschland", "Gratis-Duftanhänger zu jedem Spray", "30 Tage Rückgabe"];
+  const standard = ["Duftsprays versandkostenfrei", "Sonst ab 40&nbsp;€ versandkostenfrei", "Versand in 24&nbsp;h", "Abgefüllt in Deutschland", "Gratis-Duftanhänger zu jeder Bestellung", "30 Tage Rückgabe"];
   let eintraege = document.body.classList.contains("bf-aktiv") ? [msg.innerHTML, ...standard] : standard;
   if (XMAS_AKTIV) {
     const t = XMAS_TUER;
