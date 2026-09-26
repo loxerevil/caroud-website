@@ -1561,6 +1561,205 @@ function probenListeHtml(p) {
 
 // Duftreise: Pyramide als Grafik, Geschichte in drei Phasen, Duftprofil
 // „Warum Caroud?“ – Vergleich mit herkömmlichen Produkten (Pflege)
+// ---------- „Selbst abziehen“: nasse Motorhaube, die man mit Maus/Finger trocken zieht ----------
+function wischBlock(p) {
+  if (!p.wischen) return "";
+  return `
+    <section class="wsh" aria-label="Selbst ausprobieren">
+      <div class="wsh-kopf">
+        <p class="pdp-moment-kicker">Probier's aus</p>
+        <h2 class="pvg-titel">Einmal drüber. Trocken.</h2>
+        <p class="wsh-copy">Zieh den Wasserabzieher mit der Maus oder dem Finger über die nasse Motorhaube.</p>
+      </div>
+      <div class="wsh-feld" data-abziehen>
+        <canvas class="wsh-lack" aria-hidden="true"></canvas>
+        <canvas class="wsh-wasser" aria-hidden="true"></canvas>
+        <div class="wsh-abzieher" aria-hidden="true"><span class="wsh-griff"></span><span class="wsh-lippe"></span></div>
+        <div class="wsh-tipp" aria-hidden="true"><span class="wsh-hand">⟷</span> Nach links und rechts ziehen</div>
+        <div class="wsh-fertig" role="status" aria-live="polite">
+          <strong>Streifenfrei trocken.</strong>
+          <button type="button" class="wsh-nochmal">Nochmal nass machen</button>
+        </div>
+      </div>
+    </section>`;
+}
+
+function initWisch(feld) {
+  const lack = feld.querySelector(".wsh-lack");
+  const wasser = feld.querySelector(".wsh-wasser");
+  const abz = feld.querySelector(".wsh-abzieher");
+  const tipp = feld.querySelector(".wsh-tipp");
+  const fertig = feld.querySelector(".wsh-fertig");
+  const lc = lack.getContext("2d");
+  const wc = wasser.getContext("2d");
+  let W = 0, H = 0, dpr = 1, letztesX = null, letztesY = null, richtung = 1, prueft = 0, geschafft = false;
+
+  // Zufall mit festem Startwert: jede Haube sieht gleich schön aus
+  let s = 7;
+  const rnd = () => ((s = (s * 16807) % 2147483647) / 2147483647);
+
+  function malLack() {
+    const c = lc;
+    c.setTransform(dpr, 0, 0, dpr, 0, 0);
+    // Tiefschwarzer Lack mit leichtem Verlauf (Haube wölbt sich nach vorne)
+    let g = c.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, "#1a1d22"); g.addColorStop(0.45, "#0b0c0f"); g.addColorStop(1, "#030304");
+    c.fillStyle = g; c.fillRect(0, 0, W, H);
+    // Himmel spiegelt sich: breites weiches Lichtband schräg über die Haube
+    c.save(); c.translate(W * 0.5, H * 0.34); c.rotate(-0.16);
+    g = c.createLinearGradient(0, -H * 0.2, 0, H * 0.2);
+    g.addColorStop(0, "rgba(190,205,225,0)"); g.addColorStop(0.42, "rgba(190,205,225,0.16)");
+    g.addColorStop(0.5, "rgba(225,235,248,0.30)"); g.addColorStop(0.58, "rgba(190,205,225,0.14)"); g.addColorStop(1, "rgba(190,205,225,0)");
+    c.fillStyle = g; c.fillRect(-W, -H * 0.2, W * 2, H * 0.4); c.restore();
+    // Zwei Sicken (Kanten der Motorhaube) als feine Lichtlinien
+    [[0.18, 0.28], [0.82, 0.28]].forEach(([x, k]) => {
+      c.beginPath(); c.moveTo(W * x, -10);
+      c.quadraticCurveTo(W * (x + (x < 0.5 ? 0.05 : -0.05)), H * 0.5, W * (x + (x < 0.5 ? k * 0.2 : -k * 0.2)), H + 10);
+      c.strokeStyle = "rgba(255,255,255,0.10)"; c.lineWidth = 1.2; c.stroke();
+      c.strokeStyle = "rgba(0,0,0,0.55)"; c.lineWidth = 3; c.translate(2, 0); c.stroke(); c.setTransform(dpr, 0, 0, dpr, 0, 0);
+    });
+    // Harte Glanzkante oben (Werkstattlicht)
+    g = c.createLinearGradient(0, 0, W, 0);
+    g.addColorStop(0, "rgba(255,255,255,0)"); g.addColorStop(0.3, "rgba(255,255,255,0.55)"); g.addColorStop(0.7, "rgba(255,255,255,0.55)"); g.addColorStop(1, "rgba(255,255,255,0)");
+    c.fillStyle = g; c.fillRect(0, H * 0.075, W, 1.2);
+    // Zwei Softbox-Spiegelungen wie in der Aufbereitungshalle
+    [[0.62, 0.16, 0.26, 0.09, -0.05], [0.2, 0.62, 0.18, 0.06, 0.04]].forEach(([x, y, w, h, rot]) => {
+      c.save(); c.translate(W * x, H * y); c.rotate(rot);
+      const gg = c.createLinearGradient(0, -H * h, 0, H * h);
+      gg.addColorStop(0, "rgba(235,242,250,0)"); gg.addColorStop(0.3, "rgba(235,242,250,0.16)");
+      gg.addColorStop(0.7, "rgba(235,242,250,0.12)"); gg.addColorStop(1, "rgba(235,242,250,0)");
+      c.filter = "blur(10px)";
+      c.fillStyle = gg; c.beginPath(); c.roundRect(-W * w / 2, -H * h, W * w, H * h * 2, 8); c.fill(); c.restore();
+      c.filter = "none";
+    });
+    // Metallic-Flakes, ganz fein
+    for (let i = 0; i < W * H / 60; i++) {
+      c.fillStyle = `rgba(255,255,255,${0.02 + rnd() * 0.05})`;
+      c.fillRect(rnd() * W, rnd() * H, 0.6, 0.6);
+    }
+    // Vignette
+    g = c.createRadialGradient(W / 2, H / 2, H * 0.3, W / 2, H / 2, W * 0.75);
+    g.addColorStop(0, "rgba(0,0,0,0)"); g.addColorStop(1, "rgba(0,0,0,0.55)");
+    c.fillStyle = g; c.fillRect(0, 0, W, H);
+  }
+
+  function tropfen(c, x, y, r) {
+    // Körper: dunkel mit hellerem Rand, darunter leichter Schatten, oben links Glanzpunkt
+    c.beginPath(); c.ellipse(x + r * 0.18, y + r * 0.22, r, r * 0.92, 0, 0, Math.PI * 2);
+    c.fillStyle = "rgba(0,0,0,0.35)"; c.fill();
+    const g = c.createRadialGradient(x - r * 0.3, y - r * 0.35, r * 0.1, x, y, r);
+    g.addColorStop(0, "rgba(120,135,155,0.20)"); g.addColorStop(0.7, "rgba(40,46,56,0.35)"); g.addColorStop(1, "rgba(170,185,205,0.55)");
+    c.beginPath(); c.ellipse(x, y, r, r * 0.92, 0, 0, Math.PI * 2); c.fillStyle = g; c.fill();
+    c.beginPath(); c.ellipse(x - r * 0.35, y - r * 0.38, r * 0.28, r * 0.2, -0.6, 0, Math.PI * 2);
+    c.fillStyle = "rgba(255,255,255,0.85)"; c.fill();
+    if (r > 3) { c.beginPath(); c.arc(x + r * 0.4, y + r * 0.45, r * 0.12, 0, Math.PI * 2); c.fillStyle = "rgba(255,255,255,0.35)"; c.fill(); }
+  }
+
+  function malWasser() {
+    const c = wc;
+    c.setTransform(dpr, 0, 0, dpr, 0, 0);
+    c.globalCompositeOperation = "source-over";
+    c.clearRect(0, 0, W, H);
+    // Nasser Film: Lack wirkt matter und etwas heller
+    c.fillStyle = "rgba(125,140,158,0.16)"; c.fillRect(0, 0, W, H);
+    s = 11;
+    for (let i = 0; i < W / 9; i++) {           // Wasserschlieren, die langsam nach unten laufen
+      const x = rnd() * W, y = rnd() * H * 0.8, l = 30 + rnd() * 120;
+      const g = c.createLinearGradient(x, y, x, y + l);
+      g.addColorStop(0, "rgba(160,175,195,0)"); g.addColorStop(0.5, "rgba(160,175,195,0.10)"); g.addColorStop(1, "rgba(160,175,195,0)");
+      c.fillStyle = g; c.fillRect(x, y, 2 + rnd() * 5, l);
+    }
+    const flaeche = W * H;
+    for (let i = 0; i < flaeche / 1400; i++) tropfen(c, rnd() * W, rnd() * H, 0.6 + rnd() * 1.4);  // feiner Sprühnebel
+    for (let i = 0; i < flaeche / 2600; i++) tropfen(c, rnd() * W, rnd() * H, 2 + rnd() * 3.5);   // mittlere Tropfen
+    for (let i = 0; i < flaeche / 16000; i++) tropfen(c, rnd() * W, rnd() * H, 5 + rnd() * 6);    // große Perlen
+    geschafft = false; feld.classList.remove("ist-fertig");
+  }
+
+  function groesse() {
+    const r = feld.getBoundingClientRect();
+    dpr = Math.min(window.devicePixelRatio || 1, 3);   // gestochen scharf bis 4K-Bildschirm
+    W = r.width; H = r.height;
+    [lack, wasser].forEach((cv) => { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); });
+    malLack(); malWasser();
+  }
+
+  const klingeHoehe = () => Math.min(H * 0.62, 260);
+
+  function wischen(x, y) {
+    const h = klingeHoehe();
+    const y0 = Math.max(0, Math.min(H - h, y - h / 2));
+    abz.style.transform = `translate(${x}px, ${y0}px) scaleX(${richtung})`;
+    abz.style.height = h + "px";
+    if (letztesX === null) { letztesX = x; letztesY = y0; return; }
+    const dx = x - letztesX;
+    if (Math.abs(dx) > 0.5) richtung = dx > 0 ? 1 : -1;
+    const c = wc;
+    c.globalCompositeOperation = "destination-out";
+    // Die Silikonlippe nimmt alles mit, was sie überstreicht – als Viereck zwischen alter und neuer Position
+    const schritte = Math.max(1, Math.ceil(Math.hypot(dx, y0 - letztesY) / 4));
+    for (let i = 1; i <= schritte; i++) {
+      const t = i / schritte;
+      const xi = letztesX + dx * t, yi = letztesY + (y0 - letztesY) * t;
+      c.fillStyle = "rgba(0,0,0,1)";
+      c.fillRect(xi - 6, yi + 4, 12, h - 8);
+    }
+    c.globalCompositeOperation = "source-over";
+    letztesX = x; letztesY = y0;
+    if (++prueft % 12 === 0) pruefen();
+  }
+
+  function pruefen() {
+    if (!wasser.width || !wasser.height) return;
+    // Wie viel ist schon trocken? Grob über ein Raster zählen
+    const d = wc.getImageData(0, 0, wasser.width, wasser.height).data;
+    let nass = 0, n = 0;
+    const schritt = Math.max(8, Math.round(12 * dpr));
+    const rx = Math.round(wasser.width * 0.04), ry = Math.round(wasser.height * 0.04);   // Ränder zählen nicht mit
+    for (let yy = ry; yy < wasser.height - ry; yy += schritt) for (let xx = rx; xx < wasser.width - rx; xx += schritt) {
+      n++; if (d[(yy * wasser.width + xx) * 4 + 3] > 20) nass++;
+    }
+    if (!geschafft && nass / n < 0.08) { geschafft = true; feld.classList.add("ist-fertig"); }
+  }
+
+  const pos = (e) => { const r = feld.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+  feld.addEventListener("pointerdown", (e) => {
+    if (e.target.closest(".wsh-nochmal")) return;
+    feld.setPointerCapture(e.pointerId); feld.classList.add("wischt", "benutzt");
+    letztesX = null; wischen(...pos(e));
+  });
+  feld.addEventListener("pointermove", (e) => {
+    if (e.pointerType === "mouse" && !feld.classList.contains("wischt")) {
+      // Maus schwebt nur: Abzieher folgt, zieht aber noch nicht
+      const [x, y] = pos(e); const h = klingeHoehe();
+      abz.style.height = h + "px";
+      abz.style.transform = `translate(${x}px, ${Math.max(0, Math.min(H - h, y - h / 2))}px) scaleX(${richtung})`;
+      return;
+    }
+    if (feld.classList.contains("wischt")) wischen(...pos(e));
+  });
+  const ende = () => { feld.classList.remove("wischt"); letztesX = null; pruefen(); };
+  feld.addEventListener("pointerup", ende);
+  feld.addEventListener("pointercancel", ende);
+  feld.querySelector(".wsh-nochmal").addEventListener("click", () => { malWasser(); });
+
+  function start() {
+    groesse();
+    // Startposition: Abzieher steht links am Rand
+    const h0 = klingeHoehe();
+    abz.style.height = h0 + "px";
+    abz.style.transform = `translate(${W * 0.12}px, ${(H - h0) / 2}px)`;
+  }
+  // Erst malen, wenn das Feld wirklich sichtbar ist (Produktseite kann beim Aufbau noch versteckt sein)
+  let rt;
+  new ResizeObserver(() => {
+    const b = feld.getBoundingClientRect().width;
+    if (!b) return;
+    if (!W) { start(); return; }
+    if (Math.abs(b - W) > 2) { clearTimeout(rt); rt = setTimeout(start, 200); }
+  }).observe(feld);
+}
+
 function vergleichBlock(p) {
   const v = p.vergleich;
   if (!v) return "";
@@ -1762,9 +1961,11 @@ function renderProduktseite(p) {
       </div>
       ${momentBlock(p)}
       ${duftreiseBlock(p)}
+      ${wischBlock(p)}
       ${vergleichBlock(p)}
       ${recoKarten(p)}
     </div>`;
+  produktPage.querySelectorAll("[data-abziehen]").forEach(initWisch);
   // Galerie: Foto, Foto 2, Etikett, Video umschalten
   const stage = produktPage.querySelector("[data-stage]");
   produktPage.querySelectorAll("[data-thumb]").forEach((b) => {

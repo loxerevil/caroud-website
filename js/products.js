@@ -328,6 +328,7 @@ const OTHER_PRODUCTS = [
     photo: "img/fotos/pflege-abzieher.webp?v=" + ASSET_V,
     photo2: "img/fotos/pflege-abzieher-2.webp?v=" + ASSET_V,
     photo3: "img/fotos/pflege-abzieher-3.webp?v=" + ASSET_V,
+    wischen: true,
     vergleich: {
       bild: "img/fotos/pflege-abzieher-2.webp?v=" + ASSET_V,
       unser: "Caroud Wasserabzieher",
