@@ -316,6 +316,9 @@ const OTHER_PRODUCTS = [
     price: 11.90, priceOld: null, bestseller: false,
     desc: "Der Allrounder im Dreierpack: für Scheiben, Lack und Innenraum. Waschbar, langlebig und weich genug für jede Oberfläche.",
     notes: ["3 Stück", "Allround", "Waschbar"],
+    photo: "img/fotos/pflege-mikrofaser.webp?v=" + ASSET_V,
+    photo2: "img/fotos/pflege-mikrofaser-2.webp?v=" + ASSET_V,
+    photo3: "img/fotos/pflege-mikrofaser-3.webp?v=" + ASSET_V,
   },
   {
     id: "pflege-abzieher",
