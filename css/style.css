@@ -2771,3 +2771,7 @@ body.aktion-xmas { --accent: #1f4a37; --accent-dark: #163829; --zweig: url("data
 .gift-note .gift-kicker { display: inline; margin-right: 0.55rem; font-size: 0.62rem; letter-spacing: 0.2em; color: #9aa0a8; font-weight: 600; }
 .gift-wert { flex: none; font-size: 0.72rem; color: #9aa0a8; white-space: nowrap; }
 @media (max-width: 480px) { .gift-wert { display: none; } }
+/* Gratis-Hinweis und Kaufknopf etwas weicher (leicht transparent statt Tiefschwarz) (v148) */
+.gift-note { background: rgba(18, 19, 22, 0.86); }
+.produkt-page #pdpAdd { background: rgba(18, 19, 22, 0.86); border-color: transparent; }
+.produkt-page #pdpAdd:hover { background: rgba(18, 19, 22, 0.96); }
