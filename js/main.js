@@ -1082,14 +1082,23 @@ function renderUpsell() {
   if (!row.children.length) box.hidden = true;
 }
 
-// Versand: 3,90 € pauschal, ab 40 € Warenwert versandkostenfrei.
+// Versand: Alles mit Duftspray (150 ml) geht versandkostenfrei raus – auch Sets und Boxen mit Spray.
+// Alles andere (Anhänger, Glasanhänger, Proben, Pflege): 3,90 € pauschal, ab 40 € Warenwert versandkostenfrei.
 const VERSAND_PREIS = 3.90;
 const VERSANDFREI_AB = XMAS_VERSANDFREI ? 0 : 40;  // an Versandfrei-Türchen ohne Mindestbestellwert
 
+function versandfreiArtikel(p) {
+  if (!p || p.type === "probier") return false;               // Proben nie automatisch versandfrei
+  if (p.type === "spray" || p.id === "mystery-box") return true;  // Mystery Box enthält immer ein Spray
+  const wahl = Array.isArray(p.wahl) ? p.wahl : [];
+  return wahl.some((w) => w.linie === "spray") || (p.notes || []).some((n) => /Duftspray 150|Versandkostenfrei/.test(n));
+}
+
 function versandStatus() {
   const sub = cartSubtotal();
-  const frei = sub >= VERSANDFREI_AB;
-  return { frei, kosten: frei || !cart.length ? 0 : VERSAND_PREIS, fehlend: Math.max(0, VERSANDFREI_AB - sub), sub };
+  const spray = cart.some((i) => versandfreiArtikel(byId(i.id)));
+  const frei = spray || sub >= VERSANDFREI_AB;
+  return { frei, spray, kosten: frei || !cart.length ? 0 : VERSAND_PREIS, fehlend: Math.max(0, VERSANDFREI_AB - sub), sub };
 }
 
 function renderCart() {
@@ -1102,10 +1111,12 @@ function renderCart() {
 
   const status = versandStatus();
   if (!cart.length) {
-    shippingTextEl.innerHTML = `<strong>Versandkostenfrei ab ${euro(VERSANDFREI_AB)}</strong>`;
+    shippingTextEl.innerHTML = `<strong>Duftsprays immer versandkostenfrei</strong> – sonst ab ${euro(VERSANDFREI_AB)}`;
     shippingFillEl.style.width = "0%";
   } else if (status.frei) {
-    shippingTextEl.innerHTML = `<strong>Versandkostenfrei</strong> – dein Paket geht gratis raus`;
+    shippingTextEl.innerHTML = status.spray && cartSubtotal() < VERSANDFREI_AB
+      ? `<strong>Versandkostenfrei</strong> – mit Duftspray geht dein Paket gratis raus`
+      : `<strong>Versandkostenfrei</strong> – dein Paket geht gratis raus`;
     shippingFillEl.style.width = "100%";
   } else {
     shippingTextEl.innerHTML = `Noch <strong>${euro(status.fehlend)}</strong> bis zum kostenlosen Versand`;
@@ -1912,11 +1923,11 @@ function renderProduktseite(p) {
           <div class="modal-prices">${preisHtml(p)}</div>
           ${p.bfDeal ? `<p class="bf-hinweis">${p.dealHinweis || ""}</p>` : ""}
           ${XMAS_AKTIV && XMAS.tag <= 20 ? `<p class="xm-frist-hinweis">Bestellst du bis ${WEIHNACHTEN.fristText}, kommt es vor Heiligabend an.${XMAS_VERSANDFREI ? " Heute versandkostenfrei – ohne Mindestbestellwert." : ""}</p>` : ""}
-          <p class="pdp-tax">inkl. MwSt., zzgl. <a href="widerruf.html">Versand</a> – versandkostenfrei ab 40 €</p>
+          <p class="pdp-tax">inkl. MwSt., ${versandfreiArtikel(p) ? `<a href="widerruf.html">versandkostenfrei</a>` : `zzgl. <a href="widerruf.html">Versand</a> – versandkostenfrei ab 40 €`}</p>
           <ul class="pdp-usps">
-            <li>Versandkostenfrei ab 40 €</li>
+            <li>${versandfreiArtikel(p) ? "Versandkostenfrei" : "Versandkostenfrei ab 40 €"}</li>
             <li>Versand in 24 h</li>
-            <li>14 Tage Widerrufsrecht</li>
+            <li>30 Tage Rückgabe${p.type === "haenger" || (p.notes || []).some((n) => /Duftanhänger/.test(n)) ? " (Duftanhänger nur ungeöffnet)" : ""}</li>
             <li>Auf Lager</li>
           </ul>
           ${p.category === "Duftsprays" ? `<p class="gift-note">Inklusive Gratis-Duftanhänger</p>` : ""}
@@ -2383,14 +2394,14 @@ scrollReihenPruefen();
   const bar = document.querySelector(".announcement-bar");
   const msg = bar && bar.querySelector(".announce-msg");
   if (!bar || !msg) return;
-  const standard = ["Versandkostenfrei ab 40&nbsp;€", "Versand in 24&nbsp;h", "Abgefüllt in Deutschland", "Gratis-Duftanhänger zu jedem Spray", "14 Tage Rückgabe"];
+  const standard = ["Duftsprays versandkostenfrei", "Alles andere ab 40&nbsp;€ versandkostenfrei", "Versand in 24&nbsp;h", "Abgefüllt in Deutschland", "Gratis-Duftanhänger zu jedem Spray", "30 Tage Rückgabe"];
   let eintraege = document.body.classList.contains("bf-aktiv") ? [msg.innerHTML, ...standard] : standard;
   if (XMAS_AKTIV) {
     const t = XMAS_TUER;
     const tuerMsg = !t ? null : t.typ === "gruss" ? "Frohe Weihnachten von Caroud"
       : t.id ? `${t.super ? "Super-Türchen" : `Türchen ${t.tag}`}: ${byId(t.id)?.name} nur heute günstiger` : `Türchen ${t.tag}: heute versandkostenfrei`;
     const fristMsg = XMAS.tag <= 20 ? `Bis ${WEIHNACHTEN.fristText} bestellt – vor Heiligabend da` : null;
-    const basis = XMAS_VERSANDFREI ? standard.filter((x) => !x.startsWith("Versandkostenfrei ab")) : standard;
+    const basis = XMAS_VERSANDFREI ? standard.filter((x) => !x.startsWith("Alles andere ab")) : standard;
     eintraege = [tuerMsg, fristMsg, "Weihnachtsboxen ab 19,90&nbsp;€", ...basis].filter(Boolean);
   }
   const reihe = eintraege.map((t) => `<span class="lb-item">${t}</span><span class="lb-trenner" aria-hidden="true">·</span>`).join("");
