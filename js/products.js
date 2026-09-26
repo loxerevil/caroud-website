@@ -277,6 +277,9 @@ const OTHER_PRODUCTS = [
     price: 8.90, priceOld: null, bestseller: false,
     desc: "Weicher Waschhandschuh aus Mikrofaser-Chenille für die Handwäsche: Die dicken Fasern nehmen viel Shampoo und Wasser auf und lösen Schmutz schonend vom Lack. Einfach reinschlüpfen, waschen, auswaschen.",
     notes: ["Mikrofaser-Chenille", "Schonend zum Lack", "Waschbar"],
+    photo: "img/fotos/pflege-handschuh.webp?v=" + ASSET_V,
+    photo2: "img/fotos/pflege-handschuh-2.webp?v=" + ASSET_V,
+    photo3: "img/fotos/pflege-handschuh-3.webp?v=" + ASSET_V,
   },
   {
     id: "pflege-trockentuch",
