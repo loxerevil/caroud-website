@@ -380,6 +380,8 @@ const OTHER_PRODUCTS = [
     price: 42.90, priceOld: 55.50, bestseller: false, // 26,90 + 2 × 3,90 + 11,90 + 8,90
     desc: "Kurz rein, sauber raus: 1 Duftspray und 2 Duftanhänger in Düften deiner Wahl, dazu das Mikrofasertuch-Set und ein Waschhandschuh. Alles, damit dein Auto sauber aussieht und gut riecht – in einer Box.",
     notes: ["1× Duftspray 150 ml", "2× Duftanhänger", "Mikrofasertücher 3er-Set", "Waschhandschuh", "Versandkostenfrei"],
+    photo: "img/fotos/box-pit-stop.webp?v=" + ASSET_V,
+    photo2: "img/fotos/box-pit-stop-2.webp?v=" + ASSET_V,
     wahl: [{ anzahl: 1, linie: "spray", titel: "Dein Duftspray", doppelt: true }, { anzahl: 2, linie: "haenger", titel: "Deine 2 Duftanhänger", doppelt: true }],
   },
   {
@@ -390,6 +392,8 @@ const OTHER_PRODUCTS = [
     price: 79.90, priceOld: 109.20, bestseller: false, // 2 × 26,90 + 2 × 3,90 + 14,90 + 11,90 + 11,90 + 8,90
     desc: "Die komplette Aufbereitung für zu Hause: 2 Duftsprays und 2 Duftanhänger in deinen Wunsch-Düften, dazu Waschhandschuh, Trockentuch, Wasserabzieher und Mikrofasertuch-Set. Von der Wäsche bis zum letzten Sprühstoß.",
     notes: ["2× Duftspray 150 ml", "2× Duftanhänger", "Waschhandschuh", "Trockentuch 60 × 90", "Wasserabzieher", "Mikrofasertücher 3er-Set", "Versandkostenfrei"],
+    photo: "img/fotos/box-full-detail.webp?v=" + ASSET_V,
+    photo2: "img/fotos/box-full-detail-2.webp?v=" + ASSET_V,
     wahl: [{ anzahl: 2, linie: "spray", titel: "Deine 2 Duftsprays", doppelt: true }, { anzahl: 2, linie: "haenger", titel: "Deine 2 Duftanhänger", doppelt: true }],
   },
   // Sets – gleiche Produkte, bessere Staffelpreise. Düfte frei wählbar direkt auf der Produktseite.
