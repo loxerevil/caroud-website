@@ -618,7 +618,7 @@ const BLACK_FRIDAY = {
   deals: [
     { id: "spray-pacific-cruise", preis: 22.90 },  // statt 28,90 (inkl. Versand) · Gewinn ~5 €
     { id: "spray-fast-cherry",    preis: 22.90 },  // statt 28,90 (inkl. Versand) · Gewinn ~5 €
-    { id: "spray-ombre-apex",     preis: 22.90 },  // statt 28,90 (inkl. Versand) · Gewinn ~5 €
+    { id: "spray-erba-carbon",    preis: 22.90 },  // statt 28,90 (inkl. Versand) · Gewinn ~4,90 € (Ombre Apex hat schon Dauer-Angebot)
     { id: "set-spray-2",          preis: 42.90 },  // statt 47,90 · Gewinn ~16 € (versandkostenfrei)
     { id: "bundle-signature",     preis: 49.90 },  // statt 56,90 · Gewinn ~22 € (versandkostenfrei)
     { id: "mystery-box",          preis: 29.90 },  // statt 34,90 · Gewinn ~8,90 €
@@ -641,6 +641,7 @@ const AKTION = aktiveAktion();
 const BF_AKTIV = !!AKTION;  // alter Name: „eine Aktion läuft gerade“
 if (AKTION) {
   AKTION.deals.forEach((d) => {
+    if (DAUER_ANGEBOTE[d.id]) return;  // Dauer-Angebote bekommen keinen zusätzlichen Aktionsrabatt
     const p = PRODUCTS.find((x) => x.id === d.id);
     if (!p || d.preis >= p.price) return;
     p.bfNormal = p.price;
@@ -674,7 +675,7 @@ const WEIHNACHTEN = {
     { tag: 4,  id: "pflege-trockentuch" },
     { tag: 5,  id: "probierset-3" },
     { tag: 6,  typ: "versand", titel: "Nikolaus", text: "Heute versandkostenfrei – ohne Mindestbestellwert." },
-    { tag: 7,  id: "spray-erba-carbon" },
+    { tag: 7,  id: "pflege-mikrofaser" },   // Erba Carbon ist in der Black Week (30-Tage-Regel)
     { tag: 8,  id: "glas-naxnos-asphalt" },
     { tag: 9,  id: "bundle-starter" },
     { tag: 10, id: "box-pit-stop" },
@@ -682,7 +683,7 @@ const WEIHNACHTEN = {
     { tag: 12, id: "glas-driveination" },
     { tag: 13, id: "set-spray-3" },
     { tag: 14, id: "pflege-handschuh" },
-    { tag: 15, id: "spray-erba-tuned" },
+    { tag: 15, id: "xmas-kollektion" },     // statt Erba Tuned (hat schon Dauer-Angebot)
     { tag: 16, id: "glas-erba-carbon" },
     { tag: 17, id: "probierset-7" },
     { tag: 18, id: "box-full-detail" },
@@ -719,7 +720,7 @@ function tuerPreis(t, p) { return t.preis || Math.round(p.price * (100 - WEIHNAC
 // Tagesangebot des Türchens anwenden (nur heute)
 if (XMAS_TUER && XMAS_TUER.id) {
   const p = PRODUCTS.find((x) => x.id === XMAS_TUER.id);
-  if (p) {
+  if (p && !DAUER_ANGEBOTE[p.id]) {  // Dauer-Angebote nicht doppelt rabattieren
     p.bfNormal = p.price;
     p.priceOld = p.price;
     p.price = tuerPreis(XMAS_TUER, p);
