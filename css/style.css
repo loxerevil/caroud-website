@@ -2761,3 +2761,13 @@ body.aktion-xmas { --accent: #1f4a37; --accent-dark: #163829; --zweig: url("data
 .pay-icons.footer-pay svg rect { fill: transparent; stroke: #3a3a3a; }
 .pay-icons.footer-pay svg .pay-fill { fill: #e0e0e0; }
 .pay-icons.footer-pay svg .pay-fill-2 { fill: #7a7a7a; }
+
+/* ---------- Gratis-Hinweis kompakt, eckig wie der Kaufknopf, Farbe wie der Header (v147) ---------- */
+.gift-note { background: var(--ink); color: #f4f2ee; border-radius: 0; box-shadow: none;
+  padding: 0.7rem 0.95rem; gap: 0.7rem; margin-bottom: 0.9rem; }
+.produkt-page .gift-note { margin: 0 0 0.9rem; }
+.gift-ico { width: 20px; height: 20px; stroke-width: 1.5; }
+.gift-text { flex: 1; min-width: 0; font-size: 0.82rem; font-weight: 500; line-height: 1.35; }
+.gift-note .gift-kicker { display: inline; margin-right: 0.55rem; font-size: 0.62rem; letter-spacing: 0.2em; color: #9aa0a8; font-weight: 600; }
+.gift-wert { flex: none; font-size: 0.72rem; color: #9aa0a8; white-space: nowrap; }
+@media (max-width: 480px) { .gift-wert { display: none; } }

@@ -153,7 +153,7 @@ function probierSVG(color, label, anzahl) {
     <g transform="translate(${x} 0)">
       <rect x="8" y="52" width="10" height="8" rx="2" fill="#1a1a1a"/>
       <rect x="10" y="44" width="6" height="8" rx="1" fill="#2a2a2a"/>
-      <rect x="0" y="60" width="26" height="86" rx="5" fill="${tint}" stroke="rgba(0,0,0,0.25)"/>
+      <rect x="0" y="60" width="26" height="86" rx="2" fill="${tint}" stroke="rgba(0,0,0,0.25)"/>
       <rect x="3" y="78" width="20" height="46" rx="2" fill="#111"/>
       <text x="13" y="97" text-anchor="middle" font-size="5.5" font-weight="600" font-family="Inter, sans-serif" letter-spacing="0.6" fill="#fff">CAROUD</text>
       <rect x="9" y="101" width="8" height="2" rx="1" fill="#b9a06a"/>
@@ -172,7 +172,7 @@ function mysterySVG(color, label) {
   // Schwarze Box mit Goldband und Fragezeichen
   return `
   <svg class="prod-art" viewBox="0 0 140 200" xmlns="http://www.w3.org/2000/svg">
-    <rect x="22" y="70" width="96" height="76" rx="5" fill="#141414" stroke="rgba(0,0,0,0.4)"/>
+    <rect x="22" y="70" width="96" height="76" rx="2" fill="#141414" stroke="rgba(0,0,0,0.4)"/>
     <rect x="14" y="52" width="112" height="24" rx="4" fill="#1e1e1e" stroke="rgba(0,0,0,0.4)"/>
     <rect x="64" y="52" width="12" height="94" fill="#b9a06a"/>
     <rect x="14" y="60" width="112" height="6" fill="rgba(185,160,106,0.55)"/>
@@ -278,11 +278,11 @@ function enthaeltHaenger(p) {
 // Beim Umzug auf Shopify an die tatsächlich aktivierten Zahlungsarten anpassen.
 const ZAHLARTEN = ["paypal", "klarna", "applepay", "visa", "mastercard"];
 const ZAHL_SVG = {
-  paypal: `<svg viewBox="0 0 52 32" role="img" aria-label="PayPal"><rect x=".5" y=".5" width="51" height="31" rx="5"/><text x="26" y="20.5" text-anchor="middle" font-size="11" font-weight="700" font-style="italic">PayPal</text></svg>`,
-  klarna: `<svg viewBox="0 0 52 32" role="img" aria-label="Klarna"><rect x=".5" y=".5" width="51" height="31" rx="5"/><text x="26" y="20.5" text-anchor="middle" font-size="11" font-weight="700">Klarna.</text></svg>`,
-  applepay: `<svg viewBox="0 0 52 32" role="img" aria-label="Apple Pay"><rect x=".5" y=".5" width="51" height="31" rx="5"/><text x="26" y="20.5" text-anchor="middle" font-size="9.5" font-weight="600">Apple Pay</text></svg>`,
-  visa: `<svg viewBox="0 0 52 32" role="img" aria-label="Visa"><rect x=".5" y=".5" width="51" height="31" rx="5"/><text x="26" y="21" text-anchor="middle" font-size="12.5" font-weight="800" font-style="italic" letter-spacing=".5">VISA</text></svg>`,
-  mastercard: `<svg viewBox="0 0 52 32" role="img" aria-label="Mastercard"><rect x=".5" y=".5" width="51" height="31" rx="5"/><circle class="pay-fill" cx="21.5" cy="16" r="7.5"/><circle class="pay-fill pay-fill-2" cx="30.5" cy="16" r="7.5"/></svg>`,
+  paypal: `<svg viewBox="0 0 52 32" role="img" aria-label="PayPal"><rect x=".5" y=".5" width="51" height="31" rx="2"/><text x="26" y="20.5" text-anchor="middle" font-size="11" font-weight="700" font-style="italic">PayPal</text></svg>`,
+  klarna: `<svg viewBox="0 0 52 32" role="img" aria-label="Klarna"><rect x=".5" y=".5" width="51" height="31" rx="2"/><text x="26" y="20.5" text-anchor="middle" font-size="11" font-weight="700">Klarna.</text></svg>`,
+  applepay: `<svg viewBox="0 0 52 32" role="img" aria-label="Apple Pay"><rect x=".5" y=".5" width="51" height="31" rx="2"/><text x="26" y="20.5" text-anchor="middle" font-size="9.5" font-weight="600">Apple Pay</text></svg>`,
+  visa: `<svg viewBox="0 0 52 32" role="img" aria-label="Visa"><rect x=".5" y=".5" width="51" height="31" rx="2"/><text x="26" y="21" text-anchor="middle" font-size="12.5" font-weight="800" font-style="italic" letter-spacing=".5">VISA</text></svg>`,
+  mastercard: `<svg viewBox="0 0 52 32" role="img" aria-label="Mastercard"><rect x=".5" y=".5" width="51" height="31" rx="2"/><circle class="pay-fill" cx="21.5" cy="16" r="7.5"/><circle class="pay-fill pay-fill-2" cx="30.5" cy="16" r="7.5"/></svg>`,
 };
 function zahlIcons(cls) {
   return `<div class="pay-icons ${cls || ""}"><span class="pay-label">Sicher bezahlen</span><span class="pay-row">${ZAHLARTEN.map((z) => ZAHL_SVG[z]).join("")}</span></div>`;
@@ -1853,11 +1853,10 @@ function initWisch(feld) {
 // Auffälliger Hinweis: Gratis-Duftanhänger zu jeder Bestellung
 function geschenkHinweis(p) {
   if (!p || p.id === "geschenkverpackung") return "";
-  const was = "1 Duftanhänger zu jeder Bestellung";
-  const sub = versandfreiArtikel(p) ? `im Wert von ${euro(3.9)} – und dein Paket geht versandkostenfrei raus` : `im Wert von ${euro(3.9)} – Duft passend zu deiner Bestellung`;
   return `<div class="gift-note">
       <svg class="gift-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 2h6v3.2c2.9.9 5 3.6 5 6.8v7a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-7c0-3.2 2.1-5.9 5-6.8V2z"/><circle cx="12" cy="4" r="1.1"/></svg>
-      <div><span class="gift-kicker">Gratis dazu</span><strong>${was}</strong><span class="gift-sub">${sub}</span></div>
+      <span class="gift-text">Gratis-Duftanhänger zu jeder Bestellung</span>
+      <span class="gift-wert">Wert 3,90&nbsp;€</span>
     </div>`;
 }
 
