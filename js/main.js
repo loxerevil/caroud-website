@@ -1213,7 +1213,7 @@ function openProductModal(id) {
       <h3>${p.name}</h3>
       <div class="modal-prices">${preisHtml(p)}</div>
       <p class="modal-desc">${p.desc}</p>
-      ${p.category === "Duftsprays" ? `<p class="gift-note">Inklusive Gratis-Duftanhänger</p>` : ""}
+      ${geschenkHinweis(p)}
       <p class="notes-label">${p.category === "Sets & Boxen" || p.set ? "Inhalt" : p.category === "Pflege" ? "Details" : "Duftnoten"}</p>
       <div class="notes-row">${p.notes.map((n) => `<span class="note-chip">${n}</span>`).join("")}</div>
       ${fakten.length ? `
@@ -1771,6 +1771,17 @@ function initWisch(feld) {
   }).observe(feld);
 }
 
+// Auffälliger Hinweis: Gratis-Duftanhänger zu jedem Duftspray
+function geschenkHinweis(p) {
+  if (p.category !== "Duftsprays") return "";
+  const anz = p.set ? (p.id === "set-spray-3" ? 3 : 2) : 1;
+  const was = anz > 1 ? `${anz} Duftanhänger – einer pro Spray` : "1 Duftanhänger zu deinem Duftspray";
+  return `<div class="gift-note">
+      <svg class="gift-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 2h6v3.2c2.9.9 5 3.6 5 6.8v7a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-7c0-3.2 2.1-5.9 5-6.8V2z"/><circle cx="12" cy="4" r="1.1"/></svg>
+      <div><span class="gift-kicker">Gratis dazu</span><strong>${was}</strong><span class="gift-sub">im Wert von ${euro(3.9 * anz)} · plus versandkostenfrei</span></div>
+    </div>`;
+}
+
 function vergleichBlock(p) {
   const v = p.vergleich;
   if (!v) return "";
@@ -1930,7 +1941,7 @@ function renderProduktseite(p) {
             <li>30 Tage Rückgabe${p.type === "haenger" || (p.notes || []).some((n) => /Duftanhänger/.test(n)) ? " (Duftanhänger nur ungeöffnet)" : ""}</li>
             <li>Auf Lager</li>
           </ul>
-          ${p.category === "Duftsprays" ? `<p class="gift-note">Inklusive Gratis-Duftanhänger</p>` : ""}
+          ${geschenkHinweis(p)}
           ${p.wahl ? duftwahlHtml(p) : ""}
           ${p.type === "haenger" && !p.set ? `<p class="pdp-hinweis">Günstiger im Set: das <a href="#p/set-haenger-3">3er-Set</a> oder das <a href="#p/set-haenger-5">5er-Set</a>.</p>` : ""}
           <div class="modal-actions">
