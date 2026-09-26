@@ -2420,3 +2420,19 @@ scrollReihenPruefen();
     <div class="lb-spur" aria-hidden="true"><div class="lb-inhalt">${reihe}</div><div class="lb-inhalt">${reihe}</div></div>`;
   bar.classList.add("ist-laufband");
 })();
+
+// Über uns: zwischen „Am Spiegel“ und „Auf der Fußmatte“ wechseln (automatisch, per Klick stoppt der Wechsel)
+(function aboutWechsel() {
+  const box = document.querySelector("[data-about-wechsel]");
+  if (!box) return;
+  const bilder = [...box.querySelectorAll(".aw-bild")];
+  const tabs = [...box.querySelectorAll(".aw-tabs button")];
+  let i = 0, timer = null;
+  const zeige = (n) => {
+    i = n;
+    bilder.forEach((b, k) => b.classList.toggle("ist-aktiv", k === n));
+    tabs.forEach((t, k) => { t.classList.toggle("ist-aktiv", k === n); t.setAttribute("aria-selected", k === n ? "true" : "false"); });
+  };
+  tabs.forEach((t) => t.addEventListener("click", () => { clearInterval(timer); zeige(+t.dataset.i); }));
+  if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) timer = setInterval(() => zeige((i + 1) % bilder.length), 5000);
+})();

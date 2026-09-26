@@ -31,7 +31,7 @@
   <!-- Überschriftenschrift vorladen, damit der Hero-Titel nicht erst in Georgia aufblitzt -->
   <link rel="preload" href="fonts/playfair-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/inter-400.woff" as="font" type="font/woff" crossorigin>
-  <link rel="stylesheet" href="css/style.css?v=96">
+  <link rel="stylesheet" href="css/style.css?v=97">
 
   <!-- Strukturierte Daten für Google. Produkt-Markup fehlt bewusst,
        solange keine echten Preise hinterlegt sind. -->
@@ -445,10 +445,19 @@
           Abgefüllt in Deutschland, in kleinen Chargen.
           Kein Riesenlager, keine Massenware – dafür wissen wir bei jeder Flasche, was drin ist.
         </p>
+        <p class="about-more">
+          Zwei Wege zu deinem Duft: der Duftanhänger am Spiegel – oder ein, zwei Sprühstöße Duftspray auf Fußmatten und Stoffsitze.
+          Die Textilfasern halten den Duft und geben ihn bei jeder Fahrt langsam wieder ab.
+        </p>
         <a href="#produkte" class="btn btn-gold">Jetzt ansehen</a>
       </div>
-      <div class="about-media">
-        <img src="img/about.webp?v=3" alt="Caroud Duftanhänger am Rückspiegel" width="1200" height="1200" loading="lazy">
+      <div class="about-media about-wechsel" data-about-wechsel>
+        <img class="aw-bild ist-aktiv" src="img/about.webp?v=3" alt="Caroud Duftanhänger am Rückspiegel" width="1200" height="1200" loading="lazy">
+        <img class="aw-bild" src="img/about-spray.webp?v=1" alt="Caroud Duftspray wird auf die Fußmatte gesprüht" width="1200" height="1200" loading="lazy">
+        <div class="aw-tabs" role="tablist" aria-label="So nutzt du Caroud">
+          <button type="button" class="ist-aktiv" role="tab" aria-selected="true" data-i="0">Am Spiegel</button>
+          <button type="button" role="tab" aria-selected="false" data-i="1">Auf der Fußmatte</button>
+        </div>
       </div>
     </div>
   </section>
@@ -557,7 +566,7 @@
   <!-- Toast -->
   <div class="toast" id="toast" hidden></div>
 
-  <script src="js/products.js?v=109"></script>
-  <script src="js/main.js?v=101"></script>
+  <script src="js/products.js?v=110"></script>
+  <script src="js/main.js?v=102"></script>
 </body>
 </html>

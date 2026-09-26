@@ -101,13 +101,13 @@ const SCENTS = [
 // ---- Linien aus den Düften erzeugen ----
 const LINES = [
   { type: "spray",   category: "Duftsprays",    suffix: "Duftspray",
-    price: 26.90, priceOld: 34.90,
+    price: 28.90, priceOld: null,   // inkl. Versand – kein Streichpreis
     text: (s) => s.spray },
   { type: "haenger", category: "Duftanhänger Premium", suffix: "Duftanhänger",
-    price: 3.90, priceOld: 5.99,
+    price: 3.90, priceOld: null,
     text: (s) => s.short + " Als Premium-Anhänger in der eigenen Caroud-Form: beidseitig bedruckt, mit schwarzer Kordel – unser Aushängeschild für den Rückspiegel." },
   { type: "glas",    category: "Glasanhänger",  suffix: "Glasanhänger",
-    price: 12.90, priceOld: 16.90,
+    price: 12.90, priceOld: null,
     text: (s) => s.short + " Im 8-ml-Glasflakon für den Rückspiegel: das Duftöl verdunstet langsam über den Verschluss – ergiebiger und langlebiger als ein Anhänger aus Papier." },
 ];
 
@@ -353,7 +353,7 @@ const OTHER_PRODUCTS = [
     name: "Starter Bundle",
     type: "bundle", category: "Sets & Boxen",
     color: "#111111", label: "Starter",
-    price: 29.90, priceOld: 34.70, bestseller: true, // 26,90 + 2 × 3,90
+    price: 29.90, priceOld: 36.70, bestseller: true, // Einzelpreise: 28,90 + 2 × 3,90
     desc: "Der perfekte Einstieg: 1 Duftspray + 2 Duftanhänger, alle Düfte frei wählbar. Spare gegenüber dem Einzelkauf.",
     notes: ["1× Spray", "2× Anhänger"],
     photo: "img/fotos/bundle-starter.webp?v=" + ASSET_V,
@@ -365,7 +365,7 @@ const OTHER_PRODUCTS = [
     name: "Signature Bundle",
     type: "bundle", category: "Sets & Boxen",
     color: "#a8323e", label: "Signature",
-    price: 56.90, priceOld: 65.50, bestseller: false, // 2 × 26,90 + 3 × 3,90
+    price: 56.90, priceOld: 69.50, bestseller: false, // Einzelpreise: 2 × 28,90 + 3 × 3,90
     desc: "Für Sammler: 2 Duftsprays + 3 Duftanhänger – frei kombinierbar aus allen sieben Düften, direkt hier auswählen.",
     notes: ["2× Spray", "3× Anhänger"],
     photo: "img/fotos/bundle-signature-2.webp?v=" + ASSET_V,
@@ -377,7 +377,7 @@ const OTHER_PRODUCTS = [
     name: "Pit Stop Box",
     type: "bundle", category: "Sets & Boxen",
     color: "#111111", label: "Pit Stop",
-    price: 42.90, priceOld: 55.50, bestseller: false, // 26,90 + 2 × 3,90 + 11,90 + 8,90
+    price: 42.90, priceOld: 57.50, bestseller: false, // Einzelpreise: 28,90 + 2 × 3,90 + 11,90 + 8,90
     desc: "Kurz rein, sauber raus: 1 Duftspray und 2 Duftanhänger in Düften deiner Wahl, dazu das Mikrofasertuch-Set und ein Waschhandschuh. Alles, damit dein Auto sauber aussieht und gut riecht – in einer Box.",
     notes: ["1× Duftspray 150 ml", "2× Duftanhänger", "Mikrofasertücher 3er-Set", "Waschhandschuh", "Versandkostenfrei"],
     photo: "img/fotos/box-pit-stop.webp?v=" + ASSET_V,
@@ -389,7 +389,7 @@ const OTHER_PRODUCTS = [
     name: "Full Detail Box",
     type: "bundle", category: "Sets & Boxen",
     color: "#a8323e", label: "Full Detail",
-    price: 79.90, priceOld: 109.20, bestseller: false, // 2 × 26,90 + 2 × 3,90 + 14,90 + 11,90 + 11,90 + 8,90
+    price: 79.90, priceOld: 113.20, bestseller: false, // Einzelpreise: 2 × 28,90 + 2 × 3,90 + 14,90 + 11,90 + 11,90 + 8,90
     desc: "Die komplette Aufbereitung für zu Hause: 2 Duftsprays und 2 Duftanhänger in deinen Wunsch-Düften, dazu Waschhandschuh, Trockentuch, Wasserabzieher und Mikrofasertuch-Set. Von der Wäsche bis zum letzten Sprühstoß.",
     notes: ["2× Duftspray 150 ml", "2× Duftanhänger", "Waschhandschuh", "Trockentuch 60 × 90", "Wasserabzieher", "Mikrofasertücher 3er-Set", "Versandkostenfrei"],
     photo: "img/fotos/box-full-detail.webp?v=" + ASSET_V,
@@ -402,7 +402,7 @@ const OTHER_PRODUCTS = [
     name: "Duftspray 2er-Set",
     type: "spray", category: "Duftsprays", set: true,
     color: "#111111", label: "2er-Set",
-    price: 47.90, priceOld: 53.80, bestseller: false,
+    price: 47.90, priceOld: 57.80, bestseller: false,
     desc: "Zwei Duftsprays à 150 ml, frei kombinierbar aus allen sieben Düften – einer fürs Auto, einer als Reserve oder zum Verschenken. Wähle deine Düfte direkt hier aus.",
     notes: ["2 × 150 ml", "Düfte frei wählbar"],
     photo: "img/fotos/set-spray-2.webp?v=" + ASSET_V,
@@ -413,7 +413,7 @@ const OTHER_PRODUCTS = [
     name: "Duftspray 3er-Set",
     type: "spray", category: "Duftsprays", set: true,
     color: "#2a2a2a", label: "3er-Set",
-    price: 66.90, priceOld: 80.70, bestseller: false,
+    price: 66.90, priceOld: 86.70, bestseller: false,
     desc: "Drei Duftsprays à 150 ml, frei kombinierbar aus allen sieben Düften – der günstigste Weg zur großen Flasche. Wähle deine Düfte direkt hier aus.",
     notes: ["3 × 150 ml", "Düfte frei wählbar"],
     photo: "img/fotos/set-spray-3.webp?v=" + ASSET_V,
@@ -498,7 +498,7 @@ const OTHER_PRODUCTS = [
     name: "Weihnachtsbox „Signature“",
     type: "bundle", category: "Sets & Boxen", set: true, saison: "weihnachten", geschenk: true,
     color: "#1f4a37", label: "Signature",
-    price: 44.90, priceOld: 47.60, bestseller: false, // 26,90 + 12,90 + 2 × 3,90 · Gewinn ~29 €
+    price: 44.90, priceOld: 49.60, bestseller: false, // Einzelpreise: 28,90 + 12,90 + 2 × 3,90 · Gewinn ~29 €
     desc: "Das Geschenk, das mitfährt: ein Duftspray, ein Glasanhänger und zwei Duftanhänger – alles in Düften deiner Wahl, in der schwarzen Geschenkbox mit Karte. Versandkostenfrei.",
     notes: ["1× Duftspray 150 ml", "1× Glasanhänger 8 ml", "2× Duftanhänger", "Geschenkbox + Karte", "Versandkostenfrei"],
     photo: "img/fotos/bundle-signature-2.webp?v=" + ASSET_V,
@@ -583,7 +583,7 @@ const HALLOWEEN = {
   badge: "Halloween",
   hinweis: "Halloween-Angebot – nur bis 31. Oktober",
   deals: [
-    { id: "spray-naxnos-asphalt", preis: 22.90 },  // statt 26,90 · Gewinn ~10,20 €
+    { id: "spray-naxnos-asphalt", preis: 23.90 },  // statt 28,90 (inkl. Versand) · Gewinn ~6 €
     { id: "glas-ombre-apex",      preis: 10.90 },  // statt 12,90 · Gewinn ~7 €
     { id: "glas-fast-cherry",     preis: 10.90 },  // statt 12,90 · Gewinn ~7 €
     { id: "set-spray-3",          preis: 59.90 },  // statt 66,90 · Gewinn ~16 € (versandkostenfrei)
@@ -608,9 +608,9 @@ const BLACK_FRIDAY = {
   badge: "Black Friday",
   hinweis: "Black-Week-Angebot – nur bis 30. November",
   deals: [
-    { id: "spray-pacific-cruise", preis: 21.90 },  // statt 26,90 · Gewinn ~9,30 €
-    { id: "spray-fast-cherry",    preis: 21.90 },  // statt 26,90 · Gewinn ~9,30 €
-    { id: "spray-ombre-apex",     preis: 21.90 },  // statt 26,90 · Gewinn ~9,30 €
+    { id: "spray-pacific-cruise", preis: 22.90 },  // statt 28,90 (inkl. Versand) · Gewinn ~5 €
+    { id: "spray-fast-cherry",    preis: 22.90 },  // statt 28,90 (inkl. Versand) · Gewinn ~5 €
+    { id: "spray-ombre-apex",     preis: 22.90 },  // statt 28,90 (inkl. Versand) · Gewinn ~5 €
     { id: "set-spray-2",          preis: 42.90 },  // statt 47,90 · Gewinn ~16 € (versandkostenfrei)
     { id: "bundle-signature",     preis: 49.90 },  // statt 56,90 · Gewinn ~22 € (versandkostenfrei)
     { id: "mystery-box",          preis: 29.90 },  // statt 34,90 · Gewinn ~8,90 €
