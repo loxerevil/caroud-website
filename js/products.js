@@ -354,7 +354,7 @@ const OTHER_PRODUCTS = [
     type: "bundle", category: "Sets & Boxen",
     color: "#111111", label: "Starter",
     price: 29.90, priceOld: 36.70, bestseller: true, // Einzelpreise: 28,90 + 2 × 3,90
-    desc: "Der perfekte Einstieg: 1 Duftspray + 2 Duftanhänger, alle Düfte frei wählbar. Spare gegenüber dem Einzelkauf.",
+    desc: "Der perfekte Einstieg: 1 Duftspray + 2 Duftanhänger, alle Düfte frei wählbar. Du sparst gegenüber dem Einzelkauf.",
     notes: ["1× Spray", "2× Anhänger"],
     photo: "img/fotos/bundle-starter.webp?v=" + ASSET_V,
     photo2: "img/fotos/bundle-starter-2.webp?v=" + ASSET_V,

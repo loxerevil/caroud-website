@@ -240,11 +240,11 @@ function byId(id) {
 }
 
 // Preis: durchgestrichener Streichpreis direkt vor dem aktuellen Preis
-// „Spare 3 €“ – wie viel ein reduzierter Artikel gegenüber dem Streichpreis spart
+// „Du sparst 3 €“ – wie viel ein reduzierter Artikel gegenüber dem Streichpreis spart
 function sparText(p) {
   if (!p.priceOld || p.priceOld <= p.price) return "";
   const d = Math.round((p.priceOld - p.price) * 100) / 100;
-  return `Spare ${Number.isInteger(d) ? d : d.toFixed(2).replace(".", ",")}&nbsp;€`;
+  return `Du sparst ${Number.isInteger(d) ? d : d.toFixed(2).replace(".", ",")}&nbsp;€`;
 }
 
 function preisHtml(p) {
