@@ -2719,3 +2719,9 @@ body.aktion-xmas { --accent: #1f4a37; --accent-dark: #163829; --zweig: url("data
   backdrop-filter: blur(6px); transition: background .25s, color .25s; }
 .aw-tabs button.ist-aktiv { background: #f4f2ee; color: #111; }
 @media (prefers-reduced-motion: reduce) { .about-wechsel .aw-bild { transition: none; } }
+
+/* ---------- Spare-Hinweis bei reduzierten Artikeln ---------- */
+.spar-badge { background: #111; }
+.spar-pill { display: inline-block; vertical-align: middle; margin-left: 0.7rem; background: #111; color: #fff;
+  font-family: var(--font); font-size: 0.62rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase;
+  padding: 0.32rem 0.55rem; border-radius: 3px; position: relative; top: -2px; }

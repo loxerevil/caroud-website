@@ -240,6 +240,13 @@ function byId(id) {
 }
 
 // Preis: durchgestrichener Streichpreis direkt vor dem aktuellen Preis
+// „Spare 3 €“ – wie viel ein reduzierter Artikel gegenüber dem Streichpreis spart
+function sparText(p) {
+  if (!p.priceOld || p.priceOld <= p.price) return "";
+  const d = Math.round((p.priceOld - p.price) * 100) / 100;
+  return `Spare ${Number.isInteger(d) ? d : d.toFixed(2).replace(".", ",")}&nbsp;€`;
+}
+
 function preisHtml(p) {
   const alt = p.priceOld && p.priceOld > p.price
     ? `<span class="price-old">${euro(p.priceOld)}</span>` : "";
@@ -915,7 +922,7 @@ function renderProducts() {
     card.innerHTML = `
       <div class="product-media">
         ${mediaFor(p)}
-        ${p.bfDeal ? `<span class="bf-badge">${p.dealBadge || ""}</span>` : (XMAS_AKTIV && (p.geschenk || p.linie === "glas" || p.set) ? `<span class="bf-badge xm-badge">Geschenkidee</span>` : "")}
+        ${p.bfDeal ? `<span class="bf-badge">${p.dealBadge || ""}</span>` : (XMAS_AKTIV && (p.geschenk || p.linie === "glas" || p.set) ? `<span class="bf-badge xm-badge">Geschenkidee</span>` : (sparText(p) ? `<span class="bf-badge spar-badge">${sparText(p)}</span>` : ""))}
         <button class="quick-add">+ In den Warenkorb</button>
       </div>
       <div class="product-name">${p.name}</div>
@@ -1931,7 +1938,7 @@ function renderProduktseite(p) {
         <div class="pdp-info">
           <p class="modal-category">${p.category}</p>
           <h1>${p.name}</h1>
-          <div class="modal-prices">${preisHtml(p)}</div>
+          <div class="modal-prices">${preisHtml(p)}${!p.bfDeal && sparText(p) ? `<span class="spar-pill">${sparText(p)}</span>` : ""}</div>
           ${p.bfDeal ? `<p class="bf-hinweis">${p.dealHinweis || ""}</p>` : ""}
           ${XMAS_AKTIV && XMAS.tag <= 20 ? `<p class="xm-frist-hinweis">Bestellst du bis ${WEIHNACHTEN.fristText}, kommt es vor Heiligabend an.${XMAS_VERSANDFREI ? " Heute versandkostenfrei – ohne Mindestbestellwert." : ""}</p>` : ""}
           <p class="pdp-tax">inkl. MwSt., ${versandfreiArtikel(p) ? `<a href="widerruf.html">versandkostenfrei</a>` : `zzgl. <a href="widerruf.html">Versand</a> – versandkostenfrei ab 40 €`}</p>

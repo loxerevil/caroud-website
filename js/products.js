@@ -557,6 +557,14 @@ const PROBE_PRODUCTS = SCENTS.map((s) => ({
 
 const PRODUCTS = SCENT_PRODUCTS.concat(OTHER_PRODUCTS, PROBE_PRODUCTS);
 
+// ---- Dauer-Angebote: zwei Duftsprays, die (noch) keine Bestseller sind, dauerhaft günstiger ----
+// Streichpreis = regulärer Spraypreis. Achtung Preisangabenverordnung: vor dem Launch rechtlich prüfen lassen,
+// ob ein Streichpreis ohne vorherigen Verkaufszeitraum zulässig ist.
+const DAUER_ANGEBOTE = { "spray-ombre-apex": 25.90, "spray-erba-tuned": 25.90 };
+PRODUCTS.forEach((p) => {
+  if (DAUER_ANGEBOTE[p.id]) { p.priceOld = p.price; p.price = DAUER_ANGEBOTE[p.id]; }
+});
+
 // ---- Aktionen: Halloween Week und Black Week ----
 // Laufen automatisch im Zeitraum start–ende (deutsche Zeit). Vorschau vorab:
 //   caroud.de/?aktion=halloween   bzw.   caroud.de/?aktion=blackfriday  (alt: ?blackfriday=vorschau)
