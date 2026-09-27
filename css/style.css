@@ -2771,3 +2771,19 @@ body.aktion-xmas { --accent: #1f4a37; --accent-dark: #163829; --zweig: url("data
 .gift-note .gift-kicker { display: inline; margin-right: 0.55rem; font-size: 0.62rem; letter-spacing: 0.2em; color: #9aa0a8; font-weight: 600; }
 .gift-wert { flex: none; font-size: 0.72rem; color: #9aa0a8; white-space: nowrap; }
 @media (max-width: 480px) { .gift-wert { display: none; } }
+
+/* ---------- Formen-Vergleich: weicher Wechsel zwischen den Reitern (v151) ---------- */
+@media (max-width: 899px) {
+  .vtab { transition: background-color .35s ease, color .35s ease, border-color .35s ease; }
+  @media (prefers-reduced-motion: no-preference) {
+    .vergleich-karte.is-on { animation: vgl-rein .55s cubic-bezier(.22,.7,.3,1) both; }
+    .vergleich-karte.is-on .vergleich-foto { animation: vgl-foto .7s cubic-bezier(.22,.7,.3,1) both; }
+  }
+}
+@keyframes vgl-rein { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes vgl-foto { from { opacity: 0; transform: scale(1.03); } to { opacity: 1; transform: none; } }
+
+/* v152 – Sicherheitsnetz: Ladebildschirm verschwindet spätestens nach 4,5 s,
+   auch wenn ein Skript hängt oder nicht lädt (langsames Netz, Cache, Blocker). */
+.preloader { animation: pl-weg .6s ease 4.5s forwards; }
+@keyframes pl-weg { to { opacity: 0; visibility: hidden; pointer-events: none; } }
