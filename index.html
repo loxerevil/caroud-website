@@ -31,7 +31,7 @@
   <!-- Überschriftenschrift vorladen, damit der Hero-Titel nicht erst in Georgia aufblitzt -->
   <link rel="preload" href="fonts/playfair-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/inter-400.woff" as="font" type="font/woff" crossorigin>
-  <link rel="stylesheet" href="css/style.css?v=106">
+  <link rel="stylesheet" href="css/style.css?v=107">
 
   <!-- Strukturierte Daten für Google. Produkt-Markup fehlt bewusst,
        solange keine echten Preise hinterlegt sind. -->
@@ -44,7 +44,7 @@
         "@id": "https://caroud.de/#organisation",
         "name": "Caroud",
         "url": "https://caroud.de/",
-        "logo": "https://caroud.de/img/logo-full.png",
+        "logo": "https://caroud.de/img/logo-caroud.png",
         "image": "https://caroud.de/img/og-image.jpg?v=5",
         "slogan": "Fine Fragrance for the Drive",
         "description": "Premium-Autodüfte aus Deutschland: Duftsprays, Glasanhänger und Duftanhänger.",
@@ -69,7 +69,7 @@
   </script>
   <!-- Launch-Sperre mit Countdown bis 15.10.2026, 18 Uhr (danach automatisch offen) -->
   <script src="js/zugang.js?v=2"></script>
-  <script src="js/launch.js?v=1"></script>
+  <script src="js/launch.js?v=2"></script>
 </head>
 <body>
 
@@ -83,7 +83,7 @@
         <div class="spray-origin" id="sprayOrigin"></div>
       </div>
       <div class="preloader-word">
-        <img src="img/logo-text-transparent.png?v=2" alt="Caroud" width="711" height="127">
+        <img src="img/logo-weiss.svg?v=1" alt="Caroud" width="1150" height="89">
       </div>
       <p class="preloader-tag">Fine&nbsp;Fragrance&nbsp;for&nbsp;the&nbsp;Drive</p>
     </div>
@@ -209,7 +209,7 @@ if (preloader && !introGesehen) {
       <a href="#produkte" data-filter="Sets &amp; Boxen">Sets &amp; Boxen</a>
     </nav>
 
-    <a href="#top" class="logo"><img src="img/logo-text-transparent.png?v=2" alt="Caroud"></a>
+    <a href="#top" class="logo"><picture><source media="(max-width: 600px)" srcset="img/logo-schriftzug-weiss.svg?v=1"><img src="img/logo-weiss.svg?v=1" alt="Caroud"></picture></a>
 
     <div class="header-actions">
       <button class="icon-btn search-toggle" aria-label="Suche">

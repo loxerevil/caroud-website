@@ -36,7 +36,7 @@
     opacity: .16; filter: grayscale(1) contrast(1.1); pointer-events: none; }
   #launchGate .lg-inner { position: relative; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
     text-align: center; padding: 3.5rem 1.25rem 2rem; gap: 1.4rem; }
-  #launchGate .lg-logo { height: 22px; width: auto; opacity: .95; }
+  #launchGate .lg-logo { height: 24px; max-width: 90vw; width: auto; opacity: .95; }
   #launchGate .lg-kicker { font-size: .68rem; letter-spacing: .32em; text-transform: uppercase; color: #9aa0a8; margin: 0; }
   #launchGate h1 { font-family: "Playfair Display", Georgia, serif; font-weight: 400; font-size: clamp(2.1rem, 7vw, 3.6rem);
     line-height: 1.08; margin: 0; letter-spacing: .005em; text-wrap: balance; }
@@ -83,7 +83,7 @@
     gate.innerHTML = `
       <div class="lg-bild"></div>
       <div class="lg-inner">
-        <img class="lg-logo" src="img/logo-text-transparent.png?v=2" alt="CAROUD">
+        <img class="lg-logo" src="img/logo-weiss.svg?v=1" alt="CAROUD">
         <p class="lg-kicker">Fine Fragrance for the Drive</p>
         <h1>Parfüm für dein Auto.<br>Bald ist es so weit.</h1>
         <p class="lg-sub">Sieben Düfte, drei Formen, eine Marke für alle, die ihr Auto lieben. Der Shop öffnet am 15.&nbsp;Oktober um 18&nbsp;Uhr.</p>

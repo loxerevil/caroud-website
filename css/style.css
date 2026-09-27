@@ -2792,3 +2792,7 @@ body.aktion-xmas { --accent: #1f4a37; --accent-dark: #163829; --zweig: url("data
 .js-fehler .reveal { opacity: 1 !important; transform: none !important; }
 .js-fehler .preloader { display: none !important; }
 .js-fehler body { overflow: auto !important; }
+
+/* v156 – neues Horizont-Logo: breiter wegen der Linien */
+.preloader-word img { width: clamp(240px, 56vw, 360px); }
+.logo picture { display: block; line-height: 0; }
