@@ -2800,3 +2800,8 @@ body.aktion-xmas { --accent: #1f4a37; --accent-dark: #163829; --zweig: url("data
 /* v157 – Logo am Handy kleiner, damit es nie an Suche/Warenkorb stößt */
 @media (max-width: 640px) { .logo img { height: 13px; } }
 @media (max-width: 380px) { .logo img { height: 11.5px; } }
+
+/* v158 – Logo überall mit Horizontlinien, optisch kleiner */
+.logo img { height: 17px; }
+@media (max-width: 640px) { .logo img { height: 13px; } }
+@media (max-width: 370px) { .logo img { height: 11.5px; } }
