@@ -2796,3 +2796,7 @@ body.aktion-xmas { --accent: #1f4a37; --accent-dark: #163829; --zweig: url("data
 /* v156 – neues Horizont-Logo: breiter wegen der Linien */
 .preloader-word img { width: clamp(240px, 56vw, 360px); }
 .logo picture { display: block; line-height: 0; }
+
+/* v157 – Logo am Handy kleiner, damit es nie an Suche/Warenkorb stößt */
+@media (max-width: 640px) { .logo img { height: 13px; } }
+@media (max-width: 380px) { .logo img { height: 11.5px; } }
