@@ -2787,3 +2787,8 @@ body.aktion-xmas { --accent: #1f4a37; --accent-dark: #163829; --zweig: url("data
    auch wenn ein Skript hängt oder nicht lädt (langsames Netz, Cache, Blocker). */
 .preloader { animation: pl-weg .6s ease 4.5s forwards; }
 @keyframes pl-weg { to { opacity: 0; visibility: hidden; pointer-events: none; } }
+
+/* v155 – Notfall: bei einem Skriptfehler Inhalte trotzdem zeigen statt weißer Seite */
+.js-fehler .reveal { opacity: 1 !important; transform: none !important; }
+.js-fehler .preloader { display: none !important; }
+.js-fehler body { overflow: auto !important; }

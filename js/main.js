@@ -995,7 +995,8 @@ let cart = [];
 try {
   cart = JSON.parse(localStorage.getItem("caroud-cart") || "[]");
   if (!Array.isArray(cart)) cart = [];
-  cart = cart.filter((i) => i && byId(i.id) && i.qty > 0);
+  cart = cart.filter((i) => i && byId(i.id) && Number.isInteger(i.qty) && i.qty > 0
+    && (i.wahl === undefined || (Array.isArray(i.wahl) && i.wahl.every((x) => typeof x === "string"))));
 } catch (_) { cart = []; }
 
 const cartCountEl = document.querySelector(".cart-count");
@@ -1232,9 +1233,16 @@ document.getElementById("checkoutBtn").addEventListener("click", () => {
   showToast("Der Checkout wird gerade angeschlossen – bald verfügbar.");
 });
 
-normalizeCart(true);
-saveCart();
-renderCart();
+// Alter oder kaputter Warenkorb aus früheren Versionen darf die Seite nie lahmlegen
+try {
+  normalizeCart(true);
+  saveCart();
+  renderCart();
+} catch (e) {
+  console.warn("Warenkorb zurückgesetzt:", e);
+  cart = [];
+  try { saveCart(); renderCart(); } catch (_) {}
+}
 // „oder leg ein Duftspray dazu“ im Warenkorb: zu den Duftsprays springen
 shippingTextEl.addEventListener("click", (e) => {
   if (!e.target.closest("[data-spray-tipp]")) return;
@@ -2440,3 +2448,4 @@ scrollReihenPruefen();
   tabs.forEach((t) => t.addEventListener("click", () => { clearInterval(timer); zeige(+t.dataset.i); }));
   if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) timer = setInterval(() => zeige((i + 1) % bilder.length), 5000);
 })();
+window.CAROUD_BEREIT = true;

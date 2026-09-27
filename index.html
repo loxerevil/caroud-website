@@ -31,7 +31,7 @@
   <!-- Überschriftenschrift vorladen, damit der Hero-Titel nicht erst in Georgia aufblitzt -->
   <link rel="preload" href="fonts/playfair-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/inter-400.woff" as="font" type="font/woff" crossorigin>
-  <link rel="stylesheet" href="css/style.css?v=105">
+  <link rel="stylesheet" href="css/style.css?v=106">
 
   <!-- Strukturierte Daten für Google. Produkt-Markup fehlt bewusst,
        solange keine echten Preise hinterlegt sind. -->
@@ -89,6 +89,11 @@
     </div>
     <div class="mist" id="mist"></div>
   </div>
+  <script>
+// Notfall: Wenn irgendein Skript abstürzt, bleibt die Seite trotzdem sichtbar
+window.addEventListener("error", function () { document.documentElement.classList.add("js-fehler"); });
+setTimeout(function () { if (!window.CAROUD_BEREIT) document.documentElement.classList.add("js-fehler"); }, 5000);
+  </script>
   <script>
 (function () {
 // ---------- Ladebildschirm: Sprühstoß-Übergang ----------
@@ -661,6 +666,6 @@ if (preloader && !introGesehen) {
   <div class="toast" id="toast" hidden></div>
 
   <script src="js/products.js?v=114"></script>
-  <script src="js/main.js?v=107"></script>
+  <script src="js/main.js?v=108"></script>
 </body>
 </html>
