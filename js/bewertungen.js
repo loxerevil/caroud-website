@@ -17,7 +17,10 @@ const BEWERTUNGEN = [
   const sektion = document.getElementById("bewertungen");
   if (!sektion) return;
 
-  const vorschau = new URLSearchParams(location.search).get("bewertungen") === "vorschau";
+  // Beispielkarten: mit ?bewertungen=vorschau – und automatisch bis zum Launch (15.10.2026, 18 Uhr),
+  // solange die Seite hinter der Passwort-Sperre liegt. Nach dem Launch nur noch echte Bewertungen.
+  const vorLaunch = Date.now() < Date.parse("2026-10-15T18:00:00+02:00");
+  const vorschau = vorLaunch || new URLSearchParams(location.search).get("bewertungen") === "vorschau";
   const BEISPIEL = [
     { name: "Beispiel A.", sterne: 5, datum: "2026-10-18", produkt: "Duftspray Ombre Apex", text: "Beispieltext: So sieht eine Bewertung aus. Hier steht später, was echte Kunden über ihren Duft schreiben." },
     { name: "Beispiel B.", sterne: 5, datum: "2026-10-21", produkt: "Glasanhänger Fast Cherry", text: "Beispieltext: Kurze und längere Bewertungen passen beide in die Karte. Die Reihe lässt sich wischen oder mit den Pfeilen blättern." },
@@ -39,7 +42,7 @@ const BEWERTUNGEN = [
     `<div class="bw-schnitt"><span class="bw-note">${schnitt.toFixed(1).replace(".", ",")}</span>` +
     `<span class="bw-sterne" aria-label="${schnitt.toFixed(1)} von 5 Sternen">${sterne(schnitt)}</span>` +
     `<span class="bw-anzahl">aus ${liste.length} ${liste.length === 1 ? "Bewertung" : "Bewertungen"}</span></div>` +
-    (vorschau && !BEWERTUNGEN.length ? `<p class="bw-vorschau">Vorschau mit Beispieldaten – auf der echten Seite unsichtbar, bis echte Bewertungen eingetragen sind.</p>` : "");
+    (vorschau && !BEWERTUNGEN.length ? `<p class="bw-vorschau">Vorschau mit Beispielen – nur bis zum Launch sichtbar. Danach stehen hier ausschließlich echte Kundenbewertungen.</p>` : "");
 
   document.getElementById("bwReihe").innerHTML = liste.map((b) => `
     <article class="bw-karte">

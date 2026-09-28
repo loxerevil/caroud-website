@@ -148,7 +148,7 @@ function glasSVG(color, label, img) {
 
 
 function probierSVG(color, label, anzahl) {
-  // Drei 30-ml-Mini-Sprays nebeneinander – die Probier-Groesse
+  // Drei 10-ml-Mini-Sprays nebeneinander – die Probier-Groesse
   const mini = (x, tint) => `
     <g transform="translate(${x} 0)">
       <rect x="8" y="52" width="10" height="8" rx="2" fill="#1a1a1a"/>
@@ -622,7 +622,7 @@ function heroSlider() {
     },
     {
       name: "Probierset",
-      kicker: "Probierset · 3&nbsp;×&nbsp;30&nbsp;ml",
+      kicker: "Probierset · 3&nbsp;×&nbsp;10&nbsp;ml",
       titel: "Erst testen.<br>Dann entscheiden.",
       text: "Such dir drei Düfte aus und probier sie in Ruhe im Auto – bevor du dich für die große Flasche entscheidest.",
       ctas: [["#p/probierset-3", "Düfte wählen", "btn-gold"], ["#p/probierset-7", "Alle 7 Düfte", "btn-outline"]],
@@ -1010,7 +1010,7 @@ const shippingFillEl = document.getElementById("shippingFill");
 // Gilt nur, solange mindestens ein regulaerer Artikel im Korb liegt.
 const UPSELL = [
   { id: "haenger-pacific-cruise", price: 2.90, name: "Duftanhänger", scentChoice: "haenger" },
-  { id: "probe-pacific-cruise",   price: 4.90, name: "Duftprobe 30 ml", scentChoice: "probe" },
+  { id: "probe-pacific-cruise",   price: 4.90, name: "Duftprobe 10 ml", scentChoice: "probe" },
   { id: "pflege-handschuh", price: 6.90, name: "Waschhandschuh" },
   { id: "glas-pacific-cruise",    price: 9.90, name: "Glasanhänger", scentChoice: "glas" },
   { id: "pflege-mikrofaser", price: 8.90, name: "Mikrofaser 3er-Set" },
@@ -1566,7 +1566,7 @@ function probenListeHtml(p) {
               <span class="proben-name">${s.name}</span>
               <span class="proben-noten">${s.notes.slice(0, 3).join(" · ")}</span>
             </span>
-            <span class="proben-ml">30 ml</span>
+            <span class="proben-ml">10 ml</span>
           </button>
         </li>`).join("")}
     </ul>`;

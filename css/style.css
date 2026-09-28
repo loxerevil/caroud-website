@@ -2842,3 +2842,34 @@ body.aktion-xmas { --accent: #1f4a37; --accent-dark: #163829; --zweig: url("data
   .bw-pfeil { display: none; }
   .bw-kopf { margin-top: -.6rem; }
 }
+
+/* ===== Einheitlich leicht abgerundet (28.09.) =====
+   Fotos/Kacheln 10px · Buttons/Felder 6px · Karten/Fenster 12px */
+:root { --r-foto: 10px; --r-btn: 6px; --r-karte: 12px; }
+
+/* Buttons, Filter, Tabs, Felder */
+.btn, .chip, .vtab, .koll-btn, .qty-btn, .note-chip, .upsell-add, .bf-add, .xm-chip,
+.aw-tabs button, .modal-actions .qty-row, #pdpAdd, .pdp-hinweis, .toast, .fakten,
+.newsletter-form input, .newsletter-form button, .search-box input,
+input[type="text"], input[type="email"], input[type="tel"], input[type="search"], input[type="number"], textarea, select,
+.bf-tag, .hero-bf-tag, .bf-badge, .spar-badge, .xm-badge, .sich-badge { border-radius: var(--r-btn); }
+
+/* Fotos & Kacheln (Inhalt wird mit abgeschnitten) */
+.product-media, .koll-tile, .scent-foto, .bf-bild, .boxen-karte-bild, .pdp-moment-img,
+.pdp-reco-art, .pdp-thumb, .pdp-stage, .category-card, .duftwahl-bild, .xm-tuer,
+.cart-item-art, .search-result-art, .upsell-art, .vg-kopf img, .about-media img,
+.cross-art img, .proben-zeile img, .hero-bf-karte { border-radius: var(--r-foto); overflow: hidden; }
+.pdp-reco-art .prod-photo, .pdp-moment-img img, .scent-foto img { border-radius: inherit; }
+.cart-item-art, .search-result-art, .upsell-art, .proben-zeile img, .cross-art img { border-radius: var(--r-btn); }
+
+/* Karten, Boxen, Fenster */
+.vergleich-karte, .review-card, .bw-karte, .boxen-karte, .bf-karte, .xm-karte, .wsh-feld,
+.duftwahl, .cross-card, .vg-unser { border-radius: var(--r-karte); overflow: hidden; }
+.search-box, .modal { border-radius: var(--r-karte); }
+.vergleich-foto { border-radius: 0; }
+.vg-andere { border-radius: 0 var(--r-karte) var(--r-karte) 0; }
+@media (max-width: 700px) { .modal { border-radius: 16px 16px 0 0; } }
+.scent-card { border-radius: var(--r-karte); overflow: hidden; }
+.scent-foto { border-radius: 8px; }
+.gift-note, .qty-row, .pdp-sicherheit, .dr-stufe::before { border-radius: var(--r-btn); }
+.qty-row { overflow: hidden; }

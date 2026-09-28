@@ -463,15 +463,15 @@ const OTHER_PRODUCTS = [
     photo: "img/fotos/set-glas-2.webp?v=" + ASSET_V,
     wahl: [{ anzahl: 2, linie: "glas", titel: "Deine 2 Glasanhänger", doppelt: true }],
   },
-  // Probiersets – 30-ml-Sprühfläschchen zum Kennenlernen
+  // Probiersets – 10-ml-Sprühfläschchen zum Kennenlernen
   {
     id: "probierset-3",
     name: "Probierset – 3 Düfte",
     type: "probier", category: "Sets & Boxen", set: true,
     color: "#b9a06a", label: "3 Düfte",
     price: 16.90, priceOld: 17.70, bestseller: true,
-    desc: "Drei Düfte deiner Wahl als 30-ml-Sprays zum Kennenlernen – bevor du dich für die große Flasche entscheidest. Wähle deine drei Düfte direkt hier aus.",
-    notes: ["3 × 30 ml", "Düfte frei wählbar"],
+    desc: "Drei Düfte deiner Wahl als 10-ml-Sprays zum Kennenlernen – bevor du dich für die große Flasche entscheidest. Wähle deine drei Düfte direkt hier aus.",
+    notes: ["3 × 10 ml", "Düfte frei wählbar"],
     photo: "img/fotos/probierset-3.webp?v=" + ASSET_V,
     // Weitere Galeriebilder: alle sieben Proben einzeln
     galerie: SCENTS.map((s) => ({ src: "img/fotos/probe-" + s.key + ".webp?v=" + ASSET_V, scent: s.key, label: s.name })),
@@ -484,8 +484,8 @@ const OTHER_PRODUCTS = [
     type: "probier", category: "Sets & Boxen", set: true,
     color: "#b9a06a", label: "Alle 7",
     price: 34.90, priceOld: 41.30, bestseller: true,
-    desc: "Die komplette Caroud-Kollektion als 30-ml-Sprays: alle sieben Düfte in einer Box. Finde deinen Favoriten – oder verschenke die ganze Reihe.",
-    notes: ["7 × 30 ml", "Alle 7 Düfte", "Geschenkbox"],
+    desc: "Die komplette Caroud-Kollektion als 10-ml-Sprays: alle sieben Düfte in einer Box. Finde deinen Favoriten – oder verschenke die ganze Reihe.",
+    notes: ["7 × 10 ml", "Alle 7 Düfte", "Geschenkbox"],
     photo: "img/fotos/probierset-7.webp?v=" + ASSET_V,
     galerie: SCENTS.map((s) => ({ src: "img/fotos/probe-" + s.key + ".webp?v=" + ASSET_V, scent: s.key, label: s.name })),
     // Auf der Produktseite: kurze Liste der sieben Proben mit Duftnoten
@@ -521,8 +521,8 @@ const OTHER_PRODUCTS = [
     type: "bundle", category: "Sets & Boxen", set: true, saison: "weihnachten", geschenk: true,
     color: "#1f4a37", label: "Kollektion",
     price: 39.90, priceOld: 58.10, bestseller: false, // Einzelwert 7 × 5,90 + 12,90 + 3,90 · Gewinn ~24,50 €
-    desc: "Für alle, deren Lieblingsduft du nicht kennst: alle sieben Düfte als 30-ml-Proben, dazu ein Glasanhänger und ein Duftanhänger – in der Geschenkbox mit Karte. Versandkostenfrei.",
-    notes: ["7× Duftprobe 30 ml", "1× Glasanhänger 8 ml", "1× Duftanhänger", "Geschenkbox + Karte", "Versandkostenfrei"],
+    desc: "Für alle, deren Lieblingsduft du nicht kennst: alle sieben Düfte als 10-ml-Proben, dazu ein Glasanhänger und ein Duftanhänger – in der Geschenkbox mit Karte. Versandkostenfrei.",
+    notes: ["7× Duftprobe 10 ml", "1× Glasanhänger 8 ml", "1× Duftanhänger", "Geschenkbox + Karte", "Versandkostenfrei"],
     photo: "img/fotos/probierset-7.webp?v=" + ASSET_V,
     wahl: [{ anzahl: 1, linie: "glas", titel: "Dein Glasanhänger", doppelt: true }, { anzahl: 1, linie: "haenger", titel: "Dein Duftanhänger", doppelt: true }],
   },
@@ -548,21 +548,21 @@ const OTHER_PRODUCTS = [
   },
 ];
 
-// ---- Einzelne 30-ml-Duftproben, je Duft eine ----
+// ---- Einzelne 10-ml-Duftproben, je Duft eine ----
 // Nur als Mitnahmeartikel im Warenkorb, deshalb hidden + upsellOnly.
 // Eigene Produkte statt einer Sammel-ID, damit die Duftauswahl im
 // Warenkorb echte Artikel trifft (wie bei Anhaenger und Glasanhaenger).
 const PROBE_PRODUCTS = SCENTS.map((s) => ({
   id: "probe-" + s.key,
-  name: s.name + " Duftprobe 30 ml",
+  name: s.name + " Duftprobe 10 ml",
   type: "probier", category: "Duftproben",
   hidden: true, upsellOnly: true, einzel: true,
   color: s.color, label: s.name,
-  // Produktfoto der 30-ml-Probe (auch Kachel "gibt es auch als" und Warenkorb)
+  // Produktfoto der 10-ml-Probe (auch Kachel "gibt es auch als" und Warenkorb)
   photo: "img/fotos/probe-" + s.key + ".webp?v=" + ASSET_V,
   price: 5.90, priceOld: null, bestseller: false,
-  desc: s.short + " Als 30-ml-Spray zum Ausprobieren – ideal, bevor du dich für die große Flasche entscheidest.",
-  notes: ["30 ml", s.name],
+  desc: s.short + " Als 10-ml-Spray zum Ausprobieren – ideal, bevor du dich für die große Flasche entscheidest.",
+  notes: ["10 ml", s.name],
   scent: s.key, familie: s.familie, linie: "probe", linieName: "Duftprobe",
 }));
 
