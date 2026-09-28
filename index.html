@@ -31,7 +31,7 @@
   <!-- Überschriftenschrift vorladen, damit der Hero-Titel nicht erst in Georgia aufblitzt -->
   <link rel="preload" href="fonts/playfair-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/inter-400.woff" as="font" type="font/woff" crossorigin>
-  <link rel="stylesheet" href="css/style.css?v=109">
+  <link rel="stylesheet" href="css/style.css?v=110">
 
   <!-- Strukturierte Daten für Google. Produkt-Markup fehlt bewusst,
        solange keine echten Preise hinterlegt sind. -->
@@ -561,6 +561,19 @@ if (preloader && !introGesehen) {
     </div>
   </section>
 
+  <!-- Bewertungen (erscheint erst, wenn echte Bewertungen in js/bewertungen.js stehen) -->
+  <section class="section bewertungen reveal" id="bewertungen" hidden>
+    <p class="section-kicker">Bewertungen</p>
+    <h2 class="section-title">Das sagen unsere Kunden</h2>
+    <div class="bw-kopf" id="bwKopf"></div>
+    <div class="bw-wrap">
+      <button type="button" class="bw-pfeil bw-zurueck" aria-label="Vorherige Bewertungen">&#8249;</button>
+      <div class="bw-reihe" id="bwReihe" tabindex="0" aria-label="Kundenbewertungen"></div>
+      <button type="button" class="bw-pfeil bw-weiter" aria-label="Weitere Bewertungen">&#8250;</button>
+    </div>
+    <p class="bw-hinweis">Hier erscheinen nur Bewertungen von Kundinnen und Kunden, die bei uns bestellt haben. Wir prüfen jede Bewertung vor der Veröffentlichung anhand der Bestellung.</p>
+  </section>
+
   <!-- FAQ -->
   <section class="section faq-section reveal" id="faq">
     <p class="section-kicker">Service</p>
@@ -666,6 +679,7 @@ if (preloader && !introGesehen) {
   <div class="toast" id="toast" hidden></div>
 
   <script src="js/products.js?v=114"></script>
+  <script src="js/bewertungen.js?v=1"></script>
   <script src="js/main.js?v=108"></script>
 </body>
 </html>
